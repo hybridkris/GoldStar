@@ -9,10 +9,12 @@ from flask.ext.login import current_user, login_user, LoginManager, UserMixin, l
 from flask.ext.wtf import PasswordField, SubmitField, TextField, Form
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import distinct
+from threading import Thread
 import userPageUser
 import StarObject
 import page
-
+from pythontincan import startThread
 
 # Create the app for Flask
 app = Flask(__name__)
@@ -53,7 +55,7 @@ class Star(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	description = db.Column(db.Unicode)
 	category = db.Column(db.Unicode)
-	created = db.Column(db.DateTime, default = datetime.datetime.now())
+	created = db.Column(db.DateTime, default = datetime.datetime.now)
 	issuer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	hashtag = db.Column(db.Unicode)
@@ -371,6 +373,26 @@ def feedback():
 def logout():
 	logout_user()
 	return redirect('/')
+def models_committed(sender,changes):
+	session = db.create_scoped_session()
+	query = session.query(User)
+	for change in changes:
+		if isinstance(change[0],Star):
+			s = change[0]
+			users = query.filter(User.id.in_([s.owner_id,s.issuer_id]))
+			owner_name = ''
+			issuer_email =''
+			issuer_name = ''
+			for user in users:
+				if user.id == s.owner_id:
+					owner_name = str(makeName(user.firstName,user.lastName,user.email))		
+				else:
+					issuer_email = user.email
+					issuer_name = str(makeName(user.firstName,user.lastName,user.email))
+			startThread(issuer_name,issuer_email,"interacted",owner_name)
+def makeName(userFirstName, userLastName, userEmail):
+	fullName = "{0} {1}({2})".format(str(userFirstName), str(userLastName), str(userEmail))
+	return fullName
 
 @app.route('/getLeaderboard')
 def getLeaderboard():
@@ -379,6 +401,17 @@ def getLeaderboard():
 	for i in Leaderboards:
 		leaderList.append(dict(firstName=i.firstName,lastName=i.lastName,starCount=len(i.stars), id=i.id))
 	return jsonify(dict(leaders = leaderList))
+
+@app.route('/getHashtags')
+def getHashtags():
+	hashtagList = []
+	hashtagQuery = Star.query.order_by(Star.hashtag).all()
+	for tag in hashtagQuery:
+		if tag.hashtag != None or tag.hashtag != "":
+			if tag.hashtag not in hashtagList:
+				hashtagList.append(tag.hashtag)
+				print tag.hashtag
+	return jsonify(dict(hashtags = hashtagList))
 
 @app.route('/leaderboard/<string:hashtag>')
 def specificLeaderboard(hashtag):
@@ -410,7 +443,7 @@ auth_func = lambda: current_user.is_authenticated()
 manager.create_api(User, methods=['GET', 'POST'], validation_exceptions=[userValidation], authentication_required_for=['GET'], authentication_function=auth_func, 
 	include_columns=['id','firstName', 'lastName', 'twitterUser', 'stars', 'issued','email'])
 manager.create_api(Star, methods=['GET', 'POST'], validation_exceptions=[starValidation])
-
+flask.ext.sqlalchemy.models_committed.connect(models_committed,sender=app)
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0')

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="user-scalable=no,width=device-width">
+		<title>Gold Star</title>
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand" href="#">
+						<img src="goldstar.png" width="20" height="20" /> Gold Star <img src="goldstar.png" width="20" height="20" />
+					</a>
+						<ul class="nav">
+							<li><button id="gg" class="btn btn-inverse" onclick="toggleView(this.id)">Give Gold Star</button></li>
+							<li><button id="ms" class="btn btn-inverse" onclick="toggleView(this.id)">My Gold Stars</button></li>
+							<li><button id="as" class="btn btn-inverse" onclick="toggleView(this.id)">Awarded Stars</button></li>
+						</ul>
+					
+				</div>
+			</div>
+		</div>
+		<div id="gold1" style="display:none;">
+			<div class="container">
+				<div class="hero-unit">
+					<h1> Give Gold Star </h1> <br />
+					<p>Choose who you want to give the gold star to:</p>
+					<p> [search bar for people] </p>
+				</div>
+			</div>
+		</div>
+		<div id="gold2" style="display:none;">
+			<div class="container">
+				<div class="hero-unit">
+					<h1> My Gold Stars</h1> <br />
+					<p>These are the stars that people have awarded you.</p>
+					<p>[list of stars awarded to you, by whom, and what for]</p>
+				</div>
+			</div>
+		</div>
+		<div id="gold3" style="display:none;">
+			<div class="container">
+				<div class="hero-unit">
+					<h1> Awarded Stars </h1> <br />
+					<p>These are the stars that you have awarded people</p>
+					<p>[list of stars awarded by you, to whom, and what for]</p>
+				</div>
+			</div>
+		</div>
+		<script src="js/bootstrap.js"></script>
+		<script src="js/customscripts.js"></script>
+		<script src="js/jquery-1.7.2.min.js"></script>					
+	</body>
+	
+	
+</html>

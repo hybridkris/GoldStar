@@ -16,14 +16,7 @@ function pageInit()
 	
 	//load objects
 	loadCurrentStars();
-
-	var hashtags = getHashTags("all");
-	$( "#EventTextBox" ).autocomplete({
-				source: hashtags
-			});	
-	$( "#AllStarEventHashTag" ).autocomplete({
-				source: hashtags
-			});	
+	getHashTags('all');
 }
 
 function loadCurrentStars()
@@ -95,7 +88,7 @@ function displayLeaderBoard()
 		 		userArrAll[userArrAll.length] = {Name: e[i].firstName + " " + e[i].lastName, numOfStars: e[i].starCount, id: e[i].id};
 		 	}
 
-		 	console.log(userArrAll);
+		 //	console.log(userArrAll);
 
 		 	var userArrHasStar = [];
 		 	//weed out people with 0 stars
@@ -105,12 +98,12 @@ function displayLeaderBoard()
 		 		}
 		 	}
 		 	
-		 	console.log(userArrHasStar);
+		 //	console.log(userArrHasStar);
 
 		 	//sort arrays
-		 	console.log(userArrAll.sort(function(a,b){
-		 		return parseInt(a.numOfStars) - parseInt(b.numOfStars);
-		 	}));
+		 //	console.log(userArrAll.sort(function(a,b){
+		 	// 	return parseInt(a.numOfStars) - parseInt(b.numOfStars);
+		 	// }));
 
 		 	var tierOnePercent = 0.50;
 		 	var tierTwoPercent = 0.25;
@@ -124,7 +117,7 @@ function displayLeaderBoard()
 		 	var tierFourUsers = Math.ceil(numberOfUsers * tierFourPercent);
 		 	var tierFiveUsers = Math.ceil(numberOfUsers * tierFivePercent);
 
-		 	console.log("1%: "+tierOneUsers+" \b5%: "+tierTwoUsers+" \b10%: "+tierThreeUsers+" \b25%: "+tierFourUsers+" \b50%: "+tierFiveUsers);
+		 	//console.log("1%: "+tierOneUsers+" \b5%: "+tierTwoUsers+" \b10%: "+tierThreeUsers+" \b25%: "+tierFourUsers+" \b50%: "+tierFiveUsers);
 
 		 	for(var i = userArrAll.length - 1; i >= 0; --i){
 		 		var divToChange = "#";
@@ -173,7 +166,7 @@ function displayLeaderBoard()
 				if ($(divToChange).html().indexOf('<div class="well-small"') >= 0 )
 				{
 					//if message is still there for the div, it removes it
-					console.log("still has default message")
+					//console.log("still has default message")
 					$(divToChange).html("")
 				}
 				$(divToChange).append(itemHTML);
@@ -265,9 +258,9 @@ function displayMyStars()
  		//console.log("displaying all");
  		//create starArray
  		starArray = user.issued.concat(user.stars);
- 		console.log(user.issued)
+ 		//console.log(user.issued)
  		starArray.sort(compareStarArrayByDate)
- 		console.log(starArray)
+ 		//console.log(starArray)
  		//sort array
 
 		emptyMessage = "No stars! You need involvement..."	
@@ -305,7 +298,16 @@ function displayMyStars()
 				var issuerID = val.issuer_id;
 				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
 				var timestamp = new Date(val.created);
-				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp);
+				var today = new Date(val.created);
+				var dd = today.getDate();
+				var mm = today.getMonth()+1; //January is 0!
+
+				var yyyy = today.getFullYear();
+				if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} 
+				var atTime = today.getHours() +":"+today.getMinutes() ;
+				var today = mm+'/'+dd+'/'+yyyy + " @" +atTime;
+				console.log(today);
+				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, today);
 				$("#myStarList").append(itemHTML);	
 			}
 	 	);
@@ -358,7 +360,7 @@ function displayEventStars()
 	 	//loop through array
 	 	$.each(hashtagStars, function(i, val)
 			{
-				console.log(val);
+				//console.log(val);
 				var itemHTML = '';
 				itemHTML += '<div class="well" style="height:4em; margin-bottom:0;">'				
 				itemHTML += 	'<div style="float:left; width:80%;">'
@@ -389,7 +391,7 @@ function loadMyStars()
 {
 			//getJson of stars here
 			var userUrl = "/api/user/" + sessionStorage.userID;
-			console.log("loading stars-1")
+			//console.log("loading stars-1")
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
@@ -401,7 +403,7 @@ function loadHashtagStars()
 {
 			//getJson of stars here
 			var userUrl = "/api/user/1";
-			console.log("loading events")
+			//console.log("loading events")
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("hashtagStars", JSON.stringify(jdata));
@@ -412,9 +414,20 @@ function loadHashtagStars()
 //returns the hashtags
 function  getHashTags(whatTags)
 {
-	console.log(whatTags);
-	//get hashtags here
-	rv = ['ape','bear','cat', 'dog'];
-	return rv;
+	var hashlist
+	//console.log(whatTags);
+	var hashurl = "/getHashtags"
+	$.getJSON(hashurl, function(data)
+	{
+		//console.log(data);
+		$( "#EventTextBox" ).autocomplete({
+				datatype: "json",
+				source: data.hashtags
+			});	
+		$( "#AllStarEventHashTag" ).autocomplete({
+				datatype: "json",
+				source: data.hashtags
+			});	
+	});
 
 }

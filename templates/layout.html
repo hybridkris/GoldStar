@@ -119,9 +119,13 @@
 			$(function(){
 				try
 				{
-					$( "#modalViewEvent" ).autocomplete({
-						source: ["Event1","Event2","Event3","Event4","Event5","Event6"],
-					});				
+					var hashurl = "/getHashtags"
+					$.getJSON(hashurl, function(data){
+						$( "#modalViewEvent" ).autocomplete({
+							datatype:'json',
+							source: data.hashtags
+						});				
+					});
 				}
 				catch(ex)
 				{
