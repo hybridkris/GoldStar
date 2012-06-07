@@ -301,6 +301,8 @@ function displayMyStars()
 				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
 				var timestamp = new Date(val.created);
 				var today = new Date(val.created);
+				var currentTime = new Date();
+				alert(today + " " + currentTime);
 				var dd = today.getDate();
 				var mm = today.getMonth()+1; //January is 0!
 
