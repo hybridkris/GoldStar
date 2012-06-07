@@ -287,14 +287,12 @@ def login():
 			user = User.query.filter_by(email = username).one()
 			if bcrypt.hashpw(password, user.password) == user.password:
 				login_user(user)
-				print "Logged In successfully"
 				return redirect('mobileview.html')
 		elif request.method == 'POST':
 			loginINFO = request.json
 			user = User.query.filter_by(email = unicode(loginINFO['email'])).one()
 			if bcrypt.hashpw(loginINFO['password'], user.password) == user.password:
 				login_user(user)
-				print "Logged In successfully"
 				return jsonify(dict(id = current_user.get_id()))
 	except Exception as ex:
 		print ex.message
@@ -324,11 +322,8 @@ def userPage(userID):
 		p = page.Page("Check out this user!", False)
 		return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser)
 	except Exception as ex:
-			p = page.Page("Oops!", False)
-			userID = current_user.get_id()
-			u = User.query.filter_by(id = userID).one()
-			thisUser = userPageUser.userPageUser(u.firstName, u.lastName, userID)
-			return render_template("error.html", page = p, user = thisUser)
+		print ex.message
+		return redirect('/error')
 
 #starLanding Page
 @app.route('/star/<int:starID>')
@@ -342,11 +337,8 @@ def starPage(starID):
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
 		return render_template("star.html", star = thisStar, page = p, user = thisUser)
 	except Exception as ex:
-		p = page.Page("Oops!", False)
-		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
-		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
-		return render_template("error.html", page = p,user = thisUser)
+		print ex.message
+		return redirect('/error')
 
 #createAccountPage
 @app.route('/signup')
@@ -412,7 +404,6 @@ def getHashtags():
 		if tag.hashtag != None or tag.hashtag != "":
 			if tag.hashtag not in hashtagList:
 				hashtagList.append(tag.hashtag)
-				print tag.hashtag
 	return jsonify(dict(hashtags = hashtagList))
 
 @app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
@@ -442,11 +433,7 @@ def specificLeaderboard(hashtag, verb):
 		return jsonify(dict(leaders = leaderList))
 	except Exception as ex:
 		print ex.message
-		p = page.Page("Oops!", False)
-		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
-		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
-		return render_template("error.html", page = p,user = thisUser)
+		return redirect('/error')
 
 @app.route("/starsbyhashtag/<string:needle>")
 def starsByHashtag(needle):
