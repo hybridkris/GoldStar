@@ -311,15 +311,19 @@ def login():
 def userPage(userID):
 	try:
 		#get info for other user
-		u = User.query.filter_by(id = userID).one()
-		starsIssued = Star.query.filter_by(issuer_id = userID).count()
-		starsReceived = Star.query.filter_by(owner_id = userID).count()
-		otherUser = userPageUser.userPageUser(u.firstName, u.lastName, userID)
+		profileUser = User.query.filter_by(id = userID).one()
+		starsIssued = len(profileUser.issued)
+		starsReceived = len(profileUser.stars)
+		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, userID)
 		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user
-		me = User.query.filter_by(id = current_user.get_id()).one()
-		thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
-		p = page.Page("Check out this user!", False)
+		if current_user.is_authenticated():
+			me = User.query.filter_by(id = current_user.get_id()).one()
+			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
+			p = page.Page("Check out this user!", False)
+		else:
+			thisUser = None
+			p = page.Page("Check out this user!", True)
 		return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser)
 	except Exception as ex:
 		print ex.message
@@ -331,10 +335,14 @@ def starPage(starID):
 	try:
 		s = Star.query.filter_by(id = starID).one()
 		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description)
-		p = page.Page("Check out this star!", False)
-		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
-		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
+		if current_user.is_authenticated():
+			userID = current_user.get_id()
+			u = User.query.filter_by(id = userID).one()
+			thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
+			p = page.Page("Check out this star!", False)
+		else:
+			thisUser = None
+			p = page.Page("Check out this star!", True)
 		return render_template("star.html", star = thisStar, page = p, user = thisUser)
 	except Exception as ex:
 		print ex.message
@@ -356,10 +364,14 @@ def createUser():
 #feedback page
 @app.route('/feedback')
 def feedback():
-	p = page.Page("Feedback!", False)
-	userID = current_user.get_id()
-	u = User.query.filter_by(id = userID).one()
-	thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
+	if current_user.is_authenticated():
+		p = page.Page("Feedback!", False)
+		userID = current_user.get_id()
+		u = User.query.filter_by(id = userID).one()
+		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
+	else:
+		p = page.Page("Feedback!", True)
+		thisUser = None
 	return render_template("feedback.html", page = p, user = thisUser)
 
 @app.route("/logout")
@@ -445,10 +457,14 @@ def starsByHashtag(needle):
 
 @app.route('/error')
 def errorPage():
-	p = page.Page("Oops!", False)
-	userID = current_user.get_id()
-	u = User.query.filter_by(id = userID).one()
-	thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
+	if current_user.is_authenticated():
+		p = page.Page("Oops!", False)
+		userID = current_user.get_id()
+		u = User.query.filter_by(id = userID).one()
+		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
+	else:
+		thisUser = None
+		p = page.Page("Oops!", True)
 	return render_template("error.html", page = p,user = thisUser)
 
 
