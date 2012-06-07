@@ -17,7 +17,7 @@ function pageInit()
 	$("#myFeedFilter").change(displayMyStars);
 	
 	//sets default hashtag in search boxes
-	defaultHashtag = "mLearnCon"
+	defaultHashtag = "Overlap12"
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
 	//load objects
