@@ -2,10 +2,12 @@
 //global varibles
 var _currentTab;
 var userList = {};
+var defaultHashtag;
 
 //on doc ready for mobile view
 function pageInit()
 {
+
 	//sets _currentTab to default value
 	if (_currentTab == null)
 	{
@@ -15,8 +17,9 @@ function pageInit()
 	$("#myFeedFilter").change(displayMyStars);
 	
 	//sets default hashtag in search boxes
-	$("#EventTextBox").val("asdf")
-
+	defaultHashtag = "asdf"
+	$("#EventTextBox").val(defaultHashtag);
+	$("#AllStarEventHashTag").val(defaultHashtag);
 	//load objects
 	loadCurrentStars();
 	getHashTags('all');
@@ -73,10 +76,15 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
 function displayLeaderBoard()
 {
 		//getJson of stars here
-		var userUrl = "/getLeaderboard"
+		var ht = $("#AllStarEventHashTag").val();
+		ht = (ht == "") ? "all" : ht;
+		var verb = $("#allStarFilter").val().toLowerCase();
+		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+		console.log(userUrl)
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
+		 	console.log(data)
 		 	var defaultDiv = '<div class="well-small" style="background-color:#ffffbb"><i>Nobody is this bright yet, will you be the first?</i></div>	'
 		 	$("#tier5").html(defaultDiv);	
 		 	$("#tier4").html(defaultDiv);	
@@ -209,16 +217,9 @@ function displayMyStars()
  	var starArray = []
  	if (myFeedFilterSelectedItem == "All")
  	{
- 		//console.log("displaying all");
- 		//create starArray
  		starArray = user.issued.concat(user.stars);
- 		//console.log(user.issued)
  		starArray.sort(compareStarArrayByDate)
  		starArray.reverse();
- 		//console.log(starArray)
- 		//sort array
-
-
 		emptyMessage = "No stars! You need involvement..."	
  	}
  	else if( myFeedFilterSelectedItem == "Given")
@@ -348,7 +349,7 @@ function loadMyStars()
 function loadHashtagStars(needle)
 {
 			//getJson of stars here
-			var userUrl = "/starsbyhashtag/" + needle;
+			var userUrl = "/starsbyhashtag/" + needle.replace("#","");
 			console.log(userUrl)
 			$.getJSON(userUrl, function(jdata)
 			 {
@@ -376,7 +377,11 @@ function  getHashTags(whatTags)
 			});	
 		$( "#AllStarEventHashTag" ).autocomplete({
 				datatype: "json",
-				source: data.hashtags
+				source: data.hashtags,
+				select: function(event, ui){
+					displayLeaderBoard();
+
+				}
 			});	
 	});
 
