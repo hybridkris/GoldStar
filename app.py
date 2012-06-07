@@ -287,14 +287,12 @@ def login():
 			user = User.query.filter_by(email = username).one()
 			if bcrypt.hashpw(password, user.password) == user.password:
 				login_user(user)
-				print "Logged In successfully"
 				return redirect('mobileview.html')
 		elif request.method == 'POST':
 			loginINFO = request.json
 			user = User.query.filter_by(email = unicode(loginINFO['email'])).one()
 			if bcrypt.hashpw(loginINFO['password'], user.password) == user.password:
 				login_user(user)
-				print "Logged In successfully"
 				return jsonify(dict(id = current_user.get_id()))
 	except Exception as ex:
 		print ex.message
@@ -412,7 +410,6 @@ def getHashtags():
 		if tag.hashtag != None or tag.hashtag != "":
 			if tag.hashtag not in hashtagList:
 				hashtagList.append(tag.hashtag)
-				print tag.hashtag
 	return jsonify(dict(hashtags = hashtagList))
 
 @app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
