@@ -66,8 +66,8 @@ class Star(db.Model):
 	@validates('hashtag')
 	def validate_hashtag(self, key, string):
 		string = string.lower()
-		if '#' not in string:
-			string = '#' + string
+		if '#' in string:
+			string = string.replace('#','')
 		return unicode(string)
 
 	#Validates the Description
