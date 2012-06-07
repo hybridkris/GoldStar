@@ -428,6 +428,12 @@ def specificLeaderboard(hashtag):
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
 		return render_template("error.html", page = p,user = thisUser)
 
+@app.route("/starsbyhashtag/<string:hashtag>")
+def starsByHashtag(hashtag):
+	starList = []	
+	starList = Star.query.filter_by(hashtag = hashtag).order_by(Star.created).all()
+	return jsonify(dict(hashtags = starList))
+
 @app.route('/error')
 def errorPage():
 	p = page.Page("Oops!", False)
