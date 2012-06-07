@@ -301,7 +301,8 @@ function displayMyStars()
 				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
 				var timestamp = new Date(val.created);
 				var today = new Date(val.created);
-				var currentTime = new Date();
+				var todayFormatted = calculateTimeFromServer(today);
+				/*var currentTime = new Date();
 				alert(today + " " + currentTime);
 				var dd = today.getDate();
 				var mm = today.getMonth()+1; //January is 0!
@@ -309,9 +310,9 @@ function displayMyStars()
 				var yyyy = today.getFullYear();
 				
 				var atTime = today.getHours() +":"+today.getMinutes() ;
-				var today = mm+' / '+dd+' / '+yyyy + " @" +atTime;
+				var today = mm+' / '+dd+' / '+yyyy + " @" +atTime;*/
 			
-				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, today);
+				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted);
 				$("#myStarList").append(itemHTML);	
 			}
 	 	);
@@ -433,5 +434,81 @@ function  getHashTags(whatTags)
 				source: data.hashtags
 			});	
 	});
+
+}
+function calculateTimeFromServer(serverTime){
+	// Set the unit values in milliseconds.
+	var msecPerMinute = 1000 * 60;
+	var msecPerHour = msecPerMinute * 60;
+	var msecPerDay = msecPerHour * 24;
+
+	// Determine the current date and time.
+	var today = new Date();
+	//alert (today.getTime());
+
+	// Determine January 1, at midnight, of the current year.
+	/*var january = 0;
+	var startOfYear = new Date();
+	startOfYear.setMonth(january);
+	startOfYear.setDate(1);
+	startOfYear.setHours(0, 0, 0, 0);*/
+
+	// Determine the difference in milliseconds.
+	var interval = today.getTime() - serverTime.getTime();
+
+	// Calculate how many days the interval contains. Subtract that
+	// many days from the interval to determine the remainder.
+	var days = Math.floor(interval / msecPerDay );
+	interval = interval - (days * msecPerDay );
+
+	// Calculate the hours, minutes, and seconds.
+	var hours = Math.floor(interval / msecPerHour );
+	interval = interval - (hours * msecPerHour );
+
+	var minutes = Math.floor(interval / msecPerMinute );
+	interval = interval - (minutes * msecPerMinute );
+
+	var seconds = Math.floor(interval / 1000 );
+
+	// Format time.
+	var msg = "";
+	 /*+ minutes + " minutes, " + seconds + " seconds.";
+	alert(msg);*/
+	if (seconds >= 0){
+		if (seconds == 1){
+			msg = seconds + " second ago";
+		}
+		else{
+			msg = seconds + " seconds ago";
+		}
+	}
+
+	if (minutes > 0){
+		if (minutes == 1){
+			msg = minutes + " minute ago";
+		}
+		else{
+			msg = minutes + " minutes ago";
+		}
+	}
+
+	if (hours > 0){
+		if (hours == 1){
+			msg = hours + " hour ago";
+		}
+		else{
+			msg = hours + " hours ago";
+		}
+	}
+
+	if (days > 0){
+		if (days == 1){
+			msg = days + " day ago";
+		}
+		else{
+			msg = days + " days ago";
+		}
+	}
+	return msg;
 
 }
