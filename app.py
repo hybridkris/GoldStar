@@ -433,7 +433,7 @@ def starsByHashtag(needle):
 	starObject = []
 	starQuery = Star.query.filter_by(hashtag = needle).all()
 	for i in starQuery:
-		starObject.append(dict(category = i.category, issuer_id = i.issuer_id, owner_id = i.owner_id, id=i.id))
+		starObject.append(dict(category = i.category, issuer_id = i.issuer_id, owner_id = i.owner_id, id=i.id, hashtag= i.hashtag, created = str(i.created)))
 	return jsonify(dict(stars = starObject))
 
 @app.route('/error')
