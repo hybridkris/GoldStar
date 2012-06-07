@@ -448,11 +448,13 @@ def specificLeaderboard(hashtag, verb):
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
 		return render_template("error.html", page = p,user = thisUser)
 
-@app.route("/starsbyhashtag/<string:hashtag>")
-def starsByHashtag(hashtag):
-	starList = []	
-	starList = Star.query.filter_by(hashtag = hashtag).order_by(Star.created).all()
-	return jsonify(dict(hashtags = starList))
+@app.route("/starsbyhashtag/<string:needle>")
+def starsByHashtag(needle):
+	starObject = []
+	starQuery = Star.query.filter_by(hashtag = needle).all()
+	for i in starQuery:
+		starObject.append(dict(category = i.category, issuer_id = i.issuer_id, owner_id = i.owner_id, id=i.id, hashtag= i.hashtag, created = str(i.created)))
+	return jsonify(dict(stars = starObject))
 
 @app.route('/error')
 def errorPage():

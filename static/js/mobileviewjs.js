@@ -14,9 +14,13 @@ function pageInit()
 	//attach event to select
 	$("#myFeedFilter").change(displayMyStars);
 	
+	//sets default hashtag in search boxes
+	$("#EventTextBox").val("asdf")
+	
 	//load objects
 	loadCurrentStars();
 	getHashTags('all');
+
 }
 
 function loadCurrentStars()
@@ -30,7 +34,7 @@ function loadCurrentStars()
 	{
 		//console.log("loading event");
 		 //RECOMMENT BACK IN TO WORK
-		 //loadHashtagStars("eventStarList");	
+		 loadHashtagStars($("#EventTextBox").val());	
 	}
 	if (_currentTab == "leader")
 	{
@@ -173,57 +177,6 @@ function displayLeaderBoard()
 				userArrAll.pop();	
 		 	}
 		 	/*-------------------------------end of matts stuff------------------------------*/
-
-
-		 	
-
-		 	 	
-		 	/*$.each(data.leaders, function(i, val)
-		 		{
-		 			var divToChange = "#"
-		 			if (val.starCount >= 75)
-		 			{
-		 				divToChange += "tier5"
-		 			}
-		 			else if (val.starCount >= 50)
-		 			{
-		 				divToChange += "tier4"
-		 			}
-		 			else if (val.starCount >= 30)
-		 			{
-		 				divToChange += "tier3"
-		 			}
-		 			else if (val.starCount >= 15)
-		 			{
-		 				divToChange += "tier2"
-		 			}
-		 			else if (val.starCount >= 5)
-		 			{
-		 				divToChange += "tier1"
-		 			}
-		 			else
-		 			{
-		 				divToChange += "tier0"
-		 			}
-
-			 		var itemHTML = '';
-					itemHTML += '<a href="/users/' + val.id + '"><div class="well" style="height:4em; margin-bottom:0;">'				
-					itemHTML += 	'<div style="float:left; width:80%;">'
-					itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
-					itemHTML += 		'<span font-size:1.2em;>' + val.firstName + ' '+ val.lastName +' </span> <br/>';
-					itemHTML += 		'<span style="font-size:1em"><i>Stars:' + val.starCount + '</i> </span> <br/>'
-					itemHTML += 	'</div>'
-					itemHTML += '</div></a>	'		
-					itemHTML += 	'<div style="clear:both"></div>'
-					//checks if the empty message is still there
-					if ($(divToChange).html().indexOf('<div class="well-small"') >= 0 )
-					{
-						//if message is still there for the div, it removes it
-						console.log("still has default message")
-						$(divToChange).html("")
-					}
-					$(divToChange).append(itemHTML);	
-		 		});*/
 		 });
 }
 
@@ -302,16 +255,7 @@ function displayMyStars()
 				var timestamp = new Date(val.created);
 				var today = new Date(val.created);
 				var todayFormatted = calculateTimeFromServer(today);
-				/*var currentTime = new Date();
-				alert(today + " " + currentTime);
-				var dd = today.getDate();
-				var mm = today.getMonth()+1; //January is 0!
-
-				var yyyy = today.getFullYear();
 				
-				var atTime = today.getHours() +":"+today.getMinutes() ;
-				var today = mm+' / '+dd+' / '+yyyy + " @" +atTime;*/
-			
 				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted);
 				$("#myStarList").append(itemHTML);	
 			}
@@ -330,7 +274,7 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
 		itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
 		//itemHTML += 		'<span style="font-size:1.0em;">at <a href="#" >' + hashtag + '</a></span><br/>'
-		itemHTML += 		'<span style="font-size:1.0em;">at ' + hashtag + '</span><br/>'
+		itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
 		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
 		itemHTML += 	'</div>'
 		itemHTML += 	'<a href="#">'
@@ -355,34 +299,30 @@ function displayEventStars()
  	var emptyMessage = "Oops! something went wrong!";
 
  	//check for length first
- 	if (hashtagsStars.length == 0 )
+ 	if (hashtagStars.length == 0 )
  	{
  		$("#eventStarList").html("");
  		$("#emptyHashtagListMessage").html(emptyMessage);
+ 		$("#eventHashTagListMessageContainer").css("display", "block")
  	}
  	else
  	{
+ 		$("#eventStarList").html("");
+ 		$("#eventHashTagListMessageContainer").css("display", "none")
 	 	//loop through array
 	 	$.each(hashtagStars, function(i, val)
 			{
-				//console.log(val);
-				var itemHTML = '';
-				itemHTML += '<div class="well" style="height:4em; margin-bottom:0;">'				
-				itemHTML += 	'<div style="float:left; width:80%;">'
-				itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
-				itemHTML += 		'<span font-size:1.2em;><a href="#">Person One</a> Influenced <a href="#" >Person Two</a></span> <br/>'
-				itemHTML += 		'<span style="font-size:1.0em;">at <a href="#" >#MosEisley</a></span><br/>'
-				itemHTML += 		'<span style="font-size:0.8em">13 minutes ago </span> <br/>'
-				itemHTML += 	'</div>'
-				itemHTML += 	'<a href="#">'
-				itemHTML += 		'<div style="float:right; height:90%; width:20%;position:relative; padding-top:1.5em;">'
-				itemHTML += 				'<div class="iconDiv">'
-				itemHTML += 				'	<i class="icon-chevron-right pull-right"></i>'
-				itemHTML += 			'	</div>	'					
-				itemHTML += 		'</div>	'	
-				itemHTML += 	'</a>'
-				itemHTML += '</div>	'		
-				itemHTML += 	'<div style="clear:both"></div>'
+				console.log(val);
+				var ownerName =  userList[val.owner_id].firstName + ' ' + userList[val.owner_id].lastName;
+				var ownerID = val.owner_id
+				var verb = val.category;
+				var issuerName = userList[val.issuer_id].firstName + ' ' + userList[val.issuer_id].lastName ;
+				var issuerID = val.issuer_id;
+				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
+				var timestamp = new Date(val.created);
+				var today = new Date(val.created);
+				var todayFormatted = calculateTimeFromServer(today);
+				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted);
 				$("#eventStarList").append(itemHTML);	
 			}
 	 	);
@@ -404,14 +344,14 @@ function loadMyStars()
 			 });
 }
 
-function loadHashtagStars()
+function loadHashtagStars(needle)
 {
 			//getJson of stars here
-			var userUrl = "/api/user/1";
-			//console.log("loading events")
+			var userUrl = "/starsbyhashtag/" + needle;
+			console.log(userUrl)
 			$.getJSON(userUrl, function(jdata)
 			 {
-			 	sessionStorage.setItem("hashtagStars", JSON.stringify(jdata));
+			 	sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
 			 	displayEventStars();				
 			 });
 }
@@ -427,7 +367,11 @@ function  getHashTags(whatTags)
 		//console.log(data);
 		$( "#EventTextBox" ).autocomplete({
 				datatype: "json",
-				source: data.hashtags
+				source: data.hashtags,
+				select: function(event, ui){
+					loadHashtagStars(ui.item.label);
+
+				}
 			});	
 		$( "#AllStarEventHashTag" ).autocomplete({
 				datatype: "json",
