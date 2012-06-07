@@ -256,8 +256,20 @@ function displayMyStars()
 				var timestamp = new Date(val.created);
 				var today = new Date(val.created);
 				var todayFormatted = calculateTimeFromServer(today);
+
+				var star_id = val.id	
+				/*var currentTime = new Date();
+				alert(today + " " + currentTime);
+				var dd = today.getDate();
+				var mm = today.getMonth()+1; //January is 0!
+
+				var yyyy = today.getFullYear();
 				
-				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted);
+				var atTime = today.getHours() +":"+today.getMinutes() ;
+				var today = mm+' / '+dd+' / '+yyyy + " @" +atTime;*/
+			
+				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted,star_id);
+
 				$("#myStarList").append(itemHTML);	
 			}
 	 	);
@@ -267,7 +279,7 @@ function displayMyStars()
 
 }
 
-function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp)
+function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
 		var itemHTML = '';
 		itemHTML += '<div class="well" style="height:4em; margin-bottom:0;">'				
@@ -278,7 +290,8 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
 		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
 		itemHTML += 	'</div>'
-		itemHTML += 	'<a href="#">'
+		console.log('<a href="/star/' + star_id + '">')
+		itemHTML += 	'<a href="/star/' + star_id + '">'
 		itemHTML += 		'<div style="float:right; height:90%; width:20%;position:relative; padding-top:1.5em;">'
 		itemHTML += 				'<div class="iconDiv">'
 		itemHTML += 				'	<i class="icon-chevron-right pull-right"></i>'
@@ -362,7 +375,7 @@ function  getHashTags(whatTags)
 {
 	var hashlist
 	//console.log(whatTags);
-	var hashurl = "/getHashtags"
+	var hashurl = "/Hashtags"
 	$.getJSON(hashurl, function(data)
 	{
 		//console.log(data);
@@ -399,6 +412,7 @@ function calculateTimeFromServer(serverTime){
 	startOfYear.setHours(0, 0, 0, 0);*/
 
 	// Determine the difference in milliseconds.
+	console.log(typeof(serverTime))
 	var interval = today.getTime() - serverTime.getTime();
 	if (interval < 0){
 		interval = 0;

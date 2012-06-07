@@ -343,6 +343,7 @@ def starPage(starID):
 		else:
 			thisUser = None
 			p = page.Page("Check out this star!", True)
+
 		return render_template("star.html", star = thisStar, page = p, user = thisUser)
 	except Exception as ex:
 		print ex.message
@@ -408,14 +409,15 @@ def getLeaderboard():
 		leaderList.append(dict(firstName=i.firstName,lastName=i.lastName,starCount=len(i.stars), id=i.id))
 	return jsonify(dict(leaders = leaderList))
 
-@app.route('/getHashtags')
+@app.route('/Hashtags')
 def getHashtags():
 	hashtagList = []
 	hashtagQuery = Star.query.order_by(Star.hashtag).all()
 	for tag in hashtagQuery:
-		if tag.hashtag != None or tag.hashtag != "":
-			if tag.hashtag not in hashtagList:
-				hashtagList.append(tag.hashtag)
+
+		if tag.hashtag != None and tag.hashtag != "" and tag.hashtag not in hashtagList:
+			hashtagList.append(tag.hashtag)
+
 	return jsonify(dict(hashtags = hashtagList))
 
 @app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
