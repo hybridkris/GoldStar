@@ -2,10 +2,64 @@
 {% block cssStyle%}
 {%endblock%}
 {% block body%}
-			Star Page
-			<h4>
-				{{star.issuer}} gave a star to {{star.owner}} because {{star.reason}}
+			
+	<div class="well">
+		
+
+			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
+
+			<h4 style="text-align:center">
+				<a href="/users/{{star.issuer_id}}">{{star.issuer}}</a> gave a star to <a href="/users/{{star.owner_id}}">{{star.owner}}</a> because {{star.reason}} 
 			</h4>
+			<h4 style="text-align:center" >
+				<br/>
+				{{star.hashtag}}
+			</h4>
+			<h5 style="text-align:center" >
+				</br>
+				<div id ='timestamptext'style="display:none">
+
+					{{star.timestamp}}
+				</div>
+			</h5>
+			
+			<div style="clear:both"></div>
+			<hr />
+			<!--
+			<table style="text-align:center width:100%">
+				
+
+			</table>-->
+			<div style="text-align:center">
+				<div>		
+					<tr>
+						<td colspan=2><a href="../mobileview.html">Go back to feed</a></td>
+					</tr>
+				</div>
+				<div>
+					<tr>
+						<td colspan=2><a href="../feedback">Feedback</a></td>
+					</tr>
+				</div>
+			</div>
+	</div>
 {% endblock%}
 {% block scripts%}
+<script type = "text/javascript">
+	$(function(){
+
+		var wholeDate = new String($("#timestamptext").text().trim());
+		var dateYear = wholeDate.substr(0,4);
+		var dateMonth = wholeDate.substr(5,2);
+		var dateDay = wholeDate.substr(8,2);
+		var dateHour = wholeDate.substr(11,2);
+		var dateMinute = wholeDate.substr(14,2);
+		var dateSecond = wholeDate.substr(17,2);
+		var dateString = dateMonth+"/"+dateDay+"/"+dateYear+" "+dateHour+":"+dateMinute+":"+dateSecond
+		var DateFormatted = new Date(dateString);
+		$("#timestamptext").css('display','Block');
+		$("#timestamptext").text(calculateTimeFromServer(DateFormatted));
+	});
+</script>
+<script src="../static/js/mobileviewjs.js"></script>
 {%endblock%}

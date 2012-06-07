@@ -334,6 +334,7 @@ def userPage(userID):
 def starPage(starID):
 	try:
 		s = Star.query.filter_by(id = starID).one()
+
 		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description)
 		if current_user.is_authenticated():
 			userID = current_user.get_id()
@@ -343,6 +344,7 @@ def starPage(starID):
 		else:
 			thisUser = None
 			p = page.Page("Check out this star!", True)
+
 		return render_template("star.html", star = thisStar, page = p, user = thisUser)
 	except Exception as ex:
 		print ex.message
@@ -408,14 +410,15 @@ def getLeaderboard():
 		leaderList.append(dict(firstName=i.firstName,lastName=i.lastName,starCount=len(i.stars), id=i.id))
 	return jsonify(dict(leaders = leaderList))
 
-@app.route('/getHashtags')
+@app.route('/Hashtags')
 def getHashtags():
 	hashtagList = []
 	hashtagQuery = Star.query.order_by(Star.hashtag).all()
 	for tag in hashtagQuery:
-		if tag.hashtag != None or tag.hashtag != "":
-			if tag.hashtag not in hashtagList:
-				hashtagList.append(tag.hashtag)
+
+		if tag.hashtag != None and tag.hashtag != "" and tag.hashtag not in hashtagList:
+			hashtagList.append(tag.hashtag)
+
 	return jsonify(dict(hashtags = hashtagList))
 
 @app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
@@ -456,11 +459,11 @@ def starsByHashtag(needle):
 	return jsonify(dict(stars = starObject))
 
 @app.route('/error')
-def errorPage():
-	p = page.Page("Oops!", False)
-	userID = current_user.get_id()
-	u = User.query.filter_by(id = userID).one()
-	thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
+	if current_user.is_authenticated():
+		p = page.Page("Oops!", False)
+		userID = current_user.get_id()
+		u = User.query.filter_by(id = userID).one()
+		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
 	else:
 		thisUser = None
 		p = page.Page("Oops!", True)
