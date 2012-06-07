@@ -2,10 +2,36 @@
 {% block cssStyle%}
 {%endblock%}
 {% block body%}
-			Star Page
-			<h4>
+			
+	<div class="well">
+		
+
+			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
+
+			<h4 style="text-align:center">
 				{{star.issuer}} gave a star to {{star.owner}} because {{star.reason}}
 			</h4>
+			<h4 style="text-align:center">
+				{{star.hashtag}}
+			</h4>
+			<h5 style="text-align:center">
+				{{star.timestamp}}
+			</h5>
+			
+			<div style="clear:both"></div>
+			<hr />
+			
+			<table style="text-align:center width:100%">
+				
+					<tr>
+						<td colspan=2><a href="../mobileview.html">Go back to feed</a></td>
+					</tr>
+					<tr>
+						<td colspan=2><a href="../feedback">Feedback</a></td>
+					</tr>
+					
+			</table>		
+	</div>
 {% endblock%}
 {% block scripts%}
 {%endblock%}

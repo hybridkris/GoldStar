@@ -2,8 +2,12 @@ class starObject:
 	issuer = None
 	owner = None
 	reason = None
-
-	def __init__(self, g, r, rsn):
-		self.issuer = g
-		self.owner = r
-		self.reason = rsn
+	hashtag = None
+	timestamp = None
+	def __init__(self, issuerName, ownerName, starReason,starHashtag,starTime):
+		self.issuer = issuerName
+		self.owner = ownerName
+		self.reason = starReason
+		self.hashtag = starHashtag
+		self.timestamp = starTime
+		
