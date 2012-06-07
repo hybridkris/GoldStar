@@ -98,12 +98,12 @@ function displayLeaderBoard()
 		 		}
 		 	}
 		 	
-		 //	console.log(userArrHasStar);
+		 	//	console.log(userArrHasStar);
 
 		 	//sort arrays
-		 //	console.log(userArrAll.sort(function(a,b){
-		 	// 	return parseInt(a.numOfStars) - parseInt(b.numOfStars);
-		 	// }));
+		 	userArrAll.sort(function(a,b){
+		 	 	return parseInt(a.numOfStars) - parseInt(b.numOfStars);
+		 	 });
 
 		 	var tierOnePercent = 0.50;
 		 	var tierTwoPercent = 0.25;
@@ -260,8 +260,10 @@ function displayMyStars()
  		starArray = user.issued.concat(user.stars);
  		//console.log(user.issued)
  		starArray.sort(compareStarArrayByDate)
+ 		starArray.reverse();
  		//console.log(starArray)
  		//sort array
+
 
 		emptyMessage = "No stars! You need involvement..."	
  	}
