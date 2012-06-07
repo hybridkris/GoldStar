@@ -416,7 +416,7 @@ function  getHashTags(whatTags)
 {
 	var hashlist
 	//console.log(whatTags);
-	var hashurl = "/getHashtags"
+	var hashurl = "/Hashtags"
 	$.getJSON(hashurl, function(data)
 	{
 		//console.log(data);
