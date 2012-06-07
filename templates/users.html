@@ -17,15 +17,22 @@
 						<td style="text-align:center;">{{theOtherUser.starsGiven}} Stars Given &nbsp;&nbsp;&nbsp;&nbsp; {{theOtherUser.starsReceived}} Stars Received</td>
 					</tr>
 					<tr>
-						<td colspan=2><a href="../mobileview.html">Go back to feed</a></td>
+						<td colspan=2><a href="../mobileview.html">Go back to my feed</a></td>
 					</tr>
 					<tr>
 						<td colspan=2><a href="../feedback">Feedback</a></td>
 					</tr>
-					<tr>
-						<td colspan=2><a href="../logout">Log Out</a></td>
-					</tr>
+					{% if not page.hideStarButton %}
+						{% if ownPage %}
+							<tr>
+								<td colspan=2><a href="../logout">Log Out</a></td>
+							</tr>
+						{%endif%}
+					{%endif%}
 			</table>		
+			
+				
+			
 	</div>
 
 {% endblock%}
