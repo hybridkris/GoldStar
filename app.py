@@ -335,15 +335,12 @@ def starPage(starID):
 	try:
 		s = Star.query.filter_by(id = starID).one()
 
-		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description)
-		if current_user.is_authenticated():
-			userID = current_user.get_id()
-			u = User.query.filter_by(id = userID).one()
-			thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
-			p = page.Page("Check out this star!", False)
-		else:
-			thisUser = None
-			p = page.Page("Check out this star!", True)
+		timeStamp = s.created
+		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description, s.hashtag, s.created, s.issuer_id,s.owner_id)
+		p = page.Page("Check out this star!", False)
+		userID = current_user.get_id()
+		u = User.query.filter_by(id = userID).one()
+		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
 
 		return render_template("star.html", star = thisStar, page = p, user = thisUser)
 	except Exception as ex:
