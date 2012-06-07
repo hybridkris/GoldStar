@@ -334,7 +334,6 @@ def userPage(userID):
 def starPage(starID):
 	try:
 		s = Star.query.filter_by(id = starID).one()
-
 		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description,s.hashtag,s.created,s.issuer_id,s.owner_id)
 		if current_user.is_authenticated():
 			userID = current_user.get_id()
