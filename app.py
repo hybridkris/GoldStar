@@ -287,14 +287,12 @@ def login():
 			user = User.query.filter_by(email = username).one()
 			if bcrypt.hashpw(password, user.password) == user.password:
 				login_user(user)
-				print "Logged In successfully"
 				return redirect('mobileview.html')
 		elif request.method == 'POST':
 			loginINFO = request.json
 			user = User.query.filter_by(email = unicode(loginINFO['email'])).one()
 			if bcrypt.hashpw(loginINFO['password'], user.password) == user.password:
 				login_user(user)
-				print "Logged In successfully"
 				return jsonify(dict(id = current_user.get_id()))
 	except Exception as ex:
 		print ex.message
@@ -313,22 +311,23 @@ def login():
 def userPage(userID):
 	try:
 		#get info for other user
-		u = User.query.filter_by(id = userID).one()
-		starsIssued = Star.query.filter_by(issuer_id = userID).count()
-		starsReceived = Star.query.filter_by(owner_id = userID).count()
-		otherUser = userPageUser.userPageUser(u.firstName, u.lastName, userID)
+		profileUser = User.query.filter_by(id = userID).one()
+		starsIssued = len(profileUser.issued)
+		starsReceived = len(profileUser.stars)
+		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, userID)
 		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user
-		me = User.query.filter_by(id = current_user.get_id()).one()
-		thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
-		p = page.Page("Check out this user!", False)
+		if current_user.is_authenticated():
+			me = User.query.filter_by(id = current_user.get_id()).one()
+			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
+			p = page.Page("Check out this user!", False)
+		else:
+			thisUser = None
+			p = page.Page("Check out this user!", True)
 		return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser)
 	except Exception as ex:
-			p = page.Page("Oops!", False)
-			userID = current_user.get_id()
-			u = User.query.filter_by(id = userID).one()
-			thisUser = userPageUser.userPageUser(u.firstName, u.lastName, userID)
-			return render_template("error.html", page = p, user = thisUser)
+		print ex.message
+		return redirect('/error')
 
 #starLanding Page
 @app.route('/star/<int:starID>')
@@ -336,17 +335,18 @@ def starPage(starID):
 	try:
 		s = Star.query.filter_by(id = starID).one()
 		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description)
-		p = page.Page("Check out this star!", False)
-		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
-		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
+		if current_user.is_authenticated():
+			userID = current_user.get_id()
+			u = User.query.filter_by(id = userID).one()
+			thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
+			p = page.Page("Check out this star!", False)
+		else:
+			thisUser = None
+			p = page.Page("Check out this star!", True)
 		return render_template("star.html", star = thisStar, page = p, user = thisUser)
 	except Exception as ex:
-		p = page.Page("Oops!", False)
-		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
-		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
-		return render_template("error.html", page = p,user = thisUser)
+		print ex.message
+		return redirect('/error')
 
 #createAccountPage
 @app.route('/signup')
@@ -364,10 +364,14 @@ def createUser():
 #feedback page
 @app.route('/feedback')
 def feedback():
-	p = page.Page("Feedback!", False)
-	userID = current_user.get_id()
-	u = User.query.filter_by(id = userID).one()
-	thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
+	if current_user.is_authenticated():
+		p = page.Page("Feedback!", False)
+		userID = current_user.get_id()
+		u = User.query.filter_by(id = userID).one()
+		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
+	else:
+		p = page.Page("Feedback!", True)
+		thisUser = None
 	return render_template("feedback.html", page = p, user = thisUser)
 
 @app.route("/logout")
@@ -412,7 +416,6 @@ def getHashtags():
 		if tag.hashtag != None or tag.hashtag != "":
 			if tag.hashtag not in hashtagList:
 				hashtagList.append(tag.hashtag)
-				print tag.hashtag
 	return jsonify(dict(hashtags = hashtagList))
 
 @app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
@@ -442,11 +445,7 @@ def specificLeaderboard(hashtag, verb):
 		return jsonify(dict(leaders = leaderList))
 	except Exception as ex:
 		print ex.message
-		p = page.Page("Oops!", False)
-		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
-		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
-		return render_template("error.html", page = p,user = thisUser)
+		return redirect('/error')
 
 @app.route("/starsbyhashtag/<string:needle>")
 def starsByHashtag(needle):
@@ -462,6 +461,9 @@ def errorPage():
 	userID = current_user.get_id()
 	u = User.query.filter_by(id = userID).one()
 	thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
+	else:
+		thisUser = None
+		p = page.Page("Oops!", True)
 	return render_template("error.html", page = p,user = thisUser)
 
 
