@@ -82,8 +82,7 @@ function displayLeaderBoard()
 		 	$("#tier2").html(defaultDiv);	
 		 	$("#tier1").html(defaultDiv);	
 		 	$("#tier0").html(defaultDiv);	
-		 	
-		 	/*----------------------------------matts stuff----------------------------------*/
+		
 		 	e = data.leaders;
 		 	numberOfUsers = data.leaders.length;
 		 	var userArrAll = [];
@@ -174,7 +173,7 @@ function displayLeaderBoard()
 				$(divToChange).append(itemHTML);
 				userArrAll.pop();	
 		 	}
-		 	/*-------------------------------end of matts stuff------------------------------*/
+		 	
 		 });
 }
 
@@ -253,15 +252,7 @@ function displayMyStars()
 				var todayFormatted = calculateTimeFromServer(today);
 
 				var star_id = val.id	
-				/*var currentTime = new Date();
-				alert(today + " " + currentTime);
-				var dd = today.getDate();
-				var mm = today.getMonth()+1; //January is 0!
-
-				var yyyy = today.getFullYear();
 				
-				var atTime = today.getHours() +":"+today.getMinutes() ;
-				var today = mm+' / '+dd+' / '+yyyy + " @" +atTime;*/
 			
 				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted,star_id);
 
@@ -398,15 +389,7 @@ function calculateTimeFromServer(serverTime){
 	var today = new Date();
 	//alert (today.getTime());
 
-	// Determine January 1, at midnight, of the current year.
-	/*var january = 0;
-	var startOfYear = new Date();
-	startOfYear.setMonth(january);
-	startOfYear.setDate(1);
-	startOfYear.setHours(0, 0, 0, 0);*/
-
 	// Determine the difference in milliseconds.
-	
 	var interval = today.getTime() - serverTime.getTime();
 	if (interval < 0){
 		interval = 0;
@@ -428,8 +411,6 @@ function calculateTimeFromServer(serverTime){
 
 	// Format time.
 	var msg = "";
-	 /*+ minutes + " minutes, " + seconds + " seconds.";
-	alert(msg);*/
 	if (seconds >= 0){
 		if (seconds == 1){
 			msg = seconds + " second ago";
