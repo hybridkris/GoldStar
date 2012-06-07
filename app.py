@@ -321,10 +321,15 @@ def userPage(userID):
 			me = User.query.filter_by(id = current_user.get_id()).one()
 			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
 			p = page.Page("Check out this user!", False)
+			if thisUser.ID == otherUser.ID:
+				ownPage = True
+			else:
+				ownPage = False
+			return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
 		else:
 			thisUser = None
 			p = page.Page("Check out this user!", True)
-		return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser)
+			return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = False)
 	except Exception as ex:
 		print ex.message
 		return redirect('/error')
