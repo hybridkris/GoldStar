@@ -17,7 +17,7 @@ function pageInit()
 	$("#myFeedFilter").change(displayMyStars);
 	
 	//sets default hashtag in search boxes
-	defaultHashtag = "asdf"
+	defaultHashtag = "mLearnCon"
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
 	//load objects
@@ -76,7 +76,7 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
 function displayLeaderBoard()
 {
 		//getJson of stars here
-		var ht = $("#AllStarEventHashTag").val();
+		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
 		var verb = $("#allStarFilter").val().toLowerCase();
 		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
@@ -257,7 +257,6 @@ function displayMyStars()
 				var timestamp = new Date(val.created);
 				var today = new Date(val.created);
 				var todayFormatted = calculateTimeFromServer(today);
-
 				var star_id = val.id	
 				/*var currentTime = new Date();
 				alert(today + " " + currentTime);
@@ -337,7 +336,8 @@ function displayEventStars()
 				var timestamp = new Date(val.created);
 				var today = new Date(val.created);
 				var todayFormatted = calculateTimeFromServer(today);
-				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted);
+				var star_id = val.id	
+				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted, star_id);
 				$("#eventStarList").append(itemHTML);	
 			}
 	 	);
@@ -362,7 +362,7 @@ function loadMyStars()
 function loadHashtagStars(needle)
 {
 			//getJson of stars here
-			var userUrl = "/starsbyhashtag/" + needle.replace("#","");
+			var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
 			console.log(userUrl)
 			$.getJSON(userUrl, function(jdata)
 			 {
