@@ -9,7 +9,7 @@
 			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
 
 			<h4 style="text-align:center">
-				{{star.issuer}} gave a star to {{star.owner}} because {{star.reason}}
+				<a href="/users/{{star.issuer_id}}">{{star.issuer}}</a> gave a star to <a href="/users/{{star.owner_id}}">{{star.owner}}</a> because {{star.reason}} 
 			</h4>
 			<h4 style="text-align:center">
 				{{star.hashtag}}
@@ -20,17 +20,23 @@
 			
 			<div style="clear:both"></div>
 			<hr />
-			
+			<!--
 			<table style="text-align:center width:100%">
 				
+
+			</table>-->
+			<div style="text-align:center">
+				<div>		
 					<tr>
 						<td colspan=2><a href="../mobileview.html">Go back to feed</a></td>
 					</tr>
+				</div>
+				<div>
 					<tr>
 						<td colspan=2><a href="../feedback">Feedback</a></td>
 					</tr>
-					
-			</table>		
+				</div>
+			</div>
 	</div>
 {% endblock%}
 {% block scripts%}
