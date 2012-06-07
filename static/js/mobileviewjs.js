@@ -27,18 +27,18 @@ function loadCurrentStars()
 {
 	if (_currentTab == "myStars")
 	{
-		//console.log("loading myStars");
+		
 		loadMyStars("myStarList");	
 	}
 	else if (_currentTab == "event")
 	{
-		//console.log("loading event");
+		
 		 //RECOMMENT BACK IN TO WORK
 		 loadHashtagStars($("#EventTextBox").val());	
 	}
 	if (_currentTab == "leader")
 	{
-		//console.log("loading leader");
+		
 		displayLeaderBoard();
 	}
 	
@@ -48,23 +48,21 @@ function loadCurrentStars()
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
-    //console.log(e.target) // activated tab
-   // console.log(e.relatedTarget) // previous tab
-
+   
     var currentTab = e.target.toString();
     if (currentTab.indexOf("myStars")  >= 0 )
     {
-    	//console.log("myStars");
+    	
     	_currentTab = "myStars";
     }
     else if (currentTab.indexOf("event")  >= 0 )
     {
-    	//console.log("event");
+    	
     	_currentTab = "event";
     }
     else if (currentTab.indexOf("leader")  >= 0 )
     {
-    	//console.log("leader");
+    	
     	_currentTab = "leader";
     }
     loadCurrentStars();
@@ -93,7 +91,7 @@ function displayLeaderBoard()
 		 		userArrAll[userArrAll.length] = {Name: e[i].firstName + " " + e[i].lastName, numOfStars: e[i].starCount, id: e[i].id};
 		 	}
 
-		 //	console.log(userArrAll);
+		
 
 		 	var userArrHasStar = [];
 		 	//weed out people with 0 stars
@@ -103,7 +101,7 @@ function displayLeaderBoard()
 		 		}
 		 	}
 		 	
-		 	//	console.log(userArrHasStar);
+		 	
 
 		 	//sort arrays
 		 	userArrAll.sort(function(a,b){
@@ -122,8 +120,7 @@ function displayLeaderBoard()
 		 	var tierFourUsers = Math.ceil(numberOfUsers * tierFourPercent);
 		 	var tierFiveUsers = Math.ceil(numberOfUsers * tierFivePercent);
 
-		 	//console.log("1%: "+tierOneUsers+" \b5%: "+tierTwoUsers+" \b10%: "+tierThreeUsers+" \b25%: "+tierFourUsers+" \b50%: "+tierFiveUsers);
-
+		 	
 		 	for(var i = userArrAll.length - 1; i >= 0; --i){
 		 		var divToChange = "#";
 		 		var flag = false;
@@ -171,7 +168,7 @@ function displayLeaderBoard()
 				if ($(divToChange).html().indexOf('<div class="well-small"') >= 0 )
 				{
 					//if message is still there for the div, it removes it
-					//console.log("still has default message")
+					
 					$(divToChange).html("")
 				}
 				$(divToChange).append(itemHTML);
@@ -209,13 +206,13 @@ function displayMyStars()
  	var starArray = []
  	if (myFeedFilterSelectedItem == "All")
  	{
- 		//console.log("displaying all");
+ 		
  		//create starArray
  		starArray = user.issued.concat(user.stars);
- 		//console.log(user.issued)
+ 		
  		starArray.sort(compareStarArrayByDate)
  		starArray.reverse();
- 		//console.log(starArray)
+ 		
  		//sort array
 
 
@@ -223,13 +220,11 @@ function displayMyStars()
  	}
  	else if( myFeedFilterSelectedItem == "Given")
  	{
- 		//console.log("displaying Given");
  		starArray = user.issued;
  		emptyMessage = "No stars given, go out and meet some people!"
  	} 
  	else if (myFeedFilterSelectedItem == "Received")
  	{
- 		//console.log("displaying received");
  		starArray = user.stars;
  		emptyMessage = "No stars received, Try to be more awesome ;-)!"
  	}
@@ -290,7 +285,6 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
 		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
 		itemHTML += 	'</div>'
-		console.log('<a href="/star/' + star_id + '">')
 		itemHTML += 	'<a href="/star/' + star_id + '">'
 		itemHTML += 		'<div style="float:right; height:90%; width:20%;position:relative; padding-top:1.5em;">'
 		itemHTML += 				'<div class="iconDiv">'
@@ -326,7 +320,7 @@ function displayEventStars()
 	 	//loop through array
 	 	$.each(hashtagStars, function(i, val)
 			{
-				console.log(val);
+				
 				var ownerName =  userList[val.owner_id].firstName + ' ' + userList[val.owner_id].lastName;
 				var ownerID = val.owner_id
 				var verb = val.category;
@@ -350,7 +344,7 @@ function loadMyStars()
 {
 			//getJson of stars here
 			var userUrl = "/api/user/" + sessionStorage.userID;
-			//console.log("loading stars-1")
+			
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
@@ -362,7 +356,7 @@ function loadHashtagStars(needle)
 {
 			//getJson of stars here
 			var userUrl = "/starsbyhashtag/" + needle;
-			console.log(userUrl)
+			
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
@@ -374,11 +368,11 @@ function loadHashtagStars(needle)
 function  getHashTags(whatTags)
 {
 	var hashlist
-	//console.log(whatTags);
+	
 	var hashurl = "/Hashtags"
 	$.getJSON(hashurl, function(data)
 	{
-		//console.log(data);
+		
 		$( "#EventTextBox" ).autocomplete({
 				datatype: "json",
 				source: data.hashtags,
@@ -412,7 +406,7 @@ function calculateTimeFromServer(serverTime){
 	startOfYear.setHours(0, 0, 0, 0);*/
 
 	// Determine the difference in milliseconds.
-	console.log(typeof(serverTime))
+	
 	var interval = today.getTime() - serverTime.getTime();
 	if (interval < 0){
 		interval = 0;

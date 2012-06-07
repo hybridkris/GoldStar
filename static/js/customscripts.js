@@ -292,7 +292,6 @@ function showselect(id)
 }
 function showDescription(divid)
 {
-	//console.log(divid);
 	$('#' + divid).toggle();
 }
 
