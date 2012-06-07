@@ -11,6 +11,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import distinct
 from threading import Thread
+from collections import Counter
 import userPageUser
 import StarObject
 import page
@@ -88,6 +89,7 @@ class Star(db.Model):
 	def validate_category(self, key, string):
 		e = ""
 		string = string.strip()
+		string = string.upper()
 		if len(string) > 100:
 			e = "Category Length is too long"
 		if len(e) > 0:
@@ -413,13 +415,31 @@ def getHashtags():
 				print tag.hashtag
 	return jsonify(dict(hashtags = hashtagList))
 
-@app.route('/leaderboard/<string:hashtag>')
-def specificLeaderboard(hashtag):
-	hashtag = '#' + hashtag.lower()
+@app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
+def specificLeaderboard(hashtag, verb):
+	hashtag = hashtag.lower()
+	if verb != 'all':
+		verb = verb.upper()
+	star_counts = {}
+	leaderList = []
 	try:
-		event = Star.query.filter_by(hashtag = hashtag).order_by(Star.owner_id).all()
-		print event
-		return 'hi'
+		if hashtag != 'all' and verb == 'all':
+			leaderboardfilter = Star.query.filter_by(hashtag = hashtag).order_by(Star.owner_id).all()
+		elif hashtag == 'all' and verb != 'all':
+			leaderboardfilter = Star.query.filter_by(category = verb).order_by(Star.owner_id).all()
+		elif hashtag == 'all' and verb == 'all':
+			leaderboardfilter = Star.query.all()
+		else:
+			leaderboardfilter = Star.query.filter_by(hashtag = hashtag, category = verb).order_by(Star.owner_id).all()
+		for star in leaderboardfilter:
+				if star.owner_id in star_counts:
+					star_counts[star.owner_id] += 1
+				else:
+					star_counts[star.owner_id] = 1
+					leaderList.append(dict(id = star.owner_id, firstName = star.owner.firstName, lastName = star.owner.lastName, starCount = 1))
+		for star in leaderList:
+			star['starCount'] = star_counts[star['id']]
+		return jsonify(dict(leaders = leaderList))
 	except Exception as ex:
 		print ex.message
 		p = page.Page("Oops!", False)
