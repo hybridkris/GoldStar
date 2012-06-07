@@ -455,6 +455,9 @@ function calculateTimeFromServer(serverTime){
 
 	// Determine the difference in milliseconds.
 	var interval = today.getTime() - serverTime.getTime();
+	if (interval < 0){
+		interval = 0;
+	}
 
 	// Calculate how many days the interval contains. Subtract that
 	// many days from the interval to determine the remainder.
