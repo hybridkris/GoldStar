@@ -311,15 +311,19 @@ def login():
 def userPage(userID):
 	try:
 		#get info for other user
-		u = User.query.filter_by(id = userID).one()
-		starsIssued = Star.query.filter_by(issuer_id = userID).count()
-		starsReceived = Star.query.filter_by(owner_id = userID).count()
-		otherUser = userPageUser.userPageUser(u.firstName, u.lastName, userID)
+		profileUser = User.query.filter_by(id = userID).one()
+		starsIssued = len(profileUser.issued)
+		starsReceived = len(profileUser.stars)
+		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, userID)
 		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user
-		me = User.query.filter_by(id = current_user.get_id()).one()
-		thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
-		p = page.Page("Check out this user!", False)
+		if current_user.is_authenticated():
+			me = User.query.filter_by(id = current_user.get_id()).one()
+			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
+			p = page.Page("Check out this user!", False)
+		else:
+			thisUser = None
+			p = page.Page("Check out this user!", True)
 		return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser)
 	except Exception as ex:
 		print ex.message
@@ -437,10 +441,14 @@ def specificLeaderboard(hashtag, verb):
 
 @app.route('/error')
 def errorPage():
-	p = page.Page("Oops!", False)
-	userID = current_user.get_id()
-	u = User.query.filter_by(id = userID).one()
-	thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
+	if current_user.is_authenticated():
+		p = page.Page("Oops!", False)
+		userID = current_user.get_id()
+		u = User.query.filter_by(id = userID).one()
+		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
+	else:
+		thisUser = None
+		p = page.Page("Oops!", True)
 	return render_template("error.html", page = p,user = thisUser)
 
 
