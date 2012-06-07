@@ -16,7 +16,7 @@ function pageInit()
 	
 	//sets default hashtag in search boxes
 	$("#EventTextBox").val("asdf")
-	
+
 	//load objects
 	loadCurrentStars();
 	getHashTags('all');
@@ -44,6 +44,7 @@ function loadCurrentStars()
 	
 	
 }
+
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
