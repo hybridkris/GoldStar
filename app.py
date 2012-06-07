@@ -66,8 +66,8 @@ class Star(db.Model):
 	@validates('hashtag')
 	def validate_hashtag(self, key, string):
 		string = string.lower()
-		if '#' not in string:
-			string = '#' + string
+		if '#' in string:
+			string = string.replace('#','')
 		return unicode(string)
 
 	#Validates the Description
@@ -426,6 +426,12 @@ def specificLeaderboard(hashtag):
 		u = User.query.filter_by(id = userID).one()
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
 		return render_template("error.html", page = p,user = thisUser)
+
+@app.route("/starsbyhashtag/<string:hashtag>")
+def starsByHashtag(hashtag):
+	starList = []	
+	starList = Star.query.filter_by(hashtag = hashtag).order_by(Star.created).all()
+	return jsonify(dict(hashtags = starList))
 
 @app.route('/error')
 def errorPage():
