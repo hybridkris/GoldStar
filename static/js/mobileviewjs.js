@@ -11,17 +11,53 @@ function pageInit()
 {
 
 	//sets _currentTab to default value
-	if (_currentTab == null)
+	//sets default hashtag in search boxes
+	defaultHashtag = "Overlap12"
+	$("#EventTextBox").val(defaultHashtag);
+	$("#AllStarEventHashTag").val(defaultHashtag);
+	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
 	{
 		_currentTab = "myStars";
+		$("#EventTextBox").val(defaultHashtag);
+		$("#AllStarEventHashTag").val(defaultHashtag);
+	}
+	else
+	{ 
+		_currentTab = sessionStorage.currentTab;
+		if(sessionStorage.currentTab == "myStars")
+		{
+			$('#browserTabs a[href="#myStarsTab"]').tab('show');
+
+		}
+		else if(sessionStorage.currentTab == "event")
+		{
+			if(sessionStorage.hashtag!=defaultHashtag && sessionStorage.hashtag!="" && sessionStorage.hashtag!=null){
+				$("#EventTextBox").val(sessionStorage.hashtag);
+				$("#AllStarEventHashTag").val(sessionStorage.hashtag);
+			}
+			else{
+				$("#EventTextBox").val(defaultHashtag);
+			}
+			$('#browserTabs a[href="#eventTab"]').tab('show');
+		}
+		else if(sessionStorage.currentTab =="leader")
+		{
+
+			if(sessionStorage.hashtag!=defaultHashtag){
+				$("#AllStarEventHashTag").val(sessionStorage.hashtag);
+				$("#EventTextBox").val(sessionStorage.hashtag);
+			}
+			else{
+				$("#AllStarEventHashTag").val(defaultHashtag);
+			}
+			$('#browserTabs a[href="#leaderBoardTab"]').tab('show');
+		}
+
 	}
 	//attach event to select
 	$("#myFeedFilter").change(displayMyStars);
 	
 	//sets default hashtag in search boxes
-	defaultHashtag = "Overlap12"
-	$("#EventTextBox").val(defaultHashtag);
-	$("#AllStarEventHashTag").val(defaultHashtag);
 	//load objects
 	loadCurrentStars();
 	getHashTags('all');
@@ -122,6 +158,7 @@ function addStarsToDiv(divToAdd, starArray, errorMessage, errorMessageDiv, error
 
 function loadCurrentStars()
 {
+
 	if (_currentTab == "myStars")
 	{
 		
@@ -129,17 +166,46 @@ function loadCurrentStars()
 	}
 	else if (_currentTab == "event")
 	{
-		
-		 //RECOMMENT BACK IN TO WORK
-		 loadHashtagStars($("#EventTextBox").val());	
+
+		if($("#AllStarEventHashTag").val()!=defaultHashtag)
+		{
+			$("#EventTextBox").val($("#AllStarEventHashTag").val());
+			sessionStorage.hashtag =$("#EventTextBox").val();
+		}
+		else if($("#AllStarEventHashTag").val()==defaultHashtag)
+		{
+			$("#EventTextBox").val(defaultHashtag);	
+			sessionStorage.hashtag =$("#EventTextBox").val();
+		}
+		else
+		{
+			$("#EventTextBox").val(defaultHashtag);	
+			sessionStorage.hashtag =$("#EventTextBox").val();
+		}
+		//RECOMMENT BACK IN TO WORK
+		loadHashtagStars($("#EventTextBox").val());	
 	}
 	if (_currentTab == "leader")
 	{
+
+		if($("#EventTextBox").val()!=defaultHashtag)
+		{
+			$("#AllStarEventHashTag").val($("#EventTextBox").val());
+			sessionStorage.hashtag =$("#AllStarEventHashTag").val();
+		}
+		else if($("#EventTextBox").val()==defaultHashtag)
+		{
+			$("#AllStarEventHashTag").val(defaultHashtag);	
+			sessionStorage.hashtag =$("#AllStarEventHashTag").val();
+		}
+		else
+		{
+			$("#AllStarEventHashTag").val(defaultHashtag);	
+			sessionStorage.hashtag =$("#AllStarEventHashTag").val();
+		}
 		
 		displayLeaderBoard();
 	}
-	
-	
 }
 
 //bind events to tab change
@@ -162,6 +228,7 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     	
     	_currentTab = "leader";
     }
+    sessionStorage.currentTab = _currentTab;
     loadCurrentStars();
 });
 
@@ -172,11 +239,9 @@ function displayLeaderBoard()
 		ht = (ht == "") ? "all" : ht;
 		var verb = $("#allStarFilter").val().toLowerCase();
 		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
-		console.log(userUrl)
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
-		 	console.log(data)
 		 	var defaultDiv = '<div class="well-small" style="background-color:#ffffbb"><i>Nobody is this bright yet, will you be the first?</i></div>	'
 		 	$("#tier5").html(defaultDiv);	
 		 	$("#tier4").html(defaultDiv);	
