@@ -13,11 +13,15 @@ function pageInit()
 	{
 		_currentTab = "myStars";
 	}
+	else
+	{
+		_currentTab = sessionStorage.currentTab;
+	}
 	//attach event to select
 	$("#myFeedFilter").change(displayMyStars);
 	
 	//sets default hashtag in search boxes
-	defaultHashtag = "mLearnCon"
+	defaultHashtag = "Overlap12"
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
 	//load objects
@@ -68,6 +72,7 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     	
     	_currentTab = "leader";
     }
+    sessionStorage.currentTab = _currentTab;
     loadCurrentStars();
 });
 
@@ -78,6 +83,7 @@ function displayLeaderBoard()
 		ht = (ht == "") ? "all" : ht;
 		var verb = $("#allStarFilter").val().toLowerCase();
 		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+		sessionStorage
 		console.log(userUrl)
 		$.getJSON(userUrl, function(data)
 		 {
