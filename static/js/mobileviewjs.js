@@ -371,7 +371,7 @@ function displayMyStars()
 	var user = JSON.parse(sessionStorage.getItem("userObject"));
 
 
- 	// check to see what list item is selected
+ 	// check to see what list item is selected, gets index
  	var myFeedFilterSelectedItem = $("#myFeedFilter").val();
 
  	//create empty message
@@ -379,7 +379,7 @@ function displayMyStars()
 
  	//make array of stars
  	var starArray = []
- 	if (myFeedFilterSelectedItem == "All")
+ 	if (myFeedFilterSelectedItem == 0)
  	{
 
  		starArray = user.issued.concat(user.stars);
@@ -387,12 +387,12 @@ function displayMyStars()
  		starArray.reverse();
 		emptyMessage = "No stars! You need involvement..."	
  	}
- 	else if( myFeedFilterSelectedItem == "Given")
+ 	else if( myFeedFilterSelectedItem == 1)
  	{
  		starArray = user.issued;
  		emptyMessage = "No stars given, go out and meet some people!"
  	} 
- 	else if (myFeedFilterSelectedItem == "Received")
+ 	else if (myFeedFilterSelectedItem == 2)
  	{
  		starArray = user.stars;
  		emptyMessage = "No stars received, Try to be more awesome ;-)!"
@@ -405,6 +405,11 @@ function displayMyStars()
 
 }
 
+function GoToHashTagPage(hashtag)
+{
+	console.log("go to the event page for:" + hashtag);
+}
+
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
 		var itemHTML = '';
@@ -412,8 +417,8 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		itemHTML += 	'<div style="float:left; width:80%;">'
 		itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
 		itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
-		//itemHTML += 		'<span style="font-size:1.0em;">at <a href="#" >' + hashtag + '</a></span><br/>'
-		itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
+		itemHTML += 		'<span style="font-size:1.0em;"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
+		//itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
 		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
 		itemHTML += 	'</div>'
 		itemHTML += 	'<a href="/star/' + star_id + '">'

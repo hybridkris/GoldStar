@@ -95,7 +95,7 @@
 
 
 		}
-	
+
 		</style>
 {%endblock%}
 {% block body%}
@@ -117,7 +117,7 @@
 			<div class="tab-pane" id="findPeopleTab">
 				<div style="text-align:center;margin-bottom:9px;">
 					<div class="input-prepend">
-                		<span class="add-on">@</span><input type="search" class="input-medium search-query" placeholder="Start stargazing here!" style="width:25%;" id="findPeopleSearchBox"><button style="width:5em;margin:1em" onclick='onGazeClick();'>Gaze</button><br />
+                		<span class="add-on">@</span><input type="search" class="input-medium search-query" placeholder="Start stargazing here!" style="width:25%;" id="findPeopleSearchBox"><button class="btn btn-warning" style="width:5em;margin:1em" onclick='onGazeClick();'>Gaze</button><br />
           			</div>
 										
 				</div>
@@ -139,7 +139,8 @@
 			<div class="tab-pane" id="eventTab">
 				<div style="text-align:center;margin-bottom:9px;">
 					<div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox"><button style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Go</button><button style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox"><button style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
+
           			</div>
 
 				</div>
@@ -160,9 +161,9 @@
 			<div class="tab-pane active" id="myStarsTab">
 				<div style="text-align:center">
 					<select style="width:80%" id="myFeedFilter">
-						<option selected>All My Stars!</option>
-						<option>Given Stars!</option>
-						<option>Receieved Stars!</option>
+						<option selected value="0">All My Stars!</option>
+						<option value="1">Given Stars!</option>
+						<option value="2">Receieved Stars!</option>
 					</select><br />
 				</div>
 				<hr/>
@@ -182,17 +183,10 @@
 			<div class="tab-pane" id="leaderBoardTab">
 
 			<table style="width:100%;">
-		
-			<tr>
-				<td style="text-align:left;width:45%;"><i>Hashtag</i>					</td>
-				<td style="text-align:left;width:35%;"> 
-				<i>Did</i>	
-					</td>
-					<td></td>
-			</tr>
+	
 			<tr>
 				<td><div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:50%;margin:0em 0em 0em 0em;" id="AllStarEventHashTag"></div></td>
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;margin:0em 0em 0em 0em;" id="AllStarEventHashTag"></div></td>
 				<td><select class="input-medium"style="width:100%;margin:0em 0em 0em 0em;" id="allStarFilter">
 						<option selected>All</option>
 						<option>Influenced</option>
