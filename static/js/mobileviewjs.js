@@ -413,10 +413,21 @@ function GoToHashTagPage(hashtag)
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
 		var itemHTML = '';
-		itemHTML += '<div class="well" style="height:4em; margin-bottom:0;">'				
+		if(ownerID==sessionStorage.userID){
+			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#F5F5F5;">'
+		}
+		else {
+			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#dff1f5;">'
+
+		}				
 		itemHTML += 	'<div style="float:left; width:80%;">'
 		itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
-		itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
+		if(ownerID==sessionStorage.userID){
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'"> You </a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
+		}
+		else{
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">you</a></span> <br/>'	
+		}
 		itemHTML += 		'<span style="font-size:1.0em;"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
 		//itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
 		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
