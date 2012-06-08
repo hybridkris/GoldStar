@@ -10,7 +10,16 @@ function pageInit()
 
 	//sets _currentTab to default value
 	//sets default hashtag in search boxes
-	defaultHashtag = "Overlap12"
+
+	if(localStorage.CheckedIntoConference!=""){
+		defaultHashtag = localStorage.CheckedIntoConference;	
+	}
+	else if(localStorage.CheckedIntoConference!= null){
+		defaultHashtag = localStorage.CheckedIntoConference;	
+	}
+	else{
+		defaultHashtag ='Overlap12';
+	}
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
 	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
@@ -412,16 +421,19 @@ function loadMyStars()
 
 function loadHashtagStars(needle)
 {
-			//getJson of stars here
-			var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
-
-			$.getJSON(userUrl, function(jdata)
-			 {
-			 	sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
-			 	displayEventStars();				
-			 });
+	//getJson of stars here
+	var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
+	$.getJSON(userUrl, function(jdata)
+	{
+		sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
+	 	displayEventStars();				
+	});
 }
-
+function checkIntoConference(checkingIntoHashtag)
+{
+	localStorage.CheckedIntoConference = checkingIntoHashtag;
+	console.log(localStorage.CheckedIntoConference);
+}
 //returns the hashtags
 function  getHashTags(whatTags)
 {
