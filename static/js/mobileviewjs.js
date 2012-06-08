@@ -388,39 +388,10 @@ function displayMyStars()
  		starArray = user.stars;
  		emptyMessage = "No stars received, Try to be more awesome ;-)!"
  	}
- 	//check for length first
- 	if (starArray.length == 0 )
- 	{
- 		$("#myStarList").html("");
- 		$("#emptyListMessage").html(emptyMessage);
- 		$("#emptyListMessageContainer").css("display","block");
- 	}
- 	else
- 	{
- 		$("#myStarList").html("");	
- 		$("#emptyListMessageContainer").css("display","none");
-	 	//loop through array
-	 	$.each(starArray, function(i, val)
-			{
-				var ownerName =  userList[val.owner_id].firstName + ' ' + userList[val.owner_id].lastName;
-				var ownerID = val.owner_id
-				var verb = val.category;
-				var issuerName = userList[val.issuer_id].firstName + ' ' + userList[val.issuer_id].lastName ;
-				var issuerID = val.issuer_id;
-				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
-				var timestamp = new Date(val.created);
-				var today = new Date(val.created);
-				var todayFormatted = calculateTimeFromServer(today);
-				var star_id = val.id	
-				
-			
-				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted,star_id);
 
-				$("#myStarList").append(itemHTML);	
-			}
-	 	);
-	 		
- 	}
+
+ 	addStarsToDiv("myStarList", starArray, emptyMessage, "emptyListMessage", "emptyListMessageContainer")
+
  		
 
 }
@@ -455,41 +426,10 @@ function displayEventStars()
 
  	
  	hashtagStars.sort(compareStarArrayByDate)
- 	hashtagStars.reverse(); 	//create empty message
- 	
+ 	hashtagStars.reverse();
+ 	//create empty message
  	var emptyMessage = "Oh dear! Nothing was found!";
-
- 	//check for length first
- 	if (hashtagStars.length == 0 )
- 	{
- 		$("#eventStarList").html("");
- 		$("#emptyHashtagListMessage").html(emptyMessage);
- 		$("#eventHashTagListMessageContainer").css("display", "block")
- 	}
- 	else
- 	{
- 		$("#eventStarList").html("");
- 		$("#eventHashTagListMessageContainer").css("display", "none")
-	 	//loop through array
-	 	$.each(hashtagStars, function(i, val)
-			{
-				
-				var ownerName =  userList[val.owner_id].firstName + ' ' + userList[val.owner_id].lastName;
-				var ownerID = val.owner_id
-				var verb = val.category;
-				var issuerName = userList[val.issuer_id].firstName + ' ' + userList[val.issuer_id].lastName ;
-				var issuerID = val.issuer_id;
-				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
-				var timestamp = new Date(val.created);
-				var today = new Date(val.created);
-				var todayFormatted = calculateTimeFromServer(today);
-				var star_id = val.id	
-				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted, star_id);
-				$("#eventStarList").append(itemHTML);	
-			}
-	 	);
-	 		
- 	}
+ 	addStarsToDiv("eventStarList", hashtagStars, emptyMessage, "emptyHashtagListMessage", "eventHashTagListMessageContainer")
  		
 
 }
