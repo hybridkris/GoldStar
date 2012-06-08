@@ -225,45 +225,44 @@ def after_request(response):
 def get_twitter_token():
 	user = g.user
 	if user is not None:
-		return user.oauth_token, user.oauth_secret
+		token = session.get("twitter_token")
+		if token is not None:
+			user.oauth_token, twitter.secret_key = token
+			db.session.commit()
+		return token
 
-@app.route('/twit')
-def twit():
-	return twitter.authorize(callback=url_for('oauth_authorized', 
-		next = request.args.get('next') or request.referrer or None))
+@app.route('/twitterauth')
+def twitterauth():
+	if current_user.is_authenticated():
+		return twitter.authorize(callback=url_for('oauth_authorized', 
+			next = request.args.get('next') or request.referrer or None))
+	else:
+		return redirect('/error')
 
 @app.route('/oauth_authorized')
 @twitter.authorized_handler
 def oauth_authorized(resp):
+	print "hi"
 	if resp is None:
 		flash(u'You denied the request to sign in.')
 	if resp is not None:
-		print resp['screen_name']
-	return redirect('/index.html')
+		user = User.query.filter_by(id = current_user.get_id()).first()
+		user.oauth_token = resp['oauth_token']
+		user.oauth_secret = resp['oauth_token_secret']
+		db.session.commit()
+		session['user_id'] = user.id
+	return redirect('/mobileview.html')
 
 @app.route('/tweet', methods = ['POST'])
 def tweet():
 	if g.user is None:
-		return redirect('/twit')
-	status = u'@juggler2009 test tag testing 1 2'
+		return redirect('/twitterauth')
+	status = u'Tweeting from the app I made at work. #GoldStar'
 	resp = twitter.post('statuses/update.json', data = {'status': status})
-	return redirect('/index.html')
-
+	return redirect('/mobileview.html')
+#End Twitter Auth
 
 #The main index of the Gold Star App
-#OLD Login screen
-@app.route('/index.html')
-def index_route():
-	p = page.Page("Gold Star!", False)
-	return render_template('index.html', page = p)
-
-#Displays the entire Gold Star App
-#OLD GIVE A STAR SCREEN
-@app.route('/main.html')
-def main_route():
-	p = page.Page("Gold Star!", False)
-	return render_template('main.html', loginID = current_user.get_id(), page = p)
-	
 @app.route('/')
 @app.route('/mobileview.html')
 def mobileview_route():
