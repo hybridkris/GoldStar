@@ -16,7 +16,6 @@ import userPageUser
 import StarObject
 import page
 from pythontincan import startThread
-
 # Create the app for Flask
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -225,15 +224,16 @@ def after_request(response):
 
 @twitter.tokengetter
 def get_twitter_token():
+	token = session.get("twitter_token")
 	user = g.user
-	if user is not None and user.oauth_token == None or user.oauth_secret == None:
+	if user is not None and user.oauth_token == None and user.oauth_secret == None:
 		token = session.get("twitter_token")
 		if token is not None:
-			user.oauth_token, twitter.secret_key = token
+			user.oauth_token, user.oauth_secret = token
 			db.session.commit()
 		return token
 	else:
-		return user.oauth_token, user.oauth_secret
+		return str(user.oauth_token), str(user.oauth_secret)
 
 @app.route('/twitterauth')
 def twitterauth():
@@ -256,13 +256,17 @@ def oauth_authorized(resp):
 		session['user_id'] = current_user.get_id()
 	return redirect('/mobileview.html')
 
-@app.route('/tweet', methods = ['POST'])
-def tweet():
-	status = request.json
-	if g.user is None:
-		return redirect('/twitterauth')
-	resp = twitter.post('statuses/update.json', data = {'status': status['status']})
-	return jsonify(resp.data)
+def tweet(star_id):
+	session = db.create_scoped_session()
+	query = session.query(Star)
+	star = query.get(star_id)		
+	if star.owner.twitterUser:
+		status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' because he ' + star.category + ' me. #' + star.hashtag + 'www.Goldstars.me'
+	else:
+		fullName = star.owner.firstName + ' ' + star.owner.lastName
+		status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
+	resp = twitter.post('statuses/update.json', data = {'status': status})
+	output = jsonify(dict(tweet = "Tweet Successful"))		
 #End Twitter Auth
 
 #The main index of the Gold Star App
@@ -384,23 +388,28 @@ def feedback():
 def logout():
 	logout_user()
 	return redirect('/')
+
 def models_committed(sender,changes):
 	session = db.create_scoped_session()
 	query = session.query(User)
 	for change in changes:
 		if isinstance(change[0],Star):
 			s = change[0]
+
 			users = query.filter(User.id.in_([s.owner_id,s.issuer_id]))
 			owner_name = ''
 			issuer_email =''
 			issuer_name = ''
 			for user in users:
 				if user.id == s.owner_id:
-					owner_name = str(makeName(user.firstName,user.lastName,user.email))		
+					owner_name = str(makeName(user.firstName,user.lastName,user.email))	
 				else:
 					issuer_email = user.email
 					issuer_name = str(makeName(user.firstName,user.lastName,user.email))
+					if user.oauth_token is not None:
+						tweet(s.id)						
 			startThread(issuer_name,issuer_email,"interacted",owner_name)
+
 def makeName(userFirstName, userLastName, userEmail):
 	fullName = "{0} {1}({2})".format(str(userFirstName), str(userLastName), str(userEmail))
 	return fullName

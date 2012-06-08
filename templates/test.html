@@ -3,16 +3,18 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
-				myJSON = '{"status":"Test post to twitter!"}'
-				URL = '/tweet'
-				$.ajax({
-		 			type: 'POST',
-		  			url: URL,
-		  			data: myJSON,
-		  			contentType: "application/json",
-					success: function(data, textStatus, jqXHR){
-						console.log(data);
-					}
+				$("#GETJSON").click(function(){
+					myJSON = '{"id":"2"}'
+					URL = '/tweet'
+					$.ajax({
+						type: 'POST',
+						url: URL,
+						data: myJSON,
+						contentType: "application/json",
+						success: function(data, textStatus, jqXHR){
+							console.log(data.tweet);
+						}
+					});
 				});
 			});
 		</script>

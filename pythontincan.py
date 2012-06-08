@@ -21,16 +21,8 @@ def sendToLRS(whoDid,whoDidEmail,didWhat,whoDidObject):
 			}]
 	try:
 		resp = requests.post(url,data=json.dumps(tc_star),auth=HTTPBasicAuth(getUsername(),getsecretKey()),headers={"Content-Type":"application/json"})
-		print resp.text
-	except IOError, e:
-		if hasattr(e, 'code'):
-			if e.code != 401:
-				print e.code
-				print e.headers
-		else:
-			print e.code
-			print e.headers
-			print e.headers['www-authenticate'] 
+	except IOError as e:
+		print e
 			
 def main():
 	#Thread(None,sendToLRS,None,(Who,Did,toWho)).start()
