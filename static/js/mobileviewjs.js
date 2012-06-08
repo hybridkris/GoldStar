@@ -9,13 +9,27 @@ function pageInit()
 {
 
 	//sets _currentTab to default value
-	if (_currentTab == null)
+	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
 	{
 		_currentTab = "myStars";
+		console.log(_currentTab);
+		console.log(sessionStorage.currentTab);
 	}
 	else
-	{
+	{ 
 		_currentTab = sessionStorage.currentTab;
+		if(sessionStorage.currentTab == "myStars")
+		{
+			$('#browserTabs a[href="#myStarsTab"]').tab('show');
+		}
+		else if(sessionStorage.currentTab == "event")
+		{
+			$('#browserTabs a[href="#eventTab"]').tab('show');
+		}
+		else if(sessionStorage.currentTab =="leader")
+		{
+			$('#browserTabs a[href="#leaderBoardTab"]').tab('show');
+		}
 	}
 	//attach event to select
 	$("#myFeedFilter").change(displayMyStars);
@@ -32,6 +46,7 @@ function pageInit()
 
 function loadCurrentStars()
 {
+	console.log(_currentTab);
 	if (_currentTab == "myStars")
 	{
 		
@@ -83,8 +98,6 @@ function displayLeaderBoard()
 		ht = (ht == "") ? "all" : ht;
 		var verb = $("#allStarFilter").val().toLowerCase();
 		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
-		sessionStorage
-		console.log(userUrl)
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
