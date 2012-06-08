@@ -288,6 +288,9 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		itemHTML += 	'<div style="clear:both"></div>'
 		return itemHTML;
 
+
+		
+
 }
 function displayEventStars()
 {

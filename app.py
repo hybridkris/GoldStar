@@ -474,6 +474,10 @@ def errorPage():
 		p = page.Page("Oops!", True)
 	return render_template("error.html", page = p,user = thisUser)
 
+@app.route('/settings')
+def settingsPage():
+	return render_template("settings.html")
+
 
 auth_func = lambda: current_user.is_authenticated()
 #Creates the API
