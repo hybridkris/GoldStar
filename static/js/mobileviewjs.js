@@ -3,6 +3,8 @@
 var _currentTab;
 var userList = {};
 var defaultHashtag;
+var usersDisplay  = [];
+var usersHidden = [];
 
 //on doc ready for mobile view
 function pageInit()
@@ -23,7 +25,99 @@ function pageInit()
 	//load objects
 	loadCurrentStars();
 	getHashTags('all');
+	
+	//set autocomplete for stargazing menu
+	//Known duplicate code from customscripts.js, line 217(ish)
 
+	$.each(userList, function(i, val){
+			var currentUser = val;
+			if (sessionStorage.userID != currentUser.id)
+			{
+				usersHidden.push(currentUser.id);
+				usersDisplay.push(currentUser.firstName + ' ' + currentUser.lastName + ' (' +currentUser.email+')');
+			}
+	});
+
+	$("#findPeopleSearchBox").autocomplete({
+				source: usersDisplay,
+				select: function(event, ui){
+					var index = $.inArray(ui.item.value,usersDisplay);
+					loadOtherUserStars(usersHidden[index])
+				}
+			});
+
+}
+
+function onGazeClick()
+{
+	var index = $.inArray($("#findPeopleSearchBox").val(),usersDisplay);
+	loadOtherUserStars(usersHidden[index])
+}
+
+function loadOtherUserStars(userID)
+{
+	var url = '/api/user/' + userID
+	$("#emptyUserSearchListMessage").html("Searching...");
+	$.getJSON(url, function(data)
+		{
+			//make array of stars
+		 	var starArray = [];
+		 	starArray = data.issued.concat(data.stars);
+		 	starArray.sort(compareStarArrayByDate)
+		 	starArray.reverse();
+			addStarsToDiv("otherUserStarList", starArray, "Oops, they do not have any stars!", "emptyUserSearchListMessage", "userSearchPageMessageDiv")		 	
+		});
+}
+
+function getSelectableDivId(id)
+{
+	if (id.indexOf("#") != 0)
+	{
+		id = "#" + id;
+	}
+	return id;	
+}
+
+function addStarsToDiv(divToAdd, starArray, errorMessage, errorMessageDiv, errorMessageContainer)
+{
+	//makes sure the div id has a hashtag to be selected by jquery
+	divToAdd = getSelectableDivId(divToAdd);
+	errorMessageDiv = getSelectableDivId(errorMessageDiv);
+	errorMessageContainer = getSelectableDivId(errorMessageContainer);
+
+		//check for length first
+ 	if (starArray.length == 0 )
+ 	{
+ 		$(divToAdd).html("");
+ 		$(errorMessageDiv).html(errorMessage);
+ 		$(errorMessageContainer).css("display","block");
+ 	}
+ 	else
+ 	{
+ 		$(divToAdd).html("");	
+ 		$(errorMessageContainer).css("display","none");
+	 	//loop through array
+	 	$.each(starArray, function(i, val)
+			{
+				var ownerName =  userList[val.owner_id].firstName + ' ' + userList[val.owner_id].lastName;
+				var ownerID = val.owner_id
+				var verb = val.category;
+				var issuerName = userList[val.issuer_id].firstName + ' ' + userList[val.issuer_id].lastName ;
+				var issuerID = val.issuer_id;
+				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
+				var timestamp = new Date(val.created);
+				var today = new Date(val.created);
+				var todayFormatted = calculateTimeFromServer(today);
+				var star_id = val.id	
+				
+			
+				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted,star_id);
+
+				$(divToAdd).append(itemHTML);	
+			}
+	 	);
+	 		
+ 	}
 }
 
 function loadCurrentStars()
@@ -207,7 +301,7 @@ function displayMyStars()
  	var myFeedFilterSelectedItem = $("#myFeedFilter").val();
 
  	//create empty message
- 	var emptyMessage = "Oops! something went wrong!";
+ 	var emptyMessage = "Oh dear, nothing was found!";
 
  	//make array of stars
  	var starArray = []
@@ -295,8 +389,10 @@ function displayEventStars()
 	var hashtagStars = JSON.parse(sessionStorage.getItem("hashtagStars"));
 
  	
- 	//create empty message
- 	var emptyMessage = "Oops! something went wrong!";
+ 	hashtagStars.sort(compareStarArrayByDate)
+ 	hashtagStars.reverse(); 	//create empty message
+ 	
+ 	var emptyMessage = "Oh dear! Nothing was found!";
 
  	//check for length first
  	if (hashtagStars.length == 0 )
