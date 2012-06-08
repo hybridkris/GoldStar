@@ -212,10 +212,12 @@ def load_user(userid):
 #Twitter Authorizations
 @app.before_request
 def before_request():
-	g.user = None
-	if 'user_id' in session:
-		g.user = User.query.get(session['user_id'])
-
+	try:
+		g.user = None
+		if 'user_id' in session:
+			g.user = User.query.get(session['user_id'])
+	except Exception as ex:
+		print ex.message
 @app.after_request
 def after_request(response):
 	db.session.remove()
@@ -224,12 +226,14 @@ def after_request(response):
 @twitter.tokengetter
 def get_twitter_token():
 	user = g.user
-	if user is not None:
+	if user is not None and user.oauth_token == None or user.oauth_secret == None:
 		token = session.get("twitter_token")
 		if token is not None:
 			user.oauth_token, twitter.secret_key = token
 			db.session.commit()
 		return token
+	else:
+		return user.oauth_token, user.oauth_secret
 
 @app.route('/twitterauth')
 def twitterauth():
@@ -242,24 +246,23 @@ def twitterauth():
 @app.route('/oauth_authorized')
 @twitter.authorized_handler
 def oauth_authorized(resp):
-	print "hi"
 	if resp is None:
 		flash(u'You denied the request to sign in.')
 	if resp is not None:
-		user = User.query.filter_by(id = current_user.get_id()).first()
+		user = User.query.get(current_user.get_id())
 		user.oauth_token = resp['oauth_token']
 		user.oauth_secret = resp['oauth_token_secret']
 		db.session.commit()
-		session['user_id'] = user.id
+		session['user_id'] = current_user.get_id()
 	return redirect('/mobileview.html')
 
 @app.route('/tweet', methods = ['POST'])
 def tweet():
+	status = request.json
 	if g.user is None:
 		return redirect('/twitterauth')
-	status = u'Tweeting from the app I made at work. #GoldStar'
-	resp = twitter.post('statuses/update.json', data = {'status': status})
-	return redirect('/mobileview.html')
+	resp = twitter.post('statuses/update.json', data = {'status': status['status']})
+	return jsonify(resp.data)
 #End Twitter Auth
 
 #The main index of the Gold Star App
@@ -305,6 +308,9 @@ def login():
 		thisUser = None
 	return render_template("login.html", form=form, page = p, user = thisUser)
 
+@app.route('/test')
+def test():
+	return render_template('test.html')
 #user page
 @app.route('/users/<int:userID>')
 def userPage(userID):
