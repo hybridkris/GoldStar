@@ -13,6 +13,10 @@ function pageInit()
 	{
 		_currentTab = "myStars";
 	}
+	else
+	{
+		_currentTab = sessionStorage.currentTab;
+	}
 	//attach event to select
 	$("#myFeedFilter").change(displayMyStars);
 	
@@ -68,6 +72,7 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     	
     	_currentTab = "leader";
     }
+    sessionStorage.currentTab = _currentTab;
     loadCurrentStars();
 });
 
@@ -78,6 +83,7 @@ function displayLeaderBoard()
 		ht = (ht == "") ? "all" : ht;
 		var verb = $("#allStarFilter").val().toLowerCase();
 		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+		sessionStorage
 		console.log(userUrl)
 		$.getJSON(userUrl, function(data)
 		 {

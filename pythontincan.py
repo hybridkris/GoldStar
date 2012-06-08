@@ -7,7 +7,7 @@ from requests.auth import HTTPBasicAuth
 import uuid
 import random
 import argparse
-def sendToLRS(whoDid,whoDidEmail,didWhat,whoDidObject):
+def sendToLRS(whoDid,whoDidEmail,didWhat,whoDidObject,):
 	#Call functions to get account variables
 	statement_id = str(_ruuid())
 	objectID = str(_randomID())
@@ -42,17 +42,20 @@ def _randomID():
 
 def getUsername():
 	#Change to your app ID
-	userName = 'UU3N64YGT2'
+	userName ='RLC4BXEK09' 
+	#'UU3N64YGT2'
 	return userName
 
 def getsecretKey():
 	#Change to your secret key
-	SecretKey = '9VU0MxwcogqhZYKc9Vn734oohTSOFoZohFJBJf5m'
+	SecretKey = 'CcP5PLO8qaJUZYoDF7mFJKCxhz0TODC0rrznipcS'
+	#'9VU0MxwcogqhZYKc9Vn734oohTSOFoZohFJBJf5m'
 	return SecretKey
 
 def getURL():
 	#Change to your Tin Can endpoint
-	URL = 'https://cloud.scorm.com/ScormEngineInterface/TCAPI/UU3N64YGT2/statements/'
+	URL = 'https://cloud.scorm.com/ScormEngineInterface/TCAPI/RLC4BXEK09/statements/'
+	#'https://cloud.scorm.com/ScormEngineInterface/TCAPI/UU3N64YGT2/statements/'
 	return URL
 
 def _ruuid(): 
