@@ -5,6 +5,8 @@ var userList = {};
 var defaultHashtag;
 var usersDisplay  = [];
 var usersHidden = [];
+var ajaxUpdate;
+
 
 //on doc ready for mobile view
 function pageInit()
@@ -12,7 +14,16 @@ function pageInit()
 
 	//sets _currentTab to default value
 	//sets default hashtag in search boxes
-	defaultHashtag = "mLearnCon"
+
+	if(localStorage.CheckedIntoConference!="" && localStorage.CheckedIntoConference!= null){
+		defaultHashtag = localStorage.CheckedIntoConference;	
+	}
+	
+	else{
+		defaultHashtag = "mLearnCon"
+		sessionStorage.hashtag = "mLearnCon"
+	}
+
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
 
@@ -28,6 +39,7 @@ function pageInit()
 		_currentTab = sessionStorage.currentTab;
 		if(sessionStorage.currentTab == "myStars")
 		{
+			loadCurrentStars();
 			$('#browserTabs a[href="#myStarsTab"]').tab('show');
 
 		}
@@ -83,7 +95,19 @@ function pageInit()
 				}
 			});
 
+	ajaxUpdate = setInterval(updateData, 10000);
+
 }
+
+//ajax function call
+function updateData()
+{
+	//update user page
+	loadMyStars();
+	//update hashtag
+	loadHashtagStars($("#EventTextBox").val());
+}
+
 
 function onGazeClick()
 {
@@ -214,6 +238,8 @@ function loadCurrentStars()
 	}
 }
 
+
+
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
@@ -234,6 +260,11 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     	
     	_currentTab = "leader";
     }
+    else if (currentTab.indexOf("find")  >= 0 )
+    {
+    	
+    	_currentTab = "findPeople";
+    }
     sessionStorage.currentTab = _currentTab;
     loadCurrentStars();
 });
@@ -243,8 +274,9 @@ function displayLeaderBoard()
 		//getJson of stars here
 		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
-		var verb = $("#allStarFilter").val().toLowerCase();
+		var verb = "all"
 		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+		console.log("getting all-stars");
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
@@ -428,10 +460,21 @@ function GoToHashTagPageWithRedirect(hashtag)
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
 		var itemHTML = '';
-		itemHTML += '<div class="well" style="height:4em; margin-bottom:0;">'				
+		if(ownerID==sessionStorage.userID){
+			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#dff1f5;">'
+		}
+		else {
+			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#F5F5F5;">'
+
+		}				
 		itemHTML += 	'<div style="float:left; width:80%;">'
 		itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
-		itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
+		if(ownerID==sessionStorage.userID){
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'"> You </a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
+		}
+		else{
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">you</a></span> <br/>'	
+		}
 		itemHTML += 		'<span style="font-size:1.0em;"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
 		//itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
 		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
@@ -467,7 +510,7 @@ function loadMyStars()
 {
 			//getJson of stars here
 			var userUrl = "/api/user/" + sessionStorage.userID;
-			
+			console.log("getting my stars");
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
@@ -477,22 +520,26 @@ function loadMyStars()
 
 function loadHashtagStars(needle)
 {
-			//getJson of stars here
-			var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
-
-			$.getJSON(userUrl, function(jdata)
-			 {
-			 	sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
-			 	displayEventStars();				
-			 });
+	//getJson of stars here
+	var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
+	console.log("getting hashtag stars");
+	$.getJSON(userUrl, function(jdata)
+	{
+		sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
+	 	displayEventStars();				
+	});
 }
-
+function checkIntoConference(checkingIntoHashtag)
+{
+	localStorage.CheckedIntoConference = checkingIntoHashtag;
+	console.log(localStorage.CheckedIntoConference);
+}
 //returns the hashtags
 function  getHashTags(whatTags)
 {
 	var hashlist
 	
-	var hashurl = "/Hashtags"
+	var hashurl = "/Hashtags";
 	$.getJSON(hashurl, function(data)
 	{
 		
@@ -585,3 +632,22 @@ function calculateTimeFromServer(serverTime){
 	return msg;
 
 }
+
+
+///KnockOut stuff//////
+/*
+TODO: Implement Knock with an observable array of objects
+
+function StarListViewModal()
+{
+	this.myStars = ko.observable([
+		{Issuer: "Person 1", Receiver: "Person 2"},
+		{Issuer: "Person 3", Receiver: "Person 1"},
+		{Issuer: "Person 4", Receiver: "Person 3"},
+		{Issuer: "Person 2", Receiver: "Person 4"}
+	]);
+}
+
+ko.applyBindings(new StarListViewModal());
+
+*/

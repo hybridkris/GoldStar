@@ -9,7 +9,10 @@
 			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
 
 			<h4 style="text-align:center">
-				<a href="/users/{{star.issuer_id}}">{{star.issuer}}</a> gave a star to <a href="/users/{{star.owner_id}}">{{star.owner}}</a> because {{star.reason}} 
+				<a href="/users/{{star.issuer_id}}">{{star.issuer}}</a> gave a star to <a href="/users/{{star.owner_id}}">{{star.owner}}</a> 
+			</h4>
+			<h4 style="text-align:center">
+				Reason:{{star.reason}}
 			</h4>
 			<h4 style="text-align:center" >
 				<br/><button class="hashTagButton" onclick="GoToHashTagPageWithRedirect('{{star.hashtag}}');"><b><i>#{{star.hashtag}}</i></b></button>
