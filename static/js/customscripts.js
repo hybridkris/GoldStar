@@ -185,7 +185,11 @@ function postJSON(id, num)
 			//var e2 = $('#modalViewVerb').val();
 			var e3 = $('#modalViewTextarea').val();
 			var e4 = $('#modalViewEvent').val();
-			var userData = '{"description":"'+e3+'","category":"'+e2+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
+			var tweet = false;
+			if($("#modalViewTweet").is(':checked'))
+				tweet = true;
+
+			var userData = '{"tweet":"'+tweet+'","description":"'+e3+'","category":"'+e2+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
 			//alert(userData);
 			$.ajax({
 				type: "POST",
@@ -268,8 +272,7 @@ function getJSON(num)
 						star.ownerfullName = "";
 					star.issuerfullName = "You"
 					starMasterList.push(star)
-			};			
-
+			};
 			jdata.stars = starMasterList;
 			userData = jdata;
 			ko.applyBindings(userData,document.getElementById('userNameNav'));
@@ -299,10 +302,20 @@ function showDescription(divid)
 function showModal()
 {
 	$('#myModal').modal('show');
+	if(sessionStorage.twitterUser == 'false')
+	{
+		$('#modalViewTweet').attr("disabled", true);
+		$('#modalViewTweet').attr("checked", false);
+	}
+	else
+	{
+		$('#modalViewTweet').attr("disabled", false);
+	}
 }
 function resetModalView(){
 		$('#modalViewUser').val("");
 		$('#modalViewVerb').val("");
 		$('#modalViewEvent').val("");
 		$('#modalViewTextarea').val("");
+		$('#modalViewTweet').attr("disabled", false);
 }

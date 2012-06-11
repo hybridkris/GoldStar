@@ -59,9 +59,20 @@ class Star(db.Model):
 	issuer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	hashtag = db.Column(db.Unicode)
+	tweet = db.Column(db.Boolean)
 	issuer = db.relationship("User", backref="issued", primaryjoin='Star.issuer_id==User.id')
 	owner = db.relationship("User", backref="stars", primaryjoin="Star.owner_id==User.id")
 	#Validation defs which validate 1 parameter of the table at a time
+
+	@validates('tweet')
+	def validate_tweet(self, key, string):
+		string = string.lower()
+		if string == 'true':
+			tweet = True
+		else:
+			tweet = False
+		print tweet
+		return tweet
 
 	@validates('hashtag')
 	def validate_hashtag(self, key, string):
@@ -278,6 +289,10 @@ def mobileview_route():
 		userID = current_user.get_id()
 		u = User.query.filter_by(id = userID).one()
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, current_user.get_id())
+		if u.twitterUser is not None:
+			thisUser.twitterUser = "true"
+		else:
+			thisUser.twitterUser = "false"
 		return render_template('mobileview.html', page = p, user = thisUser)
 	else:
 		return redirect('login')
@@ -412,7 +427,7 @@ def models_committed(sender,changes):
 				else:
 					issuer_email = user.email
 					issuer_name = str(makeName(user.firstName,user.lastName,user.email))
-					if user.oauth_token is not None:
+					if user.oauth_token is not None and s.tweet:
 						tweet(s.id)						
 			startThread(issuer_name,issuer_email,"interacted",owner_name)
 
