@@ -34,7 +34,7 @@ twitter = oauth.remote_app('twitter',
 	request_token_url = 'https://api.twitter.com/oauth/request_token',
 	access_token_url = 'https://api.twitter.com/oauth/access_token',
 	#authorize_url = 'https://api.twitter.com/oauth/authorize',
-	authorize_url='http://api.twitter.com/oauth/authenticate',
+	authorize_url='http://api.twitter.com/oauth/authorize',
 	consumer_key = TWITTER_APP_ID,
 	consumer_secret = TWITTER_APP_SECRET_ID
 	)
@@ -235,7 +235,8 @@ def after_request(response):
 
 @twitter.tokengetter
 def get_twitter_token():
-	token = session.get("twitter_token")
+	return session.get("twitter_token")
+	"""
 	user = g.user
 	if user is not None and user.oauth_token == None and user.oauth_secret == None:
 		token = session.get("twitter_token")
@@ -244,7 +245,7 @@ def get_twitter_token():
 			db.session.commit()
 		return token
 	else:
-		return str(user.oauth_token), str(user.oauth_secret)
+		return str(user.oauth_token), str(user.oauth_secret)"""
 
 @app.route('/twitterauth')
 def twitterauth():
@@ -269,16 +270,25 @@ def oauth_authorized(resp):
 	return redirect('/mobileview.html')
 
 def tweet(star_id):
-	session = db.create_scoped_session()
-	query = session.query(Star)
-	star = query.get(star_id)		
-	if star.owner.twitterUser:
-		status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' because he ' + star.category + ' me. #' + star.hashtag + 'www.Goldstars.me'
-	else:
-		fullName = star.owner.firstName + ' ' + star.owner.lastName
-		status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
-	resp = twitter.post('statuses/update.json', data = {'status': status})
-	output = jsonify(dict(tweet = "Tweet Successful"))		
+	try:
+		session = db.create_scoped_session()
+		query = session.query(Star)
+		star = query.get(star_id)
+		if star.owner.twitterUser:
+			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' because he ' + star.category + ' me. #' + star.hashtag + 'www.Goldstars.me'
+		else:
+			fullName = star.owner.firstName + ' ' + star.owner.lastName
+			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
+		resp = twitter.post('statuses/update.json', data = {'status': status})
+		output = jsonify(dict(tweet = "Tweet Successful"))
+	except Exception as ex:
+		userquery = session.query(User)
+		fixUser = userquery.get(star.issuer.id)
+		fixUser.twitterUser = None
+		fixUser.oauth_token = None
+		fixUser.oauth_secret = None
+		session.commit()
+
 #End Twitter Auth
 
 #The main index of the Gold Star App
