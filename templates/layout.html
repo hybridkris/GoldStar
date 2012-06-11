@@ -2,6 +2,8 @@
 <html lang="en">
 	<head>
 		<meta name="viewport" content="user-scalable=yes,width=device-width">
+		<link rel="shortcut icon" type="image/x-icon" href="../static/img/staricon.ico" />
+		<link rel="icon" type="image/x-icon" href="../static/img/staricon.ico" />
 		<title>{{page.title}}</title>
 		<link href="../static/css/bootstrap.css" rel="stylesheet"/>
 		<link href="../static/css/bootstrap-responsive.css" rel="stylesheet"/>
@@ -34,7 +36,7 @@
 					<!--  -->
 					{% if not page.hideStarButton %}
 
-					<a class="brand" style = "padding: 20px 14px 12px;">Hello</a> <a class="underline brand" style = "padding: 20px 14px 12px;" href="/users/{{ user.ID }}">{{user.firstName}}!</a>					
+					<a class="brand">Hello</a> <a class="underline brand" style = "padding-left:0.625em" href="/users/{{ user.ID }}">{{user.firstName}}!</a>					
 					<ul class="nav pull-right">
 						
 						<li><a href="#myModalview"><button  onclick="showModal(); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
@@ -119,7 +121,7 @@
 			$(function(){
 				try
 				{
-					var hashurl = "/getHashtags"
+					var hashurl = "/Hashtags"
 					$.getJSON(hashurl, function(data){
 						$( "#modalViewEvent" ).autocomplete({
 							datatype:'json',

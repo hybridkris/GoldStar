@@ -330,10 +330,15 @@ def userPage(userID):
 			me = User.query.filter_by(id = current_user.get_id()).one()
 			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
 			p = page.Page("Check out this user!", False)
+			if thisUser.ID == otherUser.ID:
+				ownPage = True
+			else:
+				ownPage = False
+			return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
 		else:
 			thisUser = None
 			p = page.Page("Check out this user!", True)
-		return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser)
+			return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = False)
 	except Exception as ex:
 		print ex.message
 		return redirect('/error')
@@ -343,7 +348,7 @@ def userPage(userID):
 def starPage(starID):
 	try:
 		s = Star.query.filter_by(id = starID).one()
-		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description)
+		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description,s.hashtag,s.created,s.issuer_id,s.owner_id)
 		if current_user.is_authenticated():
 			userID = current_user.get_id()
 			u = User.query.filter_by(id = userID).one()
@@ -352,6 +357,7 @@ def starPage(starID):
 		else:
 			thisUser = None
 			p = page.Page("Check out this star!", True)
+
 		return render_template("star.html", star = thisStar, page = p, user = thisUser)
 	except Exception as ex:
 		print ex.message
@@ -422,14 +428,15 @@ def getLeaderboard():
 		leaderList.append(dict(firstName=i.firstName,lastName=i.lastName,starCount=len(i.stars), id=i.id))
 	return jsonify(dict(leaders = leaderList))
 
-@app.route('/getHashtags')
+@app.route('/Hashtags')
 def getHashtags():
 	hashtagList = []
 	hashtagQuery = Star.query.order_by(Star.hashtag).all()
 	for tag in hashtagQuery:
-		if tag.hashtag != None or tag.hashtag != "":
-			if tag.hashtag not in hashtagList:
-				hashtagList.append(tag.hashtag)
+
+		if tag.hashtag != None and tag.hashtag != "" and tag.hashtag not in hashtagList:
+			hashtagList.append(tag.hashtag)
+
 	return jsonify(dict(hashtags = hashtagList))
 
 @app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
@@ -461,6 +468,14 @@ def specificLeaderboard(hashtag, verb):
 		print ex.message
 		return redirect('/error')
 
+@app.route("/starsbyhashtag/<string:needle>")
+def starsByHashtag(needle):
+	starObject = []
+	starQuery = Star.query.filter_by(hashtag = needle).all()
+	for i in starQuery:
+		starObject.append(dict(category = i.category, issuer_id = i.issuer_id, owner_id = i.owner_id, id=i.id, hashtag= i.hashtag, created = str(i.created)))
+	return jsonify(dict(stars = starObject))
+
 @app.route('/error')
 def errorPage():
 	if current_user.is_authenticated():
@@ -472,6 +487,10 @@ def errorPage():
 		thisUser = None
 		p = page.Page("Oops!", True)
 	return render_template("error.html", page = p,user = thisUser)
+
+@app.route('/settings')
+def settingsPage():
+	return render_template("settings.html")
 
 
 auth_func = lambda: current_user.is_authenticated()
