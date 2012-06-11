@@ -263,6 +263,7 @@ def oauth_authorized(resp):
 		user = User.query.get(current_user.get_id())
 		user.oauth_token = resp['oauth_token']
 		user.oauth_secret = resp['oauth_token_secret']
+		user.twitterUser = resp['screen_name']
 		db.session.commit()
 		session['user_id'] = current_user.get_id()
 	return redirect('/mobileview.html')
