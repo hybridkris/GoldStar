@@ -12,7 +12,16 @@ function pageInit()
 
 	//sets _currentTab to default value
 	//sets default hashtag in search boxes
-	defaultHashtag = "Overlap12"
+
+	if(localStorage.CheckedIntoConference!=""){
+		defaultHashtag = localStorage.CheckedIntoConference;	
+	}
+	else if(localStorage.CheckedIntoConference!= null){
+		defaultHashtag = localStorage.CheckedIntoConference;	
+	}
+	else{
+		defaultHashtag ='Overlap12';
+	}
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
 	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
@@ -404,10 +413,21 @@ function GoToHashTagPage(hashtag)
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
 		var itemHTML = '';
-		itemHTML += '<div class="well" style="height:4em; margin-bottom:0;">'				
+		if(ownerID==sessionStorage.userID){
+			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#F5F5F5;">'
+		}
+		else {
+			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#dff1f5;">'
+
+		}				
 		itemHTML += 	'<div style="float:left; width:80%;">'
 		itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
-		itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
+		if(ownerID==sessionStorage.userID){
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'"> You </a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
+		}
+		else{
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">you</a></span> <br/>'	
+		}
 		itemHTML += 		'<span style="font-size:1.0em;"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
 		//itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
 		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
@@ -456,16 +476,19 @@ function loadMyStars()
 
 function loadHashtagStars(needle)
 {
-			//getJson of stars here
-			var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
-
-			$.getJSON(userUrl, function(jdata)
-			 {
-			 	sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
-			 	displayEventStars();				
-			 });
+	//getJson of stars here
+	var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
+	$.getJSON(userUrl, function(jdata)
+	{
+		sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
+	 	displayEventStars();				
+	});
 }
-
+function checkIntoConference(checkingIntoHashtag)
+{
+	localStorage.CheckedIntoConference = checkingIntoHashtag;
+	console.log(localStorage.CheckedIntoConference);
+}
 //returns the hashtags
 function  getHashTags(whatTags)
 {
