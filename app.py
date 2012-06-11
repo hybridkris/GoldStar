@@ -34,7 +34,7 @@ twitter = oauth.remote_app('twitter',
 	request_token_url = 'https://api.twitter.com/oauth/request_token',
 	access_token_url = 'https://api.twitter.com/oauth/access_token',
 	#authorize_url = 'https://api.twitter.com/oauth/authorize',
-	authorize_url='http://api.twitter.com/oauth/authorize',
+	authorize_url='http://api.twitter.com/oauth/authenticate',
 	consumer_key = TWITTER_APP_ID,
 	consumer_secret = TWITTER_APP_SECRET_ID
 	)
@@ -235,17 +235,16 @@ def after_request(response):
 
 @twitter.tokengetter
 def get_twitter_token():
-	return session.get("twitter_token")
-	"""
 	user = g.user
-	if user is not None and user.oauth_token == None and user.oauth_secret == None:
+	#return session.get("twitter_token")
+	if user is not None and user.oauth_token is None and user.oauth_secret is None:
 		token = session.get("twitter_token")
 		if token is not None:
 			user.oauth_token, user.oauth_secret = token
 			db.session.commit()
 		return token
 	else:
-		return str(user.oauth_token), str(user.oauth_secret)"""
+		return str(user.oauth_token), str(user.oauth_secret)
 
 @app.route('/twitterauth')
 def twitterauth():
@@ -260,7 +259,7 @@ def twitterauth():
 def oauth_authorized(resp):
 	if resp is None:
 		flash(u'You denied the request to sign in.')
-	if resp is not None:
+	elif resp is not None:
 		user = User.query.get(current_user.get_id())
 		user.oauth_token = resp['oauth_token']
 		user.oauth_secret = resp['oauth_token_secret']
@@ -280,14 +279,16 @@ def tweet(star_id):
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
 			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
 		resp = twitter.post('statuses/update.json', data = {'status': status})
-		output = jsonify(dict(tweet = "Tweet Successful"))
+		print "Tweet successful"
 	except Exception as ex:
+		print ex.message
 		userquery = session.query(User)
 		fixUser = userquery.get(star.issuer.id)
 		fixUser.twitterUser = None
 		fixUser.oauth_token = None
 		fixUser.oauth_secret = None
 		session.commit()
+		print "tweet not successful"
 
 #End Twitter Auth
 
@@ -418,6 +419,7 @@ def feedback():
 @app.route("/logout")
 @login_required
 def logout():
+	session.pop('user_id', None)
 	logout_user()
 	return redirect('/')
 

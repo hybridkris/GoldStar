@@ -319,3 +319,7 @@ function resetModalView(){
 		$('#modalViewTextarea').val("");
 		$('#modalViewTweet').attr("disabled", false);
 }
+function redirectTwitter()
+{
+	window.location = "../twitterauth";
+}
