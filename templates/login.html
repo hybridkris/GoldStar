@@ -2,59 +2,63 @@
 <html>
 
 <head><title>Login</title>
-		<meta name="viewport" content="user-scalable=yes,width=device-width, initial-scale=1.0">
-		<title> Welcome to Gold Star! </title>
-		<link href="../static/css/bootstrap.css" rel="stylesheet" >
-	</head>
-	<body>
-		<div class="navbar" style="width:100%; padding-left:0px; padding-right:0px;">
-			<div class="navbar-inner" style="width:100%; padding-left:0px; padding-right:0px;">
-				<div class="container" style="width:100%; padding-left:0px; padding-right:0px;">
-					<div style="text-align:center; width:100%;padding-left:0px; padding-right:0px; padding-top:1em;">
-							<img src="../static/img/goldstar.png" style="margin-bottom:10px; margin-right:20px;" width="25" height="25" /><span style="font-size:2em;color:black; ">Gold Star</span><img src="../static/img/goldstar.png" style="margin-bottom:10px; margin-left:20px;" width="25" height="25" />
-					</div>
+	<meta name="viewport" content="user-scalable=yes,width=device-width, initial-scale=1.0">
+	<title> Welcome to Gold Star! </title>
+	<link href="../static/css/bootstrap.css" rel="stylesheet" >
+</head>
+<body>
+	<div class="navbar" style="width:100%; padding-left:0px; padding-right:0px;">
+		<div class="navbar-inner" style="width:100%; padding-left:0px; padding-right:0px;">
+			<div class="container" style="width:100%; padding-left:0px; padding-right:0px;">
+				<div style="text-align:center; width:100%;padding-left:0px; padding-right:0px; padding-top:1em;">
+						<img src="../static/img/goldstar.png" style="margin-bottom:10px; margin-right:20px;" width="25" height="25" /><span style="font-size:2em;color:black; ">Gold Star</span><img src="../static/img/goldstar.png" style="margin-bottom:10px; margin-left:20px;" width="25" height="25" />
 				</div>
 			</div>
 		</div>
-		<div id="index1" class="container" style="width:100%; padding-left:0px; padding-right:0px;display:none;">
-			<div class="well" style="width:100%; padding-left:0px; padding-right:0px;">
-				<h2 style="text-align:center;">Welcome!</h2>
-				<h4>Please sign in below!</h4>
-				<br /><br />
-			</div>
+	</div>
+	<div id="index1" class="container" style="width:100%; padding-left:0px; padding-right:0px;display:none;">
+		<div class="well" style="width:100%; padding-left:0px; padding-right:0px;">
+			<h2 style="text-align:center;">Welcome!</h2>
+			<h4>Please sign in below!</h4>
+			<br /><br />
 		</div>
-		<div style="width:100%">
-			<form action="{{ url_for('login') }}" method="post">
-			  {{ form.hidden_tag() }}
+	</div>
+	<div style="width:100%">
+		<form action="{{ url_for('login') }}" method="post">
+		  
+		  <div id="container" style="float:left;width:100%;text-align:center;" >
+			
+				<div>
+					Email<br />{{ form.username }}
+				</div>
+				<div>
+					Password<br />{{ form.password }}
+				</div>
+				<button type="submit" class="btn btn-warning">Login</button>
+				{{ form.hidden_tag() }}
 			  	{% with messages = get_flashed_messages() %}
 				  {% if messages %}
-				    <ul style="color:red">
+				    <!--<ul style="color:red"> -->
 				    {% for message in messages %}
-				      <li>{{ message }}</li>
+				    	<div id="loginErrorField" style="color:red">
+							Invalid Username or Password
+						</div>
+				      <!-- <li>{{ message }}</li> -->
 				    {% endfor %}
-				    </ul>
+				     <!--</ul> -->
 				  {% endif %}
 				{% endwith %}
-			  <div id="container" style="float:left;width:100%;text-align:center;" >
-				
-					<div>
-						Email<br />{{ form.username }}
-					</div>
-					<div>
-						Password<br />{{ form.password }}
-					</div>
-					<button type="submit" class="btn btn-warning">Login</button>
-				  	<!--<td colspan="3" style="text-align:center;">{{ form.submit }}</td>-->
-				</div>
-			    
-			  	
-			</form>
-			<br/>
-			<br/>
-			<div style="clear:both"></div><br />
-			<div style="width:100%; text-align:center;"><a href="/signup">Don't have an account?</a></div>
-			
-		</div>
+			  	<!--<td colspan="3" style="text-align:center;">{{ form.submit }}</td>-->
+			</div>
+		    
+		  	
+		</form>
+		<br/>
+		<br/>
+		<div style="clear:both"></div><br />
+		<div style="width:100%; text-align:center;"><a href="/signup">Don't have an account?</a></div>
+		
+	</div>
 
 </body>
 </html>

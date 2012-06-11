@@ -44,7 +44,7 @@ function login()
 				window.location = "mobileview.html";
 			}
 			else
-				//alert("Email not found.");	
+				alert("Email not found.");	
 		});
 	}
 	else
@@ -171,39 +171,34 @@ function postJSON(id, num)
 	}
 	else if (num == 1)
 	{
-		//var e = document.getElementById("select1");
-		if(confirm('Are you sure you want to give a star to ' + $('#modalViewUser').val() + '?'))
-		{
-			//var e1 = e.options[e.selectedIndex].value;
-			//starName = e.options[e.selectedIndex].text;
-			var e1 = document.getElementById("modalViewUser").name;
-			var starName = $('#modalViewUser').val();
-			sessionStorage.starName = starName;
-			e = document.getElementById("modalViewVerb");
-			var e2 = e.options[e.selectedIndex].value;
-			//var e3 = document.getElementById("select3").value;
-			//var e2 = $('#modalViewVerb').val();
-			var e3 = $('#modalViewTextarea').val();
-			var e4 = $('#modalViewEvent').val();
-			var userData = '{"description":"'+e3+'","category":"'+e2+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
-			//alert(userData);
-			$.ajax({
-				type: "POST",
-				url: "/api/star",
-				data: userData,
-				contentType: "application/json",
-				success: function(data){
-					sessionStorage.starID = data.id;
-					//alert("You successfully gave a star to "+starName+"!");
-				},
-				complete: function(){
-					window.location = "/";
-				},
-				error: function(jqXHR, textStatus, errorThrown){
-					alert(errorThrown + " " + textStatus + " " + jqXHR);
-				}
-			});
-		}
+		var e1 = document.getElementById("modalViewUser").name;
+		var starName = $('#modalViewUser').val();
+		sessionStorage.starName = starName;
+		e = document.getElementById("modalViewVerb");
+		var e2 = e.options[e.selectedIndex].value;
+		//var e3 = document.getElementById("select3").value;
+		//var e2 = $('#modalViewVerb').val();
+		var e3 = $('#modalViewTextarea').val();
+		var e4 = $('#modalViewEvent').val();
+		var userData = '{"description":"'+e3+'","category":"'+e2+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
+		//alert(userData);
+		$.ajax({
+			type: "POST",
+			url: "/api/star",
+			data: userData,
+			contentType: "application/json",
+			success: function(data){
+				sessionStorage.starID = data.id;
+				//alert("You successfully gave a star to "+starName+"!");
+			},
+			complete: function(){
+				window.location = "/";
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				alert(errorThrown + " " + textStatus + " " + jqXHR);
+			}
+		});
+	
 	}
 }
 function getJSON(num)
@@ -298,11 +293,33 @@ function showDescription(divid)
 //modal functionality
 function showModal()
 {
+	$('#modalFooterDiv').show();
+	$('#giveStarConfirmation').hide();
+	$('#giveStarErrorDiv').html('');
 	$('#myModal').modal('show');
 }
 function resetModalView(){
-		$('#modalViewUser').val("");
-		$('#modalViewVerb').val("");
-		$('#modalViewEvent').val("");
-		$('#modalViewTextarea').val("");
+	$('#giveStarConfirmation').hide();
+	$('#giveStarErrorDiv').html('');
+	$('#modalViewUser').val("");
+	$('#modalViewVerb').val("");
+	$('#modalViewEvent').val("");
+	$('#modalViewTextarea').val("");
+}
+function showErrorMessage(page, message){
+	$('#signUpErrorField').hide();
+	switch(page){
+		//login has its own error inside of login.html
+		case 'signup':{
+			$('#signUpErrorDiv').html(message);
+			$('#signUpErrorField').show('slow');
+			break;
+		}
+		case 'givestar':{
+			$('#giveStarErrorDiv').html(message);
+			$('#giveStarErrorDiv').show('fast');
+			break;
+		}
+		default: alert("Error!");
+	}
 }
