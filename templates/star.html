@@ -12,8 +12,8 @@
 				<a href="/users/{{star.issuer_id}}">{{star.issuer}}</a> gave a star to <a href="/users/{{star.owner_id}}">{{star.owner}}</a> because {{star.reason}} 
 			</h4>
 			<h4 style="text-align:center" >
-				<br/>
-				#{{star.hashtag}}
+				<br/><button class="hashTagButton" onclick="GoToHashTagPageWithRedirect('{{star.hashtag}}');"><b><i>#{{star.hashtag}}</i></b></button>
+				
 			</h4>
 			<h5 style="text-align:center" >
 				</br>

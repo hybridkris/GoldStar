@@ -12,14 +12,16 @@ function pageInit()
 
 	//sets _currentTab to default value
 	//sets default hashtag in search boxes
-	defaultHashtag = "Overlap12"
+	defaultHashtag = "mLearnCon"
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
+
 	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
 	{
 		_currentTab = "myStars";
 		$("#EventTextBox").val(defaultHashtag);
 		$("#AllStarEventHashTag").val(defaultHashtag);
+		loadCurrentStars();
 	}
 	else
 	{ 
@@ -35,6 +37,7 @@ function pageInit()
 				$("#EventTextBox").val(sessionStorage.hashtag);
 				$("#AllStarEventHashTag").val(sessionStorage.hashtag);
 			}
+			
 			else{
 				$("#EventTextBox").val(defaultHashtag);
 			}
@@ -57,9 +60,7 @@ function pageInit()
 	//attach event to select
 	$("#myFeedFilter").change(displayMyStars);
 	
-	//sets default hashtag in search boxes
 	//load objects
-	loadCurrentStars();
 	getHashTags('all');
 	
 	//set autocomplete for stargazing menu
@@ -166,8 +167,13 @@ function loadCurrentStars()
 	}
 	else if (_currentTab == "event")
 	{
+		if (sessionStorage.clickedHashtag != null && sessionStorage.clickedHashtag != "" )
+		{
+			$("#EventTextBox").val(sessionStorage.clickedHashtag);
+			sessionStorage.clickedHashtag = "";
+		}
 
-		if($("#AllStarEventHashTag").val()!=defaultHashtag)
+		else if($("#AllStarEventHashTag").val()!=defaultHashtag)
 		{
 			$("#EventTextBox").val($("#AllStarEventHashTag").val());
 			sessionStorage.hashtag =$("#EventTextBox").val();
@@ -398,7 +404,25 @@ function displayMyStars()
 
 function GoToHashTagPage(hashtag)
 {
-	console.log("go to the event page for:" + hashtag);
+	//set flag to catch hastag click
+	sessionStorage.clickedHashtag = hashtag;
+	//switch tabs
+	$('#browserTabs a[href="#eventTab"]').tab('show');
+	
+
+}
+
+
+function GoToHashTagPageWithRedirect(hashtag)
+{
+	//set flag to catch hastag click
+	sessionStorage.clickedHashtag = hashtag;
+	
+	//switch tabs
+	sessionStorage.currentTab = "event"
+	
+	window.location = "/";
+	
 }
 
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
