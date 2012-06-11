@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta name="viewport" content="user-scalable=yes,width=device-width">
+		<meta name="viewport" content="user-scalable=yes,width=device-width,initial-scale=1.0">
 		<link rel="shortcut icon" type="image/x-icon" href="../static/img/staricon.ico" />
 		<link rel="icon" type="image/x-icon" href="../static/img/staricon.ico" />
 		<title>{{page.title}}</title>
@@ -9,6 +9,7 @@
 		<link href="../static/css/bootstrap-responsive.css" rel="stylesheet"/>
 		<link href="../static/css/jquery-ui-1.8.20.custom.css" rel="stylesheet"/>
 		<style type="text/css">
+
 		.hashTagButton
 		{
 			border:none; 
@@ -44,18 +45,18 @@
 		</style>
 			{% block cssStyle %}{% endblock %}
 	</head>
-	<body>
+	<body leftmargin="0px" topmargin="0px" marginwidth="0px" marginheight="0px" width="100%">
 	
-		<div class="navbar" >
-			<div class="navbar-inner" >
-				<div class="container" >
+		<div class="navbar" style="width:100%; padding-left:0px; padding-right:0px;">
+			<div class="navbar-inner" style="width:100%; padding-left:0px; padding-right:0px;">
+				<div class="container" style="width:100%; padding-left:0px; padding-right:0px;">
 					<!--  -->
 					{% if not page.hideStarButton %}
 
 					<a class="brand">Hello</a> <a class="underline brand" style = "padding-left:0.625em" href="/users/{{ user.ID }}">{{user.firstName}}!</a>					
 					<ul class="nav pull-right">
-						
-						<li><a href="#myModalview"><button  onclick="showModal(); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
+							
+					<li><a href="#myModalview"><button  onclick="showModal(); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
 					</ul>
 					{%endif%}
 				</div>

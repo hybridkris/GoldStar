@@ -20,10 +20,12 @@ function pageInit()
 		defaultHashtag = localStorage.CheckedIntoConference;	
 	}
 	else{
+		console.log("HERE")
 		defaultHashtag ='Overlap12';
 	}
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
+	console.log(sessionStorage.currentTab)
 	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
 	{
 		_currentTab = "myStars";
@@ -33,6 +35,7 @@ function pageInit()
 	else
 	{ 
 		_currentTab = sessionStorage.currentTab;
+		console.log(_currentTab);
 		if(sessionStorage.currentTab == "myStars")
 		{
 			$('#browserTabs a[href="#myStarsTab"]').tab('show');
@@ -45,9 +48,14 @@ function pageInit()
 				$("#AllStarEventHashTag").val(sessionStorage.hashtag);
 			}
 			else{
+				console.log("Here I am");
 				$("#EventTextBox").val(defaultHashtag);
 			}
 			$('#browserTabs a[href="#eventTab"]').tab('show');
+		}
+		else if(sessionStorage.currentTab=="findPeople")
+		{
+			$('#browserTabs a[href="#findPeopleTab"]').tab('show')
 		}
 		else if(sessionStorage.currentTab =="leader")
 		{
@@ -179,22 +187,25 @@ function loadCurrentStars()
 		if($("#AllStarEventHashTag").val()!=defaultHashtag)
 		{
 			$("#EventTextBox").val($("#AllStarEventHashTag").val());
+			console.log($("#EventTextBox").val())
 			sessionStorage.hashtag =$("#EventTextBox").val();
 		}
 		else if($("#AllStarEventHashTag").val()==defaultHashtag)
 		{
-			$("#EventTextBox").val(defaultHashtag);	
+			$("#EventTextBox").val(defaultHashtag);
+			console.log($("#EventTextBox").val())	
 			sessionStorage.hashtag =$("#EventTextBox").val();
 		}
 		else
 		{
-			$("#EventTextBox").val(defaultHashtag);	
+			$("#EventTextBox").val(defaultHashtag);
+			console.log($("#EventTextBox").val())	
 			sessionStorage.hashtag =$("#EventTextBox").val();
 		}
 		//RECOMMENT BACK IN TO WORK
 		loadHashtagStars($("#EventTextBox").val());	
 	}
-	if (_currentTab == "leader")
+	else if (_currentTab == "leader")
 	{
 
 		if($("#EventTextBox").val()!=defaultHashtag)
@@ -220,12 +231,15 @@ function loadCurrentStars()
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
-   
     var currentTab = e.target.toString();
     if (currentTab.indexOf("myStars")  >= 0 )
     {
     	
     	_currentTab = "myStars";
+    }
+    else if(currentTab.indexOf("findPeople") >=0 )
+    {
+    	_currentTab ="findPeople";
     }
     else if (currentTab.indexOf("event")  >= 0 )
     {
@@ -236,8 +250,10 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     {
     	
     	_currentTab = "leader";
+
     }
     sessionStorage.currentTab = _currentTab;
+    console.log(sessionStorage.currentTab)
     loadCurrentStars();
 });
 
@@ -414,26 +430,25 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 {
 		var itemHTML = '';
 		if(ownerID==sessionStorage.userID){
-			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#F5F5F5;">'
+			itemHTML += '<div class="well" style="height:4.5em; margin-bottom:0; background-color:#F5F5F5;">'
 		}
 		else {
-			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#dff1f5;">'
-
-		}				
-		itemHTML += 	'<div style="float:left; width:80%;">'
-		itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
+			itemHTML += '<div class="well" style="height:4.5em; margin-bottom:0; background-color:#dff1f5;">'
+		}
+		itemHTML += 	'<div style="float:left; width:90%;">'
+		itemHTML += 	'		<img class="pull-left" width="40" height="40" style="padding-right:.5em; padding-bottom:3em" src="../static/img/goldstar.png" />'
 		if(ownerID==sessionStorage.userID){
 			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'"> You </a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
 		}
 		else{
 			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">you</a></span> <br/>'	
 		}
+		itemHTML += 		'<span style="font-size:0.7em">'+timestamp+' </span>'
 		itemHTML += 		'<span style="font-size:1.0em;"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
 		//itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
-		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
 		itemHTML += 	'</div>'
 		itemHTML += 	'<a href="/star/' + star_id + '">'
-		itemHTML += 		'<div style="float:right; height:90%; width:20%;position:relative; padding-top:1.5em;">'
+		itemHTML += 		'<div style="float:right; height:90%; width:10%;position:relative; padding-top:1.5em;">'
 		itemHTML += 				'<div class="iconDiv">'
 		itemHTML += 				'	<i class="icon-chevron-right pull-right"></i>'
 		itemHTML += 			'	</div>	'					
