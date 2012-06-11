@@ -17,25 +17,49 @@
 						<td style="text-align:center;">{{theOtherUser.starsGiven}} Stars Given &nbsp;&nbsp;&nbsp;&nbsp; {{theOtherUser.starsReceived}} Stars Received</td>
 					</tr>
 					<tr>
-						<td colspan=2><a href="../mobileview.html">Go back to my feed</a></td>
+						<td colspan=2><a href="../mobileview.html">Go back to my feed</a></td></br>
 					</tr>
 					<tr>
-						<td colspan=2><a href="../feedback">Feedback</a></td>
+						<td colspan=2><a href="../feedback">Feedback</a></td></br>
 					</tr>
+
 					{% if not page.hideStarButton %}
 						{% if ownPage %}
 							<tr>
-								<td colspan=2><a href="../logout">Log Out</a></td>
-								
+								<td colspan=2><a OnClick="javascript:logoutFunction();">Log Out</a></td>
 							</tr>
 						{%endif%}
 					{%endif%}
 			</table>		
+			<div style="text-align:center;display:none;" id="newAccountUser">
+				</br>
+				<div style="width:100%; text-align:center;" ><a href="/signup">Don't have an account?</a></div>
+			</div>
 			
 				
 			
 	</div>
 
 {% endblock%}
-{% block script%}
+{% block scripts%}
+<script type="text/javascript">
+	$(function(){
+		var createAccountBtn = document.getElementById("newAccountUser");
+		if (sessionStorage.userID== "" || sessionStorage.length == 0){
+			createAccountBtn.style.display="block";
+		}
+		else
+		{
+			createAccountBtn.style.display="none";
+		}
+	});
+</script>
+<script  type="text/javascript">
+
+function logoutFunction()
+{
+	sessionStorage.clear();
+	window.location="../logout"
+}
+</script>
 {%endblock%}

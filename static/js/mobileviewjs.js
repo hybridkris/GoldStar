@@ -463,8 +463,11 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		if(ownerID==sessionStorage.userID){
 			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'"> You </a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
 		}
-		else{
+		else if(issuerID==sessionStorage.userID) {
 			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">you</a></span> <br/>'	
+		}
+		else{
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">'+issuerName+'</a></span> <br/>'	
 		}
 		itemHTML += 		'<span style="font-size:0.7em">'+timestamp+' </span>'
 		itemHTML += 		'<span style="font-size:1.0em;"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
@@ -551,6 +554,9 @@ function  getHashTags(whatTags)
 			});	
 	});
 
+}
+function logoutFunction(){
+	sessionStorage.clear();
 }
 function calculateTimeFromServer(serverTime){
 	// Set the unit values in milliseconds.
