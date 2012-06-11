@@ -27,7 +27,6 @@ function sendUserInfoToServer()
 	  			contentType: "application/json",
 				success: function(data, textStatus, jqXHR){
 					sessionStorage.userID = data.id;
-					alert('You have successfully created an account!');
 				},
 				error: function(jqXHR, textStatus, errorThrown){
 					var err = jQuery.parseJSON(jqXHR.responseText);
@@ -65,7 +64,7 @@ function sendUserInfoToServer()
 		else
 		{
 			///tell user that passwords do not match
-			alert("Passwords do not match, please try again.");
+			
 
 		}
 		

@@ -44,7 +44,7 @@ function login()
 				window.location = "mobileview.html";
 			}
 			else
-				alert("Email not found.");	
+				//alert("Email not found.");	
 		});
 	}
 	else
@@ -135,7 +135,7 @@ function postJSON(id, num)
   			contentType: "application/json",
 			success: function(data, textStatus, jqXHR){
 				sessionStorage.userID = data.id;
-				alert('You have successfully created an account!');
+				//alert('You have successfully created an account!');
 			},
 			error: function(jqXHR, textStatus, errorThrown){
 				var err = jQuery.parseJSON(jqXHR.responseText);
@@ -194,7 +194,7 @@ function postJSON(id, num)
 				contentType: "application/json",
 				success: function(data){
 					sessionStorage.starID = data.id;
-					alert("You successfully gave a star to "+starName+"!");
+					//alert("You successfully gave a star to "+starName+"!");
 				},
 				complete: function(){
 					window.location = "/";
@@ -288,7 +288,7 @@ function limitText(limitField, limitNum)
 function showselect(id)
 {
 	var e = document.getElementById(id);
-	alert(e.options[e.selectedIndex].value);
+	//alert(e.options[e.selectedIndex].value);
 }
 function showDescription(divid)
 {
