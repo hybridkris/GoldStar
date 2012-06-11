@@ -359,8 +359,11 @@ def userPage(userID):
 			p = page.Page("Check out this user!", False)
 			if thisUser.ID == otherUser.ID:
 				ownPage = True
+				if me.twitterUser is not None:
+					thisUser.twitterUser = 'true'
 			else:
 				ownPage = False
+				thisUser.twitterUser = 'false'
 			return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
 		else:
 			thisUser = None
