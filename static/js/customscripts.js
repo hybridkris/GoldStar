@@ -305,9 +305,13 @@ function showModal()
 	{
 		$('#modalViewTweet').attr("disabled", true);
 		$('#modalViewTweet').attr("checked", false);
+		$("#modalViewConnect").show();
+		$("#modalViewConnectDiv").css("display", "block");
 	}
 	else
 	{
+		$("#modalViewConnect").hide();
+		$("#modalViewConnectDiv").css("display", "none");
 		$('#modalViewTweet').attr("disabled", false);
 	}
 }

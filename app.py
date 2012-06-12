@@ -292,10 +292,10 @@ def tweet(star_id):
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
-			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' because he ' + star.category + ' me. #' + star.hashtag + 'www.Goldstars.me'
+			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' because he ' + star.category + ' me. #' + star.hashtag + ' Goldstars.me'
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
-			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
+			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' Goldstars.me'
 		resp = twitter.post('statuses/update.json', data = {'status': status})
 		return True
 	except:
