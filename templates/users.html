@@ -13,10 +13,15 @@
 			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
 			<h3 style="text-align:center;">
 				{{theOtherUser.firstName}} {{theOtherUser.lastName}}<hr /></h3>
-			<h4 style="text-align:center;">
-				{{theOtherUser.starsGiven}} Stars Given<br /></h4>
-			<h4 style="text-align:center;">{{theOtherUser.starsReceived}} Stars Received
-			</h4><hr />
+			<div style="text-align:center"><button onclick="filterStarList('all')" class="hashTagButton" style="text-align:center; font-size:1.8em"><script>
+				var totalStars = {{theOtherUser.starsReceived}} + {{theOtherUser.starsGiven}}
+				document.write(totalStars);
+			</script> Stars Total
+			</h4></div><br />
+			<div style="text-align:center"><button onclick="filterStarList('given')" class="hashTagButton" style="text-align:center; font-size:1.5em">
+				{{theOtherUser.starsGiven}} Stars Given<br /></button></div><br />
+			<div style="text-align:center"><button onclick="filterStarList('received')" class="hashTagButton" style="text-align:center; font-size:1.5em">{{theOtherUser.starsReceived}} Stars Received
+			</h4></div><hr />
 			<div style="clear:both"></div>
 			{% if ownPage and theOtherUser.twitterUser %}
 			<div id = "TwitterShow" style="text-align:center;">
@@ -79,11 +84,16 @@
 					users.push(currentUser.firstName + " " + currentUser.lastName);				
 				}
 
-				loadOtherUserStars({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer");
+				loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", "all");
 				
 			});
 			$("TwitterShow").css("display", "block");
-		}		
+		}
 	});
+	function filterStarList(filter){
+		loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", filter);
+		var totalStars = {{theOtherUser.starsGiven}} + {{theOtherUser.starsReceived}};
+	}
+
 </script>
 {%endblock%}

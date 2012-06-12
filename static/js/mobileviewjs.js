@@ -261,8 +261,7 @@ function displayLeaderBoard()
 		//getJson of stars here
 		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
-		var verb = "all"
-		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+		var userUrl = "/leaderboard/filter/"+ht;
 		console.log("getting all-stars");
 		$.getJSON(userUrl, function(data)
 		 {
@@ -423,6 +422,27 @@ function loadOtherUserStars(userID, listDiv, messageDiv, messageContainerDiv){
 			//make array of stars
 		 	var starArray = [];
 		 	starArray = data.issued.concat(data.stars);
+		 	starArray.sort(compareStarArrayByDate)
+		 	starArray.reverse();
+			addStarsToDiv(listDiv, starArray, emptyMessage, messageDiv, messageContainerDiv)		 	
+		});
+}
+function loadStarsUserPage(userID, listDiv, messageDiv, messageContainerDiv, filter){
+	var url = '/api/user/' + userID;
+	$.getJSON(url, function(data)
+		{
+			var emptyMessage = "This user does not have any stars.";
+			//make array of stars
+		 	var starArray = [];
+		 	if (filter == "given"){
+		 		starArray = data.issued;
+		 	}
+		 	else if (filter == "received"){
+		 		starArray = data.stars;
+		 	}
+		 	else{
+		 		starArray = data.issued.concat(data.stars);
+		 	}
 		 	starArray.sort(compareStarArrayByDate)
 		 	starArray.reverse();
 			addStarsToDiv(listDiv, starArray, emptyMessage, messageDiv, messageContainerDiv)		 	
