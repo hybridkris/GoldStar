@@ -95,7 +95,8 @@ function pageInit()
 				}
 			});
 
-	ajaxUpdate = setInterval(updateData, 10000);
+	//RECOMMENT IN FOR AJAX UPDATES
+	//ajaxUpdate = setInterval(updateData, 10000);
 
 }
 
@@ -127,7 +128,7 @@ function loadOtherUserStars(userID)
 		 	starArray.sort(compareStarArrayByDate)
 		 	starArray.reverse();
 			addStarsToDiv("otherUserStarList", starArray, "Oops, they do not have any stars!", "emptyUserSearchListMessage", "userSearchPageMessageDiv")		 	
-		});
+		}).error(function() {$("#emptyUserSearchListMessage").html("Oops, nothing was found!")});
 }
 
 function getSelectableDivId(id)
@@ -166,8 +167,7 @@ function addStarsToDiv(divToAdd, starArray, errorMessage, errorMessageDiv, error
 				var issuerName = userList[val.issuer_id].firstName + ' ' + userList[val.issuer_id].lastName ;
 				var issuerID = val.issuer_id;
 				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
-				var timestamp = new Date(val.created);
-				var today = new Date(val.created);
+				var today = new Date(parseDate(val.created));
 				var todayFormatted = calculateTimeFromServer(today);
 				var star_id = val.id	
 				
@@ -460,36 +460,52 @@ function GoToHashTagPageWithRedirect(hashtag)
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
 		var itemHTML = '';
-		if(ownerID==sessionStorage.userID){
-			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#dff1f5;">'
+		if(ownerID != sessionStorage.userID){
+			itemHTML += '<div onclick="goToStarPage('+star_id+')" class="starItemRecieved" style="overflow:hidden;padding:1em;border-bottom:0.1em solid #C0C0C0;font-size:1.2em">'
+		}	
+		else
+		{
+			itemHTML += '<div onclick="goToStarPage('+star_id+')" class="starItemGiven" style="overflow:hidden;padding:1em;border-bottom:0.1em solid #C0C0C0;font-size:1.2em">'
 		}
-		else {
-			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#F5F5F5;">'
 
-		}				
-		itemHTML += 	'<div style="float:left; width:80%;">'
-		itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
-		if(ownerID==sessionStorage.userID){
-			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'"> You </a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
+		itemHTML += '	<div style="float:left;width:13%;padding:0em 1em 1em 1em;">'
+			itemHTML += 	'		<img class="pull-left" width="40" height="30" style="padding-right:1em;" src="../static/img/goldstar.png" />'
+		itemHTML += '	</div>'
+		itemHTML += '	<div style="float:left;width:60%;">'
+		if (issuerID == sessionStorage.userID)
+		{
+			itemHTML += '		<a href="/users/'+issuerID+'">You</a>'
 		}
-		else{
-			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">you</a></span> <br/>'	
+		else
+		{
+			itemHTML += '		<a href="/users/'+issuerID+'">'+ issuerName + '</a>'
 		}
-		itemHTML += 		'<span style="font-size:1.0em;"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
-		//itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
-		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
+		
+		itemHTML += '		gave a star to '
+		if (ownerID == sessionStorage.userID)
+		{
+			itemHTML += '		<a href="/users/'+ownerID+'">you</a><br/>'
+		}
+		else
+		{
+			itemHTML += '		<a href="/users/'+ownerID+'">' + ownerName+ '</a><br/>'
+		}
+		itemHTML += '		<span style="font-size:0.8em"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
+		itemHTML += '		<span style="font-size:0.8em">'+timestamp+'</span><br/>'
+		itemHTML += '	</div>'
+		itemHTML += ''
+		itemHTML += '	<div style="float:right;width:auto;display:table-cell;height:3em">'
+		itemHTML += '		<i class="icon-chevron-right pull-right" style="vertical-align:middle;margin-top:1.5em"></i>'
 		itemHTML += 	'</div>'
-		itemHTML += 	'<a href="/star/' + star_id + '">'
-		itemHTML += 		'<div style="float:right; height:90%; width:20%;position:relative; padding-top:1.5em;">'
-		itemHTML += 				'<div class="iconDiv">'
-		itemHTML += 				'	<i class="icon-chevron-right pull-right"></i>'
-		itemHTML += 			'	</div>	'					
-		itemHTML += 		'</div>	'	
-		itemHTML += 	'</a>'
-		itemHTML += '</div>	'		
-		itemHTML += 	'<div style="clear:both"></div>'
+		itemHTML += '</div>'
+		itemHTML += '<div style="clear:both"></div>'
 		return itemHTML;
 
+}
+
+function goToStarPage(starID)
+{
+	window.location = "star/" + starID;
 }
 function displayEventStars()
 {
@@ -562,6 +578,18 @@ function  getHashTags(whatTags)
 	});
 
 }
+
+function parseDate(wholeDate)
+	{
+		var dateYear = wholeDate.substr(0,4);
+		var dateMonth = wholeDate.substr(5,2);
+		var dateDay = wholeDate.substr(8,2);
+		var dateHour = wholeDate.substr(11,2);
+		var dateMinute = wholeDate.substr(14,2);
+		var dateSecond = wholeDate.substr(17,2);
+		var dateString = dateMonth+"/"+dateDay+"/"+dateYear+" "+dateHour+":"+dateMinute+":"+dateSecond
+		return dateString;
+	}
 function calculateTimeFromServer(serverTime){
 	// Set the unit values in milliseconds.
 	var msecPerMinute = 1000 * 60;

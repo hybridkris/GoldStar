@@ -96,6 +96,19 @@
 
 		}
 
+		.starItemGiven
+		{
+			background: #eeff99;
+			background: -moz-linear-gradient(top,  #F5F5F5 1%, #F5F5F5 44%, #eeff99 100%);
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#F5F5F5), color-stop(44%,#F5F5F5), color-stop(100%,#eeff99));
+			background: -webkit-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: -o-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: -ms-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F5F5F5', endColorstr='#eeff99',GradientType=0 );
+
+
+		}
 		</style>
 {%endblock%}
 {% block body%}
@@ -136,10 +149,13 @@
 				</div>
 				
 			</div>
-			<div class="tab-pane" id="eventTab">
+			<div class="tab-pane" id="eventTab" style="overflow:hidden">
 				<div style="text-align:center;margin-bottom:9px;">
 					<div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox"><button class="btn btn-warning" style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button class="btn btn-warning" style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
+                		<span class="add-on">#</span>
+                		<input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox">
+                		<button class="btn btn-warning" style="width:5em;" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button>
+                		<button class="btn btn-warning" style="width:6em;float:right" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
 
           			</div>
 
@@ -155,6 +171,7 @@
 				
 				<div id="eventStarList">
 					
+
 				</div>
 				
 			</div>
@@ -175,8 +192,10 @@
 					</div>
 				</div>
 				
+					
 				<div id="myStarList">
 
+			
 				</div>
 				
 			</div>
@@ -186,7 +205,7 @@
 	
 			<tr>
 				<td><div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:75%;margin:0em 1em 0em 0em;" id="AllStarEventHashTag"></div></td>
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:50%;margin:0em 1em 0em 0em;" id="AllStarEventHashTag"></div></td>
 				
 				<td><div class="input-prepend"><button class="btn btn-warning" style="width:5em;margin:0em 1em 0em 1em;" onclick='displayLeaderBoard();'>Find</button></div></td>
 			</tr>

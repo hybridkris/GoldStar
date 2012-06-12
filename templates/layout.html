@@ -14,12 +14,12 @@
 			border:none; 
 			background:transparent; 
 			cursor: pointer;
-			margin:0;
+			margin:0 0 0 -0.5em;
 
 		}
 		a , .hashTagButton
 		{
-			color:#ff8833;			
+			color:#B94E0D;			
 		}
 		a:hover , .hashTagButton:hover
 		{
@@ -40,6 +40,28 @@
 				color-stop(0, rgb(255,244,120)),
 				color-stop(0.55, rgb(250,255,99))
 			);
+		}
+		.starItemGiven
+		{
+			background: #eeff99;
+			background: -moz-linear-gradient(top,  #F5F5F5 1%, #F5F5F5 44%, #eeff99 100%);
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#F5F5F5), color-stop(44%,#F5F5F5), color-stop(100%,#eeff99));
+			background: -webkit-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: -o-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: -ms-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F5F5F5', endColorstr='#eeff99',GradientType=0 );
+		}
+		.starItemRecieved
+		{
+			background: #dff1f5;
+			background: -moz-linear-gradient(top,  #F5F5F5 1%, #F5F5F5 44%, #dff1f5 100%);
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#F5F5F5), color-stop(44%,#F5F5F5), color-stop(100%,#dff1f5));
+			background: -webkit-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#dff1f5 100%);
+			background: -o-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#dff1f5 100%);
+			background: -ms-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#dff1f5 100%);
+			background: linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#dff1f5 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F5F5F5', endColorstr='#dff1f5',GradientType=0 );
 		}
 		</style>
 			{% block cssStyle %}{% endblock %}
