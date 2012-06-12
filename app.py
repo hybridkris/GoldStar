@@ -33,8 +33,8 @@ twitter = oauth.remote_app('twitter',
 	base_url = 'http://api.twitter.com/1/',
 	request_token_url = 'https://api.twitter.com/oauth/request_token',
 	access_token_url = 'https://api.twitter.com/oauth/access_token',
-	#authorize_url = 'https://api.twitter.com/oauth/authorize',
-	authorize_url='http://api.twitter.com/oauth/authenticate',
+	authorize_url = 'https://api.twitter.com/oauth/authorize',
+	#authorize_url='http://api.twitter.com/oauth/authenticate',
 	consumer_key = TWITTER_APP_ID,
 	consumer_secret = TWITTER_APP_SECRET_ID
 	)
@@ -254,8 +254,12 @@ def get_twitter_token():
 @app.route('/twitterauth')
 def twitterauth():
 	if current_user.is_authenticated():
-		return twitter.authorize(callback=url_for('oauth_authorized', 
-			next = request.args.get('next') or request.referrer or None))
+		user = User.query.get(current_user.get_id())
+		if user.twitterUser is None:
+			return twitter.authorize(callback=url_for('oauth_authorized', 
+				next = request.args.get('next') or request.referrer or None))
+		else:
+			return redirect('/error')
 	else:
 		return redirect('/error')
 
@@ -285,6 +289,13 @@ def tweet(star_id):
 			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
 		resp = twitter.post('statuses/update.json', data = {'status': status})
 		return True
+	except:
+		userQuery = session.query(User)
+		user = userQuery.get(star.owner.id)
+		user.twitterUser = None
+		user.oauth_secret = None
+		user.oauth_token = None
+		session.commit()
 	finally:
 		session.close()
 #End Twitter Auth
@@ -317,6 +328,16 @@ def login():
 			user = User.query.filter_by(email = username).one()
 			if bcrypt.hashpw(password, user.password) == user.password:
 				login_user(user)
+				if user.twitterUser is not None:
+					resp = twitter.get('account/verify_credentials.json')
+					if resp.status == 200:
+						print "Twitter still Valid"
+					elif resp.status == 401:
+						print "Twitter Keys are Invalid"
+						user.oauth_secret = None
+						user.oauth_token = None
+						user.twitterUser = None
+						db.session.commit()
 				return redirect('mobileview.html')
 		elif request.method == 'POST':
 			loginINFO = request.json
