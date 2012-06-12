@@ -93,6 +93,10 @@
 				<textarea id="modalViewTextarea" onKeyDown="limitText(this.id, 100);" onKeyUp="limitText(this.id, 100);" style="resize:none; width:98%" rows="3" placeholder="Short description (100 character limit) *Optional"></textarea>
 				<h4>Hashtag</h4>
 				<input id="modalViewEvent" style="width:98%" type="text" class="input-medium" placeholder="Event" />
+				<div style="width:100%">
+          			Trending Hashtags:&nbsp;
+          			<a id="inStarHashLink1" onClick="setStarLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink2" onClick="setStarLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink3" onClick="setStarLinkValue(3)" style="display:none"></a>
+          		</div>
 			</div>
 			<div class="modal-footer modalgradient" >
 				<a href="#" class="btn btn-danger" data-dismiss="modal" style="width:33%; float:left;" onclick="resetModalView()">Cancel</a>
@@ -151,6 +155,20 @@
 					alert(ex.message);
 				}
 			})
+		</script>
+		<script type="text/javascript">
+			function setStarLinkValue(whichLink){
+				if(whichLink == 1){
+					$("#modalViewEvent").val($("#inStarHashLink1").html().replace("#",""))
+				}
+				else if(whichLink == 2){
+					$("#modalViewEvent").val($("#inStarHashLink2").html().replace("#",""))
+				}
+				else if(whichLink == 3){
+					$("#modalViewEvent").val($("#inStarHashLink3").html().replace("#",""))
+				}
+			}
+				
 		</script>
 			{% block scripts %}
 			{% endblock %}

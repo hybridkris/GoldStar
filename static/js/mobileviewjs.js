@@ -20,12 +20,10 @@ function pageInit()
 		defaultHashtag = localStorage.CheckedIntoConference;	
 	}
 	else{
-		console.log("HERE")
 		defaultHashtag ="mLearnCon"
 	}
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
-	console.log(sessionStorage.currentTab)
 	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
 	{
 		_currentTab = "myStars";
@@ -36,7 +34,6 @@ function pageInit()
 	else
 	{ 
 		_currentTab = sessionStorage.currentTab;
-		console.log(_currentTab);
 		if(sessionStorage.currentTab == "myStars")
 		{
 			$('#browserTabs a[href="#myStarsTab"]').tab('show');
@@ -50,7 +47,6 @@ function pageInit()
 			}
 			
 			else{
-				console.log("Here I am");
 				$("#EventTextBox").val(defaultHashtag);
 			}
 			$('#browserTabs a[href="#eventTab"]').tab('show');
@@ -77,8 +73,7 @@ function pageInit()
 	$("#myFeedFilter").change(displayMyStars);
 	
 	//load objects
-	getHashTags('all');
-	
+	suggestedHashtags();
 	//set autocomplete for stargazing menu
 	//Known duplicate code from customscripts.js, line 217(ish)
 
@@ -192,19 +187,16 @@ function loadCurrentStars()
 		else if($("#AllStarEventHashTag").val()!=defaultHashtag)
 		{
 			$("#EventTextBox").val($("#AllStarEventHashTag").val());
-			console.log($("#EventTextBox").val())
 			sessionStorage.hashtag =$("#EventTextBox").val();
 		}
 		else if($("#AllStarEventHashTag").val()==defaultHashtag)
 		{
-			$("#EventTextBox").val(defaultHashtag);
-			console.log($("#EventTextBox").val())	
+			$("#EventTextBox").val(defaultHashtag);	
 			sessionStorage.hashtag =$("#EventTextBox").val();
 		}
 		else
 		{
 			$("#EventTextBox").val(defaultHashtag);
-			console.log($("#EventTextBox").val())	
 			sessionStorage.hashtag =$("#EventTextBox").val();
 		}
 		//RECOMMENT BACK IN TO WORK
@@ -258,7 +250,6 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
 
     }
     sessionStorage.currentTab = _currentTab;
-    console.log(sessionStorage.currentTab)
     loadCurrentStars();
 });
 
@@ -525,7 +516,6 @@ function loadHashtagStars(needle)
 function checkIntoConference(checkingIntoHashtag)
 {
 	localStorage.CheckedIntoConference = checkingIntoHashtag;
-	console.log(localStorage.CheckedIntoConference);
 }
 //returns the hashtags
 function  getHashTags(whatTags)
@@ -627,4 +617,38 @@ function calculateTimeFromServer(serverTime){
 	}
 	return msg;
 
+}
+function suggestedHashtags(){
+	var suggestedHashurl = "/hashtagSuggestions";
+	var suggestedHashList = [];
+	var count = 0;
+	$.getJSON(suggestedHashurl, function(data)
+	{
+		
+		if(data.hashtags[0].hashtag != null && data.hashtags[0].hashtag != data.hashtags[1].hashtag && data.hashtags[0].hashtag != data.hashtags[2].hashtag ){
+			$("#hashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#hashLink1").css("display","inline")
+			$("#LeadHashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#LeadHashLink1").css("display","inline")
+			$("#inStarHashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#inStarHashLink1").css("display","inline")
+		}
+		if(data.hashtags[1].hashtag != null && data.hashtags[1].hashtag != data.hashtags[0].hashtag && data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
+			$("#hashLink2").html("#"+data.hashtags[1].hashtag)
+			$("#hashLink2").css("display","inline")
+			$("#LeadHashLink2").html("#"+data.hashtags[1].hashtag)
+			$("#LeadHashLink2").css("display","inline")
+			$("#inStarHashLink2").html("#"+data.hashtags[1].hashtag)
+			$("#inStarHashLink2").css("display","inline")
+		}
+		if(data.hashtags[2].hashtag != null && data.hashtags[2].hashtag != data.hashtags[0].hashtag && data.hashtags[2].hashtag != data.hashtags[1].hashtag ){
+			$("#hashLink3").html("#"+data.hashtags[2].hashtag)
+			$("#hashLink3").css("display","inline")
+			$("#LeadHashLink3").html("#"+data.hashtags[2].hashtag)
+			$("#LeadHashLink3").css("display","inline")
+			$("#inStarHashLink3").html("#"+data.hashtags[2].hashtag)
+			$("#inStarHashLink3").css("display","inline")
+		}
+		
+	});
 }

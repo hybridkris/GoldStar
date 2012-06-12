@@ -139,10 +139,13 @@
 			<div class="tab-pane" id="eventTab">
 				<div style="text-align:center;margin-bottom:9px;">
 					<div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox"><button style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" onfocus ="gethashTags()" id="EventTextBox"><button style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
 
           			</div>
-
+          			<div style="width:100%">
+          				Trending Hashtags:&nbsp;
+          				<a id="hashLink1" onClick="setLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="hashLink2" onClick="setLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="hashLink3" onClick="setLinkValue(3)" style="display:none"></a>
+          			</div>
 				</div>
 				<hr/>
 					<div class="hero-unit" id="eventHashTagListMessageContainer">
@@ -198,11 +201,14 @@
 					</select></div></td>
 				<td><div class="input-prepend"><button class="btn btn-warning" style="width:5em;margin:0em 1em 0em 1em;" onclick='displayLeaderBoard();'>Find</button></div></td>
 			</tr>
-
 			
 			
 			</table>
-<hr/>
+			<div style="width:100%">
+          		Trending Hashtags:&nbsp;
+          		<a id="LeadHashLink1" onClick="setLinkValue(1)" style="display:block"></a>&nbsp;&nbsp;<a id="LeadHashLink2" onClick="setLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="LeadHashLink3" onClick="setLinkValue(3)" style="display:none"></a>
+          	</div>
+			<hr/>
 			<br />
 
 			<h4>Supernova Influencers</h4>
@@ -278,7 +284,7 @@
 					userList[currentUser.id] = currentUser;				
 					users.push(currentUser.firstName + " " + currentUser.lastName);				
 				}
-
+				suggestedHashtags();
 				pageInit();
 				
 			});
@@ -287,6 +293,29 @@
 		
 	})
 
+</script>
+<script type="text/javascript">
+	function setLinkValue(whichLink){
+		if(whichLink == 1){
+			$("#EventTextBox").val($("#hashLink1").html().replace("#",""))
+			$("#AllStarEventHashTag").val($("#LeadHashLink1").html().replace("#",""))
+		}
+		else if(whichLink == 2){
+			$("#EventTextBox").val($("#LeadHashLink2").html().replace("#",""))
+			$("#AllStarEventHashTag").val($("#LeadHashLink2").html().replace("#",""))
+		}
+		else if(whichLink == 3){
+			$("#EventTextBox").val($("#LeadHashLink3").html().replace("#",""))
+			$("#AllStarEventHashTag").val($("#LeadHashLink3").html().replace("#",""))
+		}
+		if(sessionStorage.currentTab == "leader"){
+			displayLeaderBoard();
+		}
+		else if(sessionStorage.currentTab =="event")
+		{
+			loadHashtagStars($("#EventTextBox").val());
+		}
+	}
 </script>
 <script src="../static/js/mobileviewjs.js"></script>
 
