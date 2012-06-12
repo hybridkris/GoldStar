@@ -5,6 +5,8 @@ var userList = {};
 var defaultHashtag;
 var usersDisplay  = [];
 var usersHidden = [];
+var ajaxUpdate;
+
 
 //on doc ready for mobile view
 function pageInit()
@@ -13,14 +15,13 @@ function pageInit()
 	//sets _currentTab to default value
 	//sets default hashtag in search boxes
 
-	if(localStorage.CheckedIntoConference!=""){
+	if(localStorage.CheckedIntoConference!="" && localStorage.CheckedIntoConference!= null){
 		defaultHashtag = localStorage.CheckedIntoConference;	
 	}
-	else if(localStorage.CheckedIntoConference!= null){
-		defaultHashtag = localStorage.CheckedIntoConference;	
-	}
+	
 	else{
-		defaultHashtag ='mLearnCon';
+		defaultHashtag = "mLearnCon"
+		sessionStorage.hashtag = "mLearnCon"
 	}
 
 	$("#EventTextBox").val(defaultHashtag);
@@ -38,6 +39,7 @@ function pageInit()
 		_currentTab = sessionStorage.currentTab;
 		if(sessionStorage.currentTab == "myStars")
 		{
+			loadCurrentStars();
 			$('#browserTabs a[href="#myStarsTab"]').tab('show');
 
 		}
@@ -93,7 +95,19 @@ function pageInit()
 				}
 			});
 
+	ajaxUpdate = setInterval(updateData, 10000);
+
 }
+
+//ajax function call
+function updateData()
+{
+	//update user page
+	loadMyStars();
+	//update hashtag
+	loadHashtagStars($("#EventTextBox").val());
+}
+
 
 function onGazeClick()
 {
@@ -224,6 +238,8 @@ function loadCurrentStars()
 	}
 }
 
+
+
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
@@ -244,6 +260,11 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     	
     	_currentTab = "leader";
     }
+    else if (currentTab.indexOf("find")  >= 0 )
+    {
+    	
+    	_currentTab = "findPeople";
+    }
     sessionStorage.currentTab = _currentTab;
     loadCurrentStars();
 });
@@ -253,8 +274,9 @@ function displayLeaderBoard()
 		//getJson of stars here
 		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
-		var verb = $("#allStarFilter").val().toLowerCase();
+		var verb = "all"
 		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+		console.log("getting all-stars");
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
@@ -439,10 +461,10 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 {
 		var itemHTML = '';
 		if(ownerID==sessionStorage.userID){
-			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#F5F5F5;">'
+			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#dff1f5;">'
 		}
 		else {
-			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#dff1f5;">'
+			itemHTML += '<div class="well" style="height:4em; margin-bottom:0; background-color:#F5F5F5;">'
 
 		}				
 		itemHTML += 	'<div style="float:left; width:80%;">'
@@ -491,7 +513,7 @@ function loadMyStars()
 {
 			//getJson of stars here
 			var userUrl = "/api/user/" + sessionStorage.userID;
-			
+			console.log("getting my stars");
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
@@ -503,6 +525,7 @@ function loadHashtagStars(needle)
 {
 	//getJson of stars here
 	var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
+	console.log("getting hashtag stars");
 	$.getJSON(userUrl, function(jdata)
 	{
 		sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
@@ -519,7 +542,7 @@ function  getHashTags(whatTags)
 {
 	var hashlist
 	
-	var hashurl = "/Hashtags"
+	var hashurl = "/Hashtags";
 	$.getJSON(hashurl, function(data)
 	{
 		
@@ -612,3 +635,22 @@ function calculateTimeFromServer(serverTime){
 	return msg;
 
 }
+
+
+///KnockOut stuff//////
+/*
+TODO: Implement Knock with an observable array of objects
+
+function StarListViewModal()
+{
+	this.myStars = ko.observable([
+		{Issuer: "Person 1", Receiver: "Person 2"},
+		{Issuer: "Person 3", Receiver: "Person 1"},
+		{Issuer: "Person 4", Receiver: "Person 3"},
+		{Issuer: "Person 2", Receiver: "Person 4"}
+	]);
+}
+
+ko.applyBindings(new StarListViewModal());
+
+*/

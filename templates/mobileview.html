@@ -107,7 +107,7 @@
 			<!-- <i class="icon-user"></i> -->
 			<li style="width:25%; text-align:center" ><a href="#findPeopleTab" data-toggle="tab">Find People</a></li>
 			
-			<li style="width:25%; text-align:center" ><a href="#eventTab" data-toggle="tab">Event</a></li>
+			<li style="width:25%; text-align:center" ><a href="#eventTab" data-toggle="tab">Hashtag</a></li>
 			<!-- <i class="icon-calendar"></i> -->
 			
 			<li style="width:25%; text-align:center"><a href="#leaderBoardTab" data-toggle="tab">All-Stars</a></li>
@@ -139,7 +139,7 @@
 			<div class="tab-pane" id="eventTab">
 				<div style="text-align:center;margin-bottom:9px;">
 					<div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox"><button style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox"><button class="btn btn-warning" style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button class="btn btn-warning" style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
 
           			</div>
 
@@ -154,7 +154,7 @@
 				</div>
 				
 				<div id="eventStarList">
-
+					
 				</div>
 				
 			</div>
@@ -186,16 +186,8 @@
 	
 			<tr>
 				<td><div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;margin:0em 0em 0em 0em;" id="AllStarEventHashTag"></div></td>
-				<td><div class="input-prepend"><select class="input-medium search-query"style="width:100%;margin:0em 0em 0em 0em;" id="allStarFilter">
-						<option selected>All</option>
-						<option>Influenced</option>
-						<option>Helped</option>
-						<option>Guided</option>
-						<option>Impressed</option>
-						<option>Persuaded</option>
-						<option>Inspired</option>
-					</select></div></td>
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:75%;margin:0em 1em 0em 0em;" id="AllStarEventHashTag"></div></td>
+				
 				<td><div class="input-prepend"><button class="btn btn-warning" style="width:5em;margin:0em 1em 0em 1em;" onclick='displayLeaderBoard();'>Find</button></div></td>
 			</tr>
 
