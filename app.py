@@ -382,7 +382,7 @@ def starPage(starID):
 		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description,s.hashtag,s.created,s.issuer_id,s.owner_id)
 		if current_user.is_authenticated():
 			userID = current_user.get_id()
-			u = User.query.filter_by(id = userID).one()
+			u = User.query.get(userID)
 			thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
 			p = page.Page("Check out this star!", False)
 		else:
@@ -400,7 +400,7 @@ def createUser():
 	p = page.Page("Sign Up!", True)
 	try:
 		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
+		u = User.query.get(userID)
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, 0)
 	except Exception as ex:
 		thisUser = None
@@ -413,7 +413,7 @@ def feedback():
 	if current_user.is_authenticated():
 		p = page.Page("Feedback!", False)
 		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
+		u = User.query.get(userID)
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
 	else:
 		p = page.Page("Feedback!", True)
