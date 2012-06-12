@@ -198,7 +198,6 @@ function postJSON(id, num)
 				alert(errorThrown + " " + textStatus + " " + jqXHR);
 			}
 		});
-	
 	}
 }
 function getJSON(num)
@@ -263,8 +262,7 @@ function getJSON(num)
 						star.ownerfullName = "";
 					star.issuerfullName = "You"
 					starMasterList.push(star)
-			};			
-
+			};
 			jdata.stars = starMasterList;
 			userData = jdata;
 			ko.applyBindings(userData,document.getElementById('userNameNav'));
@@ -305,6 +303,9 @@ function showModal()
 	});
 }
 function resetModalView(){
+	//blah
+}
+function resetModalView(){
 	//Moved all to showModal()
 
 }
@@ -324,4 +325,8 @@ function showErrorMessage(page, message){
 		}
 		default: alert("Error!");
 	}
+}
+function redirectTwitter()
+{
+	window.location = "../twitterauth";
 }

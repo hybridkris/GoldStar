@@ -65,7 +65,7 @@
 					<!--  -->
 					{% if not page.hideStarButton %}
 
-					<a class="brand">Hello</a> <a class="underline brand" style = "padding-left:0.625em" href="/users/{{ user.ID }}">{{user.firstName}}!</a>					
+					<a class="brand">Hello</a> <a class="underline brand" style = "padding-left:0.625em" href="/users/{{ user.ID }}">{{user.firstName}}!</a>
 					<ul class="nav pull-right">
 						
 						<li><a href="#myModalview"><button  onclick="showModal(); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
@@ -103,6 +103,7 @@
 				<textarea id="modalViewTextarea" onKeyDown="limitText(this.id, 100);" onKeyUp="limitText(this.id, 100);" style="resize:none; width:98%" rows="3" placeholder="Short description (100 character limit) *Optional"></textarea>
 				<h4>Hashtag</h4>
 				<input id="modalViewEvent" style="width:98%" type="text" class="input-medium" placeholder="Event" />
+
 				<div style="clear:both"></div>
 				<div class="modalgradient" id="giveStarConfirmation" style="text-align:center; display:none">
 					<h4 style="color:black">Are you sure?</h4><br />
@@ -111,6 +112,9 @@
 				</div>
 				<div id="giveStarErrorDiv" style="color:red; display:none; text-align:center">
 				</div>
+
+				<label class ="checkbox inline"><input type="checkbox" id="modalViewTweet" value="True" checked="checked" /><b>Tweet</b></label>
+
 			</div>
 			<div id="modalFooterDiv"class="modal-footer modalgradient" style="text-align:center" >
 				<a href="#" class="btn btn-success" style="width:33%;" onclick="if(noGiveStarErrors()){$('#modalFooterDiv').hide('slow');$('#giveStarConfirmation').show('slow');}">Give</a>
