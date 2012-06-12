@@ -267,8 +267,8 @@ function displayLeaderBoard()
 		//getJson of stars here
 		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
-		var verb = "all"
-		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+		
+		var userUrl = "/leaderboard/filter/"+ht
 		console.log("getting all-stars");
 		$.getJSON(userUrl, function(data)
 		 {
