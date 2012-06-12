@@ -300,7 +300,6 @@ function showModal()
 	$('#modalFooterDiv').show();
 	$('#giveStarConfirmation').hide();
 	$('#giveStarErrorDiv').html('');
-
 	$('#myModal').modal('show');
 	if(sessionStorage.twitterUser == 'false')
 	{
@@ -347,24 +346,24 @@ function showErrorMessage(page, message){
 			break;
 		}
 		default: alert("Error!");
-	}
+		}
 		$('#modalViewUser').val("");
 		$('#modalViewVerb').val("");
 		$('#modalViewEvent').val("");
 		$('#modalViewTextarea').val("");
 		if(sessionStorage.twitterUser == 'false')
-	{
-		$('#modalViewTweet').attr("disabled", true);
-		$('#modalViewTweet').attr("checked", false);
-		$("#modalViewConnect").show();
-		$("#modalViewConnectDiv").css("display", "block");
-	}
-	else
-	{
-		$("#modalViewConnect").hide();
-		$("#modalViewConnectDiv").css("display", "none");
-		$('#modalViewTweet').attr("disabled", false);
-	}
+		{
+			$('#modalViewTweet').attr("disabled", true);
+			$('#modalViewTweet').attr("checked", false);
+			$("#modalViewConnect").show();
+			$("#modalViewConnectDiv").css("display", "block");
+		}
+		else
+		{
+			$("#modalViewConnect").hide();
+			$("#modalViewConnectDiv").css("display", "none");
+			$('#modalViewTweet').attr("disabled", false);
+		}
 }
 function redirectTwitter()
 {
