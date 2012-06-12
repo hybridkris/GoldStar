@@ -266,10 +266,16 @@ def tweet(star_id):
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
-			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' #' + star.hashtag + ' Goldstars.me'
+			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' Goldstars.me'
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
-			status = 'I gave #GoldStars to ' + fullName + ' #' + star.hashtag + ' Goldstars.me'
+			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' Goldstars.me'
+		if len(status) > 140:
+			cutDescriptionBy = len(status) - 140
+			if star.owner.twitterUser:
+				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' Goldstars.me'
+			else:
+				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' Goldstars.me'
 		resp = twitter.post('statuses/update.json', data = {'status': status})
 		return True
 	except:
@@ -360,9 +366,10 @@ def userPage(userID):
 		#get info for other user
 		profileUser = User.query.get(userID)
 		starsIssued = len(profileUser.issued)
+		print starsIssued
 		starsReceived = len(profileUser.stars)
+		print starsReceived
 		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, userID)
-		print "other user:", otherUser.ID
 		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user
 		if current_user.is_authenticated():
