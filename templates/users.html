@@ -13,81 +13,31 @@
 		</h3>
 		<div style="clear:both"></div>
 		<br />
-					
-		<table style="width:100%">
-			<tr>
-				<td style="text-align:center;"><h4><br />{{theOtherUser.starsGiven}} Stars Given <br /> {{theOtherUser.starsReceived}} Stars Received</h4><br />
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<div id="accordion" style="width:100%">
-						<h5 style="text-align:center;  font-size:13px; text-shadow: aqua 0.1em 0.1em 0.2em"><a href="#">mLearnCon<br />1000 Given | 500 Received</a></h5>
-						<div>
-							<div class="userPageStarInfo">				
-							 	<div style="float:left; width:80%; height:auto; display:table-cell; vertical-align:middle">
-							 		<strong><span style="font-size:0.7em;">Matthew Graham Influenced Stephen Trevorrow</span><br />
-							 		<span style="font-size:0.7em">16 Minutes ago</span></strong>
-							 	</div>
-						 		<a href="#">
-							 		<div class="userPageIconPos" style="height:60%; display:table-cell; vertical-align:middle;">
-							 			<div class="iconDiv">
-							 				<i class="icon-chevron-right pull-right"></i>
-							 			</div>						
-							 		</div>		
-									</a>
-								</div>
-								<div style="clear:both"></div>
-								<hr />
-						</div>
-						<h6 style="text-align:center; font-size:14px"><a href="#">Hash Tag 2<br />{{theOtherUser.starsGiven}} Stars Given <br /> {{theOtherUser.starsReceived}} Stars Received</a></h6>
-						<div>
-							<div class="userPageStarInfo">				
-							 	<div style="float:left; width:80%; height:auto; display:table-cell; vertical-align:middle">
-							 		<strong><span style="font-size:0.7em;">Matthew Graham Influenced Stephen Trevorrow</span><br />
-							 		<span style="font-size:0.7em">16 Minutes ago</span></strong>
-							 	</div>
-						 		<a href="#">
-							 		<div class="userPageIconPos" style="height:60%; display:table-cell; vertical-align:middle;">
-							 			<div class="iconDiv">
-							 				<i class="icon-chevron-right pull-right"></i>
-							 			</div>						
-							 		</div>		
-									</a>
-								</div>
-								<div style="clear:both"></div>
-								<hr />
-						</div>
-						<h6 style="text-align:center;  font-size:15px"><a href="#">Hash Tag 3<br /> 1000 Given | 50 Received</a></h6>
-						<div>
-							<div class="userPageStarInfo">				
-							 	<div style="float:left; width:80%; height:auto; display:table-cell; vertical-align:middle">
-							 		<strong><span style="font-size:0.7em;">Matthew Graham Influenced Stephen Trevorrow</span><br />
-							 		<span style="font-size:0.7em">16 Minutes ago</span></strong>
-							 	</div>
-						 		<a href="#">
-							 		<div class="userPageIconPos" style="height:60%; display:table-cell; vertical-align:middle;">
-							 			<div class="iconDiv">
-							 				<i class="icon-chevron-right pull-right"></i>
-							 			</div>						
-							 		</div>		
-									</a>
-								</div>
-								<div style="clear:both"></div>
-								<hr />
-							</div>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td style="text-align:center;" colspan=2><a href="../mobileview.html">Go back to feed</a></td>
-			</tr>
-		</table>
+		<div style="width:100%; text-align:center;">
+			<h4>{{theOtherUser.starsGiven}} Stars Given <br /> {{theOtherUser.starsReceived}} Stars Received</h4><br />
+			
+		</div>		
+		<br />
 
-		<br /><br />
+		<div class="hero-unit" id="emptyListUserMessageContainer">
+			<div class="well"><i>
+				<div id="emptyListUserMessage">
+				</div>
+			</i>
+			</div>
+		</div>
+		
+		<div id="userStarList">
+
+		</div>
+
+		<br />
 		{% if not page.hideStarButton %}
 			{% if ownPage %}
 				<table class="table table-bordered" style="width:100%">
+					<tr>
+						<td style="text-align:center;" colspan=2><a href="../mobileview.html">Go back to feed</a></td>
+					</tr>
 					<tr>
 						<td style="text-align:center;" colspan=2><a href="../settings">Settings</a></td>
 					</tr>
@@ -105,13 +55,4 @@
 
 {% endblock%}
 {% block scripts %}
-	<script>
-		$(document).ready(function(){
-			$("#accordion").accordion({
-				autoHeight: false,
-				collapsible: true,
-				active: false
-			});
-		})
-	</script>
 {%endblock%}
