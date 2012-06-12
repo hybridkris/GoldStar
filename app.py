@@ -366,7 +366,9 @@ def userPage(userID):
 		#get info for other user
 		profileUser = User.query.get(userID)
 		starsIssued = len(profileUser.issued)
+		print starsIssued
 		starsReceived = len(profileUser.stars)
+		print starsReceived
 		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, userID)
 		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user

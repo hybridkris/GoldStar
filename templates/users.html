@@ -12,9 +12,11 @@
 
 			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
 			<h3 style="text-align:center;">
-				{{theOtherUser.firstName}} {{theOtherUser.lastName}}<br />
-				
-			</h3>
+				{{theOtherUser.firstName}} {{theOtherUser.lastName}}<hr /></h3>
+			<h4 style="text-align:center;">
+				{{theOtherUser.starsGiven}} Stars Given<br /></h4>
+			<h4 style="text-align:center;">{{theOtherUser.starsReceived}} Stars Received
+			</h4><hr />
 			<div style="clear:both"></div>
 			{% if ownPage and theOtherUser.twitterUser %}
 			<div id = "TwitterShow" style="text-align:center;">
