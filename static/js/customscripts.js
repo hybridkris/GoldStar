@@ -174,13 +174,9 @@ function postJSON(id, num)
 		var e1 = document.getElementById("modalViewUser").name;
 		var starName = $('#modalViewUser').val();
 		sessionStorage.starName = starName;
-		e = document.getElementById("modalViewVerb");
-		var e2 = e.options[e.selectedIndex].value;
-		//var e3 = document.getElementById("select3").value;
-		//var e2 = $('#modalViewVerb').val();
 		var e3 = $('#modalViewTextarea').val();
 		var e4 = $('#modalViewEvent').val();
-		var userData = '{"description":"'+e3+'","category":"'+e2+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
+		var userData = '{"description":"'+e3+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
 		//alert(userData);
 		$.ajax({
 			type: "POST",
