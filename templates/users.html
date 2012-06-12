@@ -10,27 +10,39 @@
 	<div class="well">
 		
 
-			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
-			<h3 style="text-align:center;">
-				{{theOtherUser.firstName}} {{theOtherUser.lastName}}
-			</h3>
-			<div style="clear:both"></div>
-			<div id = "TwitterShow" style="text-align:center;">
-				<button type="submit" class="btn btn-warning" onclick="redirectTwitter();">Connect to Twitter</button>
+		<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
+		<h3 style="text-align:center;">
+			{{theOtherUser.firstName}} {{theOtherUser.lastName}} {{theOtherUser.ID}}
+		</h3>
+		<div style="clear:both"></div>
+		<div id = "TwitterShow" style="text-align:center;">
+			<button type="submit" class="btn btn-warning" onclick="redirectTwitter();">Connect to Twitter</button>
+		</div>
+		<br />
+		<br />
+		
+			
+		<div class="hero-unit" id="userPageMessageContainer">
+			<div class="well"><i>
+				<div id="userPageListMessage">
+					Empty
+				</div>
+			</i>
 			</div>
-			<br />
-			<br />
-			
-			
+		</div>
+		
+		<div id="userStarList">
 
+		</div>
 
 		<br />
-		{% if not page.hideStarButton %}
-			{% if ownPage %}
-				<table class="table table-bordered" style="width:100%">
+		<table class="table table-bordered" style="width:100%">
 					<tr>
 						<td style="text-align:center;" colspan=2><a href="../mobileview.html">Go back to feed</a></td>
 					</tr>
+		{% if not page.hideStarButton %}
+			{% if ownPage %}
+				
 					<tr>
 						<td style="text-align:center;" colspan=2><a href="../settings">Settings</a></td>
 					</tr>
@@ -41,11 +53,36 @@
 					<tr>
 						<td style="text-align:center;" colspan=2><a href="../logout">Log Out</a></td>
 					</tr>
-			</table>	
+				
 			{%endif%}
-		{%endif%}	
+		{%endif%}
+		</table>	
 	</div>
 
 {% endblock%}
 {% block scripts %}
+<script>
+	$(document).ready(function()
+	{
+		if (canUseStorage())
+		{
+			sessionStorage.userID = {{user.ID}}
+			sessionStorage.twitterUser = {{user.twitterUser}}
+			$.getJSON('/api/user', function(jdata)
+			{	
+				var users = []
+				for(var i in jdata.objects){
+					var currentUser = jdata.objects[i];
+					userList[currentUser.id] = currentUser;				
+					users.push(currentUser.firstName + " " + currentUser.lastName);				
+				}
+
+				loadOtherUserStars({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer");
+				
+			});
+			
+		}
+		
+	})
+</script>
 {%endblock%}

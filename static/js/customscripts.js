@@ -302,9 +302,7 @@ function showModal()
 		keyboard: false
 	});
 }
-function resetModalView(){
-	//blah
-}
+
 function resetModalView(){
 	//Moved all to showModal()
 

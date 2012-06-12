@@ -415,21 +415,6 @@ function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
  	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
 }
 
-function displayUserStars(starListDiv, messageDiv, messageContainerDiv){
-	//get user item from sessionStorage 
-	var user = JSON.parse(sessionStorage.getItem("userObject"));
-
- 	// check to see what list item is selected, gets index
- 	var myFeedFilterSelectedItem = $("#myFeedFilter").val();
-
- 	//create empty message
- 	var emptyMessage = "Oh dear, nothing was found!";
-
- 	//make array of stars
- 	var starArray = [];
- 	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
-}
-
 function loadOtherUserStars(userID, listDiv, messageDiv, messageContainerDiv){
 	var url = '/api/user/' + userID;
 	$.getJSON(url, function(data)
