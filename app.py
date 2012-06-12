@@ -71,7 +71,6 @@ class Star(db.Model):
 			tweet = True
 		else:
 			tweet = False
-		print tweet
 		return tweet
 
 	@validates('hashtag')
@@ -220,14 +219,17 @@ def load_user(userid):
 	return User.query.get(userid)
 
 #Twitter Authorizations
+"""
 @app.before_request
 def before_request():
 	try:
 		g.user = None
-		if 'user_id' in session:
-			g.user = User.query.get(session['user_id'])
+		if current_user.is_authenticated():
+			g.user = User.query.get(current_user.get_id())
 	except Exception as ex:
-		print ex.message
+		print "Before Request method"
+		print ex.message """
+
 @app.after_request
 def after_request(response):
 	db.session.remove()
@@ -235,16 +237,19 @@ def after_request(response):
 
 @twitter.tokengetter
 def get_twitter_token():
-	user = g.user
-	#return session.get("twitter_token")
-	if user is not None and user.oauth_token is None and user.oauth_secret is None:
-		token = session.get("twitter_token")
-		if token is not None:
-			user.oauth_token, user.oauth_secret = token
-			db.session.commit()
-		return token
-	else:
-		return str(user.oauth_token), str(user.oauth_secret)
+	session =  db.create_scoped_session() 
+	try:
+		query = session.query(User)
+		user = query.get(current_user.get_id())
+		if user is not None and user.oauth_token is None and user.oauth_secret is None:
+			returnToken = None
+		elif user is not None:
+			returnToken = str(user.oauth_token), str(user.oauth_secret)
+		else:
+			returnToken = None
+		return returnToken
+	finally:
+		session.close()
 
 @app.route('/twitterauth')
 def twitterauth():
@@ -269,8 +274,8 @@ def oauth_authorized(resp):
 	return redirect('/mobileview.html')
 
 def tweet(star_id):
-	try:
-		session = db.create_scoped_session()
+	session = db.create_scoped_session() 
+	try:		
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
@@ -279,17 +284,9 @@ def tweet(star_id):
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
 			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
 		resp = twitter.post('statuses/update.json', data = {'status': status})
-		print "Tweet successful"
-	except Exception as ex:
-		print ex.message
-		userquery = session.query(User)
-		fixUser = userquery.get(star.issuer.id)
-		fixUser.twitterUser = None
-		fixUser.oauth_token = None
-		fixUser.oauth_secret = None
-		session.commit()
-		print "tweet not successful"
-
+		return True
+	finally:
+		session.close()
 #End Twitter Auth
 
 #The main index of the Gold Star App
@@ -433,7 +430,6 @@ def models_committed(sender,changes):
 	for change in changes:
 		if isinstance(change[0],Star):
 			s = change[0]
-
 			users = query.filter(User.id.in_([s.owner_id,s.issuer_id]))
 			owner_name = ''
 			issuer_email =''
@@ -445,8 +441,13 @@ def models_committed(sender,changes):
 					issuer_email = user.email
 					issuer_name = str(makeName(user.firstName,user.lastName,user.email))
 					if user.oauth_token is not None and s.tweet:
-						tweet(s.id)						
+						success = tweet(s.id)
+						if success:
+							print "Tweet successful"
+						else:
+							print "Tweet failed"				
 			startThread(issuer_name,issuer_email,"interacted",owner_name)
+	session.close()
 
 def makeName(userFirstName, userLastName, userEmail):
 	fullName = "{0} {1}({2})".format(str(userFirstName), str(userLastName), str(userEmail))

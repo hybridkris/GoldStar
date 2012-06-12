@@ -180,7 +180,13 @@ function postJSON(id, num)
 		//var e2 = $('#modalViewVerb').val();
 		var e3 = $('#modalViewTextarea').val();
 		var e4 = $('#modalViewEvent').val();
-		var userData = '{"description":"'+e3+'","category":"'+e2+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
+		var e5 = false;
+		if($('#modalViewTweet').is(":checked"))
+			e5 = true;
+		else
+			e5 = false;
+
+		var userData = '{"tweet":"'+e5+'","description":"'+e3+'","category":"'+e2+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
 		//alert(userData);
 		$.ajax({
 			type: "POST",
@@ -306,7 +312,6 @@ function showModal()
 	}
 }
 function resetModalView(){
-<<<<<<< HEAD
 	$('#giveStarConfirmation').hide();
 	$('#giveStarErrorDiv').html('');
 	$('#modalViewUser').val("");
@@ -330,13 +335,11 @@ function showErrorMessage(page, message){
 		}
 		default: alert("Error!");
 	}
-=======
 		$('#modalViewUser').val("");
 		$('#modalViewVerb').val("");
 		$('#modalViewEvent').val("");
 		$('#modalViewTextarea').val("");
 		$('#modalViewTweet').attr("disabled", false);
->>>>>>> abdcd8e55e0560cbf0f5424ea50e106e6aecf30a
 }
 function redirectTwitter()
 {
