@@ -33,8 +33,8 @@ twitter = oauth.remote_app('twitter',
 	base_url = 'http://api.twitter.com/1/',
 	request_token_url = 'https://api.twitter.com/oauth/request_token',
 	access_token_url = 'https://api.twitter.com/oauth/access_token',
-	#authorize_url = 'https://api.twitter.com/oauth/authorize',
-	authorize_url='http://api.twitter.com/oauth/authenticate',
+	authorize_url = 'https://api.twitter.com/oauth/authorize',
+	#authorize_url='http://api.twitter.com/oauth/authenticate',
 	consumer_key = TWITTER_APP_ID,
 	consumer_secret = TWITTER_APP_SECRET_ID
 	)
@@ -54,7 +54,6 @@ class Star(db.Model):
 
 	id = db.Column(db.Integer, primary_key=True)
 	description = db.Column(db.Unicode)
-	category = db.Column(db.Unicode)
 	created = db.Column(db.DateTime, default = datetime.datetime.now)
 	issuer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -71,7 +70,6 @@ class Star(db.Model):
 			tweet = True
 		else:
 			tweet = False
-		print tweet
 		return tweet
 
 	@validates('hashtag')
@@ -91,20 +89,6 @@ class Star(db.Model):
 		if len(e) > 0:
 			exception = starValidation();
 			exception.errors = dict(description = e)
-			raise exception
-		return unicode(string)
-
-	#Validates the Category
-	@validates('category')
-	def validate_category(self, key, string):
-		e = ""
-		string = string.strip()
-		string = string.upper()
-		if len(string) > 100:
-			e = "Category Length is too long"
-		if len(e) > 0:
-			exception = starValidation()
-			exception.errors = dict(category = e)
 			raise exception
 		return unicode(string)
 
@@ -220,14 +204,6 @@ def load_user(userid):
 	return User.query.get(userid)
 
 #Twitter Authorizations
-@app.before_request
-def before_request():
-	try:
-		g.user = None
-		if 'user_id' in session:
-			g.user = User.query.get(session['user_id'])
-	except Exception as ex:
-		print ex.message
 @app.after_request
 def after_request(response):
 	db.session.remove()
@@ -235,22 +211,38 @@ def after_request(response):
 
 @twitter.tokengetter
 def get_twitter_token():
-	user = g.user
-	#return session.get("twitter_token")
-	if user is not None and user.oauth_token is None and user.oauth_secret is None:
-		token = session.get("twitter_token")
-		if token is not None:
-			user.oauth_token, user.oauth_secret = token
-			db.session.commit()
-		return token
-	else:
-		return str(user.oauth_token), str(user.oauth_secret)
+	session =  db.create_scoped_session() 
+	try:
+		query = session.query(User)
+		user = query.get(current_user.get_id())
+		if user is not None and user.oauth_token is None and user.oauth_secret is None:
+			returnToken = None
+		elif user is not None:
+			returnToken = str(user.oauth_token), str(user.oauth_secret)
+		else:
+			returnToken = None
+		return returnToken
+	finally:
+		session.close()
 
 @app.route('/twitterauth')
 def twitterauth():
 	if current_user.is_authenticated():
-		return twitter.authorize(callback=url_for('oauth_authorized', 
-			next = request.args.get('next') or request.referrer or None))
+		user = User.query.get(current_user.get_id())
+		if user.twitterUser is None:
+			return twitter.authorize(callback=url_for('oauth_authorized', 
+				next = request.args.get('next') or request.referrer or None))
+		else:
+			resp = twitter.get('account/verify_credentials.json')
+			if resp.status == 200:
+				return redirect('/error')
+			else:
+				user.twitterUser = None
+				user.oauth_secret = None
+				user.oauth_token = None
+				db.session.commit()
+				return twitter.authorize(callback=url_for('oauth_authorized', 
+					next = request.args.get('next') or request.referrer or None))
 	else:
 		return redirect('/error')
 
@@ -269,27 +261,26 @@ def oauth_authorized(resp):
 	return redirect('/mobileview.html')
 
 def tweet(star_id):
-	try:
-		session = db.create_scoped_session()
+	session = db.create_scoped_session() 
+	try:		
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
-			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' because he ' + star.category + ' me. #' + star.hashtag + 'www.Goldstars.me'
+			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' #' + star.hashtag + ' Goldstars.me'
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
-			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
+			status = 'I gave #GoldStars to ' + fullName + ' #' + star.hashtag + ' Goldstars.me'
 		resp = twitter.post('statuses/update.json', data = {'status': status})
-		print "Tweet successful"
-	except Exception as ex:
-		print ex.message
-		userquery = session.query(User)
-		fixUser = userquery.get(star.issuer.id)
-		fixUser.twitterUser = None
-		fixUser.oauth_token = None
-		fixUser.oauth_secret = None
+		return True
+	except:
+		userQuery = session.query(User)
+		user = userQuery.get(star.owner.id)
+		user.twitterUser = None
+		user.oauth_secret = None
+		user.oauth_token = None
 		session.commit()
-		print "tweet not successful"
-
+	finally:
+		session.close()
 #End Twitter Auth
 
 #The main index of the Gold Star App
@@ -320,12 +311,32 @@ def login():
 			user = User.query.filter_by(email = username).one()
 			if bcrypt.hashpw(password, user.password) == user.password:
 				login_user(user)
+				if user.twitterUser is not None:
+					resp = twitter.get('account/verify_credentials.json')
+					if resp.status == 200:
+						print "Twitter still Valid"
+					elif resp.status == 401:
+						print "Twitter Keys are Invalid"
+						user.oauth_secret = None
+						user.oauth_token = None
+						user.twitterUser = None
+						db.session.commit()
 				return redirect('mobileview.html')
 		elif request.method == 'POST':
 			loginINFO = request.json
 			user = User.query.filter_by(email = unicode(loginINFO['email'])).one()
 			if bcrypt.hashpw(loginINFO['password'], user.password) == user.password:
 				login_user(user)
+				if user.twitterUser is not None:
+					resp = twitter.get('account/verify_credentials.json')
+					if resp.status == 200:
+						print "Twitter still Valid"
+					elif resp.status == 401:
+						print "Twitter Keys are Invalid"
+						user.oauth_secret = None
+						user.oauth_token = None
+						user.twitterUser = None
+						db.session.commit()
 				return jsonify(dict(id = current_user.get_id()))
 	except Exception as ex:
 		print ex.message
@@ -347,7 +358,7 @@ def test():
 def userPage(userID):
 	try:
 		#get info for other user
-		profileUser = User.query.filter_by(id = userID).one()
+		profileUser = User.query.get(userID)
 		starsIssued = len(profileUser.issued)
 		starsReceived = len(profileUser.stars)
 		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, userID)
@@ -355,16 +366,17 @@ def userPage(userID):
 		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user
 		if current_user.is_authenticated():
-			me = User.query.filter_by(id = current_user.get_id()).one()
+			me = User.query.get(current_user.get_id())
 			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
 			p = page.Page("Check out this user!", False)
 			if thisUser.ID == otherUser.ID:
 				ownPage = True
-				if me.twitterUser is not None:
-					thisUser.twitterUser = 'true'
+				if me.twitterUser is None:
+					otherUser.twitterUser = True
+				else:
+					otherUser.twitterUser = False
 			else:
 				ownPage = False
-				thisUser.twitterUser = 'false'
 			return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
 		else:
 			thisUser = None
@@ -382,7 +394,7 @@ def starPage(starID):
 		thisStar = StarObject.starObject(str(s.issuer.firstName + ' ' + s.issuer.lastName), str(s.owner.firstName + ' ' + s.owner.lastName), s.description,s.hashtag,s.created,s.issuer_id,s.owner_id)
 		if current_user.is_authenticated():
 			userID = current_user.get_id()
-			u = User.query.filter_by(id = userID).one()
+			u = User.query.get(userID)
 			thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
 			p = page.Page("Check out this star!", False)
 		else:
@@ -400,7 +412,7 @@ def createUser():
 	p = page.Page("Sign Up!", True)
 	try:
 		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
+		u = User.query.get(userID)
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, 0)
 	except Exception as ex:
 		thisUser = None
@@ -413,7 +425,7 @@ def feedback():
 	if current_user.is_authenticated():
 		p = page.Page("Feedback!", False)
 		userID = current_user.get_id()
-		u = User.query.filter_by(id = userID).one()
+		u = User.query.get(userID)
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, u.id)
 	else:
 		p = page.Page("Feedback!", True)
@@ -433,7 +445,6 @@ def models_committed(sender,changes):
 	for change in changes:
 		if isinstance(change[0],Star):
 			s = change[0]
-
 			users = query.filter(User.id.in_([s.owner_id,s.issuer_id]))
 			owner_name = ''
 			issuer_email =''
@@ -445,8 +456,13 @@ def models_committed(sender,changes):
 					issuer_email = user.email
 					issuer_name = str(makeName(user.firstName,user.lastName,user.email))
 					if user.oauth_token is not None and s.tweet:
-						tweet(s.id)						
+						success = tweet(s.id)
+						if success:
+							print "Tweet successful"
+						else:
+							print "Tweet failed"				
 			startThread(issuer_name,issuer_email,"interacted",owner_name)
+	session.close()
 
 def makeName(userFirstName, userLastName, userEmail):
 	fullName = "{0} {1}({2})".format(str(userFirstName), str(userLastName), str(userEmail))
@@ -471,22 +487,16 @@ def getHashtags():
 
 	return jsonify(dict(hashtags = hashtagList))
 
-@app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
-def specificLeaderboard(hashtag, verb):
+@app.route('/leaderboard/filter/<string:hashtag>')
+def specificLeaderboard(hashtag):
 	hashtag = hashtag.lower()
-	if verb != 'all':
-		verb = verb.upper()
 	star_counts = {}
 	leaderList = []
 	try:
-		if hashtag != 'all' and verb == 'all':
+		if hashtag != 'all':
 			leaderboardfilter = Star.query.filter_by(hashtag = hashtag).order_by(Star.owner_id).all()
-		elif hashtag == 'all' and verb != 'all':
-			leaderboardfilter = Star.query.filter_by(category = verb).order_by(Star.owner_id).all()
-		elif hashtag == 'all' and verb == 'all':
+		elif hashtag == 'all':
 			leaderboardfilter = Star.query.all()
-		else:
-			leaderboardfilter = Star.query.filter_by(hashtag = hashtag, category = verb).order_by(Star.owner_id).all()
 		for star in leaderboardfilter:
 				if star.owner_id in star_counts:
 					star_counts[star.owner_id] += 1
@@ -505,7 +515,7 @@ def starsByHashtag(needle):
 	starObject = []
 	starQuery = Star.query.filter_by(hashtag = needle).all()
 	for i in starQuery:
-		starObject.append(dict(category = i.category, issuer_id = i.issuer_id, owner_id = i.owner_id, id=i.id, hashtag= i.hashtag, created = str(i.created)))
+		starObject.append(dict(issuer_id = i.issuer_id, owner_id = i.owner_id, id=i.id, hashtag= i.hashtag, created = str(i.created)))
 	return jsonify(dict(stars = starObject))
 
 @app.route('/error')
