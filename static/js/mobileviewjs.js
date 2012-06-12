@@ -573,7 +573,7 @@ function calculateTimeFromServer(serverTime){
 
 	// Determine the current date and time.
 	var today = new Date();
-	//alert (today.getTime());
+	
 
 	// Determine the difference in milliseconds.
 	var interval = today.getTime() - serverTime.getTime();
