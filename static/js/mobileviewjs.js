@@ -5,6 +5,8 @@ var userList = {};
 var defaultHashtag;
 var usersDisplay  = [];
 var usersHidden = [];
+var ajaxUpdate;
+
 
 //on doc ready for mobile view
 function pageInit()
@@ -13,15 +15,16 @@ function pageInit()
 	//sets _currentTab to default value
 	//sets default hashtag in search boxes
 
-	if(localStorage.CheckedIntoConference!=""){
-		defaultHashtag = localStorage.CheckedIntoConference;	
+	if(localStorage.CheckedIntoConference!="" && localStorage.CheckedIntoConference!= null){
+		defaultHashtag = localStorage.CheckedIntoConference;
+		sessionStorage.hashtag= localStorage.CheckedIntoConference;
 	}
-	else if(localStorage.CheckedIntoConference!= null){
-		defaultHashtag = localStorage.CheckedIntoConference;	
-	}
+	
 	else{
-		defaultHashtag ="mLearnCon"
+		defaultHashtag = "mLearnCon"
+		sessionStorage.hashtag = "mLearnCon"
 	}
+
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
 	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
@@ -36,6 +39,7 @@ function pageInit()
 		_currentTab = sessionStorage.currentTab;
 		if(sessionStorage.currentTab == "myStars")
 		{
+			loadCurrentStars();
 			$('#browserTabs a[href="#myStarsTab"]').tab('show');
 
 		}
@@ -90,32 +94,31 @@ function pageInit()
 				source: usersDisplay,
 				select: function(event, ui){
 					var index = $.inArray(ui.item.value,usersDisplay);
-					loadOtherUserStars(usersHidden[index])
+					loadOtherUserStars(usersHidden[index], "otherUserStarList", "emptyUserSearchListMessage", "userSearchPageMessageDiv")
 				}
 			});
 
+	ajaxUpdate = setInterval(updateData, 10000);
+
 }
+
+//ajax function call
+function updateData()
+{
+	//update user page
+	loadMyStars();
+	//update hashtag
+	loadHashtagStars($("#EventTextBox").val());
+}
+
 
 function onGazeClick()
 {
 	var index = $.inArray($("#findPeopleSearchBox").val(),usersDisplay);
-	loadOtherUserStars(usersHidden[index])
+	loadOtherUserStars(usersHidden[index], "otherUserStarList", "emptyUserSearchListMessage", "userSearchPageMessageDiv")
 }
 
-function loadOtherUserStars(userID)
-{
-	var url = '/api/user/' + userID
-	$("#emptyUserSearchListMessage").html("Searching...");
-	$.getJSON(url, function(data)
-		{
-			//make array of stars
-		 	var starArray = [];
-		 	starArray = data.issued.concat(data.stars);
-		 	starArray.sort(compareStarArrayByDate)
-		 	starArray.reverse();
-			addStarsToDiv("otherUserStarList", starArray, "Oops, they do not have any stars!", "emptyUserSearchListMessage", "userSearchPageMessageDiv")		 	
-		});
-}
+
 
 function getSelectableDivId(id)
 {
@@ -225,6 +228,8 @@ function loadCurrentStars()
 	}
 }
 
+
+
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
@@ -249,6 +254,11 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     	_currentTab = "leader";
 
     }
+    else if (currentTab.indexOf("find")  >= 0 )
+    {
+    	
+    	_currentTab = "findPeople";
+    }
     sessionStorage.currentTab = _currentTab;
     loadCurrentStars();
 });
@@ -258,8 +268,9 @@ function displayLeaderBoard()
 		//getJson of stars here
 		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
-		var verb = $("#allStarFilter").val().toLowerCase();
+		var verb = "all"
 		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+		console.log("getting all-stars");
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
@@ -377,11 +388,10 @@ function compareStarArrayByDate(a,b)
         );
 }
 
-function displayMyStars()
+function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
 {
 	//get user item from sessionStorage 
 	var user = JSON.parse(sessionStorage.getItem("userObject"));
-
 
  	// check to see what list item is selected, gets index
  	var myFeedFilterSelectedItem = $("#myFeedFilter").val();
@@ -390,7 +400,7 @@ function displayMyStars()
  	var emptyMessage = "Oh dear, nothing was found!";
 
  	//make array of stars
- 	var starArray = []
+ 	var starArray = [];
  	if (myFeedFilterSelectedItem == 0)
  	{
 
@@ -409,12 +419,21 @@ function displayMyStars()
  		starArray = user.stars;
  		emptyMessage = "No stars received, Try to be more awesome ;-)!"
  	}
+ 	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
+}
 
-
- 	addStarsToDiv("myStarList", starArray, emptyMessage, "emptyListMessage", "emptyListMessageContainer")
-
- 		
-
+function loadOtherUserStars(userID, listDiv, messageDiv, messageContainerDiv){
+	var url = '/api/user/' + userID;
+	$.getJSON(url, function(data)
+		{
+			var emptyMessage = "This user does not have any stars.";
+			//make array of stars
+		 	var starArray = [];
+		 	starArray = data.issued.concat(data.stars);
+		 	starArray.sort(compareStarArrayByDate)
+		 	starArray.reverse();
+			addStarsToDiv(listDiv, starArray, emptyMessage, messageDiv, messageContainerDiv)		 	
+		});
 }
 
 function GoToHashTagPage(hashtag)
@@ -452,13 +471,14 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		itemHTML += 	'<div style="float:left; width:90%;">'
 		itemHTML += 	'		<img class="pull-left" width="40" height="40" style="padding-right:.5em; padding-bottom:3em" src="../static/img/goldstar.png" />'
 		if(ownerID==sessionStorage.userID){
-			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'"> You </a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+issuerID+'">'+issuerName+'</a> gave a star to <a href="/users/'+ownerID+'">You</a></span> <br/>'
 		}
+
 		else if(issuerID==sessionStorage.userID) {
-			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">you</a></span> <br/>'	
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> gave a star to <a href="/users/'+issuerID+'">you</a></span> <br/>'	
 		}
 		else{
-			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">'+issuerName+'</a></span> <br/>'	
+			itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> gave a star to <a href="/users/'+issuerID+'">'+issuerName+'</a></span> <br/>'	
 		}
 		itemHTML += 		'<span style="font-size:0.7em">'+timestamp+' </span>'
 		itemHTML += 		'<span style="font-size:1.0em;"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
@@ -474,6 +494,9 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		itemHTML += '</div>	'		
 		itemHTML += 	'<div style="clear:both"></div>'
 		return itemHTML;
+
+
+		
 
 }
 function displayEventStars()
@@ -495,11 +518,11 @@ function loadMyStars()
 {
 			//getJson of stars here
 			var userUrl = "/api/user/" + sessionStorage.userID;
-			
+			console.log("getting my stars");
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
-			 	displayMyStars();				
+			 	displayMyStars("myStarList", "emptyListMessage", "emptyListMessageContainer");				
 			 });
 }
 
@@ -507,6 +530,7 @@ function loadHashtagStars(needle)
 {
 	//getJson of stars here
 	var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
+	console.log("getting hashtag stars");
 	$.getJSON(userUrl, function(jdata)
 	{
 		sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
@@ -515,6 +539,7 @@ function loadHashtagStars(needle)
 }
 function checkIntoConference(checkingIntoHashtag)
 {
+	console.log("Here")
 	localStorage.CheckedIntoConference = checkingIntoHashtag;
 }
 //returns the hashtags
@@ -522,7 +547,7 @@ function  getHashTags(whatTags)
 {
 	var hashlist
 	
-	var hashurl = "/Hashtags"
+	var hashurl = "/Hashtags";
 	$.getJSON(hashurl, function(data)
 	{
 		
@@ -556,7 +581,7 @@ function calculateTimeFromServer(serverTime){
 
 	// Determine the current date and time.
 	var today = new Date();
-	//alert (today.getTime());
+	
 
 	// Determine the difference in milliseconds.
 	var interval = today.getTime() - serverTime.getTime();
@@ -624,8 +649,8 @@ function suggestedHashtags(){
 	var count = 0;
 	$.getJSON(suggestedHashurl, function(data)
 	{
-		
-		if(data.hashtags[0].hashtag != null && data.hashtags[0].hashtag != data.hashtags[1].hashtag && data.hashtags[0].hashtag != data.hashtags[2].hashtag ){
+		console.log(data.hashtags.length)
+		if(data.hashtags[0].hashtag != null){
 			$("#hashLink1").html("#"+data.hashtags[0].hashtag)
 			$("#hashLink1").css("display","inline")
 			$("#LeadHashLink1").html("#"+data.hashtags[0].hashtag)
@@ -633,22 +658,44 @@ function suggestedHashtags(){
 			$("#inStarHashLink1").html("#"+data.hashtags[0].hashtag)
 			$("#inStarHashLink1").css("display","inline")
 		}
-		if(data.hashtags[1].hashtag != null && data.hashtags[1].hashtag != data.hashtags[0].hashtag && data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
-			$("#hashLink2").html("#"+data.hashtags[1].hashtag)
-			$("#hashLink2").css("display","inline")
-			$("#LeadHashLink2").html("#"+data.hashtags[1].hashtag)
-			$("#LeadHashLink2").css("display","inline")
-			$("#inStarHashLink2").html("#"+data.hashtags[1].hashtag)
-			$("#inStarHashLink2").css("display","inline")
+		if (data.hashtags.length > 2){
+			if(data.hashtags[1].hashtag != null || data.hashtags[1].hashtag != data.hashtags[0].hashtag || data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
+				$("#hashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#hashLink2").css("display","inline")
+				$("#LeadHashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#LeadHashLink2").css("display","inline")
+				$("#inStarHashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#inStarHashLink2").css("display","inline")
+			}
 		}
-		if(data.hashtags[2].hashtag != null && data.hashtags[2].hashtag != data.hashtags[0].hashtag && data.hashtags[2].hashtag != data.hashtags[1].hashtag ){
-			$("#hashLink3").html("#"+data.hashtags[2].hashtag)
-			$("#hashLink3").css("display","inline")
-			$("#LeadHashLink3").html("#"+data.hashtags[2].hashtag)
-			$("#LeadHashLink3").css("display","inline")
-			$("#inStarHashLink3").html("#"+data.hashtags[2].hashtag)
-			$("#inStarHashLink3").css("display","inline")
+		if (data.hashtags.length > 3){
+			if(data.hashtags[2].hashtag != null && data.hashtags[2].hashtag != data.hashtags[0].hashtag && data.hashtags[2].hashtag != data.hashtags[1].hashtag ){
+				$("#hashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#hashLink3").css("display","inline")
+				$("#LeadHashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#LeadHashLink3").css("display","inline")
+				$("#inStarHashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#inStarHashLink3").css("display","inline")
+			}
 		}
-		
 	});
 }
+
+
+///KnockOut stuff//////
+/*
+TODO: Implement Knock with an observable array of objects
+
+function StarListViewModal()
+{
+	this.myStars = ko.observable([
+		{Issuer: "Person 1", Receiver: "Person 2"},
+		{Issuer: "Person 3", Receiver: "Person 1"},
+		{Issuer: "Person 4", Receiver: "Person 3"},
+		{Issuer: "Person 2", Receiver: "Person 4"}
+	]);
+}
+
+ko.applyBindings(new StarListViewModal());
+
+*/

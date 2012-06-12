@@ -107,7 +107,7 @@
 			<!-- <i class="icon-user"></i> -->
 			<li style="width:25%; text-align:center" ><a href="#findPeopleTab" data-toggle="tab">Find People</a></li>
 			
-			<li style="width:25%; text-align:center" ><a href="#eventTab" data-toggle="tab">Event</a></li>
+			<li style="width:25%; text-align:center" ><a href="#eventTab" data-toggle="tab">Hashtag</a></li>
 			<!-- <i class="icon-calendar"></i> -->
 			
 			<li style="width:25%; text-align:center"><a href="#leaderBoardTab" data-toggle="tab">All-Stars</a></li>
@@ -139,7 +139,7 @@
 			<div class="tab-pane" id="eventTab">
 				<div style="text-align:center;margin-bottom:9px;">
 					<div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" onfocus ="gethashTags()" id="EventTextBox"><button style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" onfocus ="getHashTags()" id="EventTextBox"><button style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
 
           			</div>
           			<div style="width:100%">
@@ -157,7 +157,7 @@
 				</div>
 				
 				<div id="eventStarList">
-
+					
 				</div>
 				
 			</div>
@@ -189,16 +189,8 @@
 	
 			<tr>
 				<td><div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;margin:0em 0em 0em 0em;" id="AllStarEventHashTag"></div></td>
-				<td><div class="input-prepend"><select class="input-medium search-query"style="width:100%;margin:0em 0em 0em 0em;" id="allStarFilter">
-						<option selected>All</option>
-						<option>Influenced</option>
-						<option>Helped</option>
-						<option>Guided</option>
-						<option>Impressed</option>
-						<option>Persuaded</option>
-						<option>Inspired</option>
-					</select></div></td>
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:75%;margin:0em 1em 0em 0em;" id="AllStarEventHashTag"></div></td>
+				
 				<td><div class="input-prepend"><button class="btn btn-warning" style="width:5em;margin:0em 1em 0em 1em;" onclick='displayLeaderBoard();'>Find</button></div></td>
 			</tr>
 			
@@ -211,7 +203,7 @@
 			<hr/>
 			<br />
 
-			<h4>Supernova Influencers</h4>
+			<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 1%</h4>
 
 				<div class="well tier5" id="tier5">
 					<div class="well-small" style="background-color:#ffffbb">
@@ -220,7 +212,7 @@
 						</i>
 					</div>			
 				</div>
-				<h4>Rocket-boosting Helpers</h4>
+				<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 5%</h4>
 				<div class="well tier4" id="tier4">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -229,7 +221,7 @@
 					</div>			
 			
 				</div>
-				<h4>Radar Guidance</h4>
+				<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 10%</h4>
 				<div class="well tier3" id="tier3">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -238,7 +230,7 @@
 					</div>			
 			
 	 			</div>
-	 			<h4>Galactic Persuasion III</h4>
+	 			<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 25%</h4>
 				<div class="well tier2" id="tier2">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -247,7 +239,7 @@
 					</div>			
 			
 	 			</div>
-	 			<h4>Galactic Persuasion II</h4>
+	 			<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 50%</h4>
 				<div class="well tier1" id="tier1">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -256,7 +248,7 @@
 					</div>			
 			
 	 			</div>
-	 			<h4>Galactic Persuasion I</h4>
+	 			<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Slow Starters</h4>
 				<div class="well tier0" id="tier0">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -271,11 +263,12 @@
 {% endblock %}
 {% block scripts %}
 <script type="text/javascript">
-	$(function()
+	$(document).ready(function()
 	{
 		if (canUseStorage())
 		{
 			sessionStorage.userID = {{user.ID}}
+			sessionStorage.twitterUser = {{user.twitterUser}}
 			$.getJSON('/api/user', function(jdata)
 			{	
 				var users = []

@@ -3,13 +3,17 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
-				$('#GETJSON').click(function(){
-					var em = "Dukebdfann@comcast.net";
-					var q = '{"filters": [{"name":"email","op":"eq","val":"'+em+'"}]}';
-					var URL = '/api/user?q=' + q;
-					$.getJSON(URL, function(jdata){
-						if(jdata.objects.length)
-							sessionStorage.userID = jdata.objects[0].id;
+				$("#GETJSON").click(function(){
+					myJSON = '{"id":"2"}'
+					URL = '/tweet'
+					$.ajax({
+						type: 'POST',
+						url: URL,
+						data: myJSON,
+						contentType: "application/json",
+						success: function(data, textStatus, jqXHR){
+							console.log(data.tweet);
+						}
 					});
 				});
 			});

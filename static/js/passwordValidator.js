@@ -1,6 +1,7 @@
 
 function sendUserInfoToServer()
 {
+	$('#signUpErrorDiv').html("");
 
 	
 		var noerr = true;
@@ -27,17 +28,17 @@ function sendUserInfoToServer()
 	  			contentType: "application/json",
 				success: function(data, textStatus, jqXHR){
 					sessionStorage.userID = data.id;
-					alert('You have successfully created an account!');
 				},
 				error: function(jqXHR, textStatus, errorThrown){
 					var err = jQuery.parseJSON(jqXHR.responseText);
 					if(err.validation_errors.firstName)
-						alert(err.validation_errors.firstName);
+						showErrorMessage('signup', err.validation_errors.firstName);
 					else if(err.validation_errors.lastName)
-						alert(err.validation_errors.lastName);
+						showErrorMessage('signup', err.validation_errors.lastName);
 					else if(err.validation_errors.email)
-						alert(err.validation_errors.email);
+						showErrorMessage('signup', err.validation_errors.email);
 					noerr = false;
+					$("#signupbtnenable").removeAttr('disabled');
 				},
 	  			complete: function(jdata){
 	  				if (noerr == true){
@@ -53,6 +54,7 @@ function sendUserInfoToServer()
 								window.location = "mobileview.html";
 							}
 						});
+						$("#signupbtnenable").removeAttr('disabled');
 	  				}
 	  				else{
 	  					toggleLoginView("login2");
@@ -65,7 +67,7 @@ function sendUserInfoToServer()
 		else
 		{
 			///tell user that passwords do not match
-			alert("Passwords do not match, please try again.");
+			showErrorMessage('signup', 'Passwords do not match');
 
 		}
 		
