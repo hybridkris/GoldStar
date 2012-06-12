@@ -362,6 +362,7 @@ def userPage(userID):
 		starsIssued = len(profileUser.issued)
 		starsReceived = len(profileUser.stars)
 		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, userID)
+		print "other user:", otherUser.ID
 		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user
 		if current_user.is_authenticated():

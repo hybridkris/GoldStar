@@ -300,6 +300,7 @@ function showModal()
 	$('#modalFooterDiv').show();
 	$('#giveStarConfirmation').hide();
 	$('#giveStarErrorDiv').html('');
+
 	$('#myModal').modal('show');
 	if(sessionStorage.twitterUser == 'false')
 	{
@@ -322,6 +323,14 @@ function resetModalView(){
 	$('#modalViewVerb').val("");
 	$('#modalViewEvent').val("");
 	$('#modalViewTextarea').val("");
+	$('#myModal').modal({
+		keyboard: false
+	});
+}
+
+function resetModalView(){
+	//Moved all to showModal()
+
 }
 function showErrorMessage(page, message){
 	$('#signUpErrorField').hide();

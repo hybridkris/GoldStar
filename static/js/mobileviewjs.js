@@ -91,7 +91,7 @@ function pageInit()
 				source: usersDisplay,
 				select: function(event, ui){
 					var index = $.inArray(ui.item.value,usersDisplay);
-					loadOtherUserStars(usersHidden[index])
+					loadOtherUserStars(usersHidden[index], "otherUserStarList", "emptyUserSearchListMessage", "userSearchPageMessageDiv")
 				}
 			});
 
@@ -112,23 +112,10 @@ function updateData()
 function onGazeClick()
 {
 	var index = $.inArray($("#findPeopleSearchBox").val(),usersDisplay);
-	loadOtherUserStars(usersHidden[index])
+	loadOtherUserStars(usersHidden[index], "otherUserStarList", "emptyUserSearchListMessage", "userSearchPageMessageDiv")
 }
 
-function loadOtherUserStars(userID)
-{
-	var url = '/api/user/' + userID
-	$("#emptyUserSearchListMessage").html("Searching...");
-	$.getJSON(url, function(data)
-		{
-			//make array of stars
-		 	var starArray = [];
-		 	starArray = data.issued.concat(data.stars);
-		 	starArray.sort(compareStarArrayByDate)
-		 	starArray.reverse();
-			addStarsToDiv("otherUserStarList", starArray, "Oops, they do not have any stars!", "emptyUserSearchListMessage", "userSearchPageMessageDiv")		 	
-		});
-}
+
 
 function getSelectableDivId(id)
 {
@@ -394,11 +381,10 @@ function compareStarArrayByDate(a,b)
         );
 }
 
-function displayMyStars()
+function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
 {
 	//get user item from sessionStorage 
 	var user = JSON.parse(sessionStorage.getItem("userObject"));
-
 
  	// check to see what list item is selected, gets index
  	var myFeedFilterSelectedItem = $("#myFeedFilter").val();
@@ -407,7 +393,7 @@ function displayMyStars()
  	var emptyMessage = "Oh dear, nothing was found!";
 
  	//make array of stars
- 	var starArray = []
+ 	var starArray = [];
  	if (myFeedFilterSelectedItem == 0)
  	{
 
@@ -426,12 +412,21 @@ function displayMyStars()
  		starArray = user.stars;
  		emptyMessage = "No stars received, Try to be more awesome ;-)!"
  	}
+ 	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
+}
 
-
- 	addStarsToDiv("myStarList", starArray, emptyMessage, "emptyListMessage", "emptyListMessageContainer")
-
- 		
-
+function loadOtherUserStars(userID, listDiv, messageDiv, messageContainerDiv){
+	var url = '/api/user/' + userID;
+	$.getJSON(url, function(data)
+		{
+			var emptyMessage = "This user does not have any stars.";
+			//make array of stars
+		 	var starArray = [];
+		 	starArray = data.issued.concat(data.stars);
+		 	starArray.sort(compareStarArrayByDate)
+		 	starArray.reverse();
+			addStarsToDiv(listDiv, starArray, emptyMessage, messageDiv, messageContainerDiv)		 	
+		});
 }
 
 function GoToHashTagPage(hashtag)
@@ -517,7 +512,7 @@ function loadMyStars()
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
-			 	displayMyStars();				
+			 	displayMyStars("myStarList", "emptyListMessage", "emptyListMessageContainer");				
 			 });
 }
 
