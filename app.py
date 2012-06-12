@@ -16,7 +16,6 @@ import userPageUser
 import StarObject
 import page
 from pythontincan import startThread
-
 # Create the app for Flask
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -60,9 +59,20 @@ class Star(db.Model):
 	issuer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	hashtag = db.Column(db.Unicode)
+	tweet = db.Column(db.Boolean)
 	issuer = db.relationship("User", backref="issued", primaryjoin='Star.issuer_id==User.id')
 	owner = db.relationship("User", backref="stars", primaryjoin="Star.owner_id==User.id")
 	#Validation defs which validate 1 parameter of the table at a time
+
+	@validates('tweet')
+	def validate_tweet(self, key, string):
+		string = string.lower()
+		if string == 'true':
+			tweet = True
+		else:
+			tweet = False
+		print tweet
+		return tweet
 
 	@validates('hashtag')
 	def validate_hashtag(self, key, string):
@@ -212,10 +222,12 @@ def load_user(userid):
 #Twitter Authorizations
 @app.before_request
 def before_request():
-	g.user = None
-	if 'user_id' in session:
-		g.user = User.query.get(session['user_id'])
-
+	try:
+		g.user = None
+		if 'user_id' in session:
+			g.user = User.query.get(session['user_id'])
+	except Exception as ex:
+		print ex.message
 @app.after_request
 def after_request(response):
 	db.session.remove()
@@ -224,46 +236,63 @@ def after_request(response):
 @twitter.tokengetter
 def get_twitter_token():
 	user = g.user
-	if user is not None:
-		return user.oauth_token, user.oauth_secret
+	#return session.get("twitter_token")
+	if user is not None and user.oauth_token is None and user.oauth_secret is None:
+		token = session.get("twitter_token")
+		if token is not None:
+			user.oauth_token, user.oauth_secret = token
+			db.session.commit()
+		return token
+	else:
+		return str(user.oauth_token), str(user.oauth_secret)
 
-@app.route('/twit')
-def twit():
-	return twitter.authorize(callback=url_for('oauth_authorized', 
-		next = request.args.get('next') or request.referrer or None))
+@app.route('/twitterauth')
+def twitterauth():
+	if current_user.is_authenticated():
+		return twitter.authorize(callback=url_for('oauth_authorized', 
+			next = request.args.get('next') or request.referrer or None))
+	else:
+		return redirect('/error')
 
 @app.route('/oauth_authorized')
 @twitter.authorized_handler
 def oauth_authorized(resp):
 	if resp is None:
 		flash(u'You denied the request to sign in.')
-	if resp is not None:
-		print resp['screen_name']
-	return redirect('/index.html')
+	elif resp is not None:
+		user = User.query.get(current_user.get_id())
+		user.oauth_token = resp['oauth_token']
+		user.oauth_secret = resp['oauth_token_secret']
+		user.twitterUser = resp['screen_name']
+		db.session.commit()
+		session['user_id'] = current_user.get_id()
+	return redirect('/mobileview.html')
 
-@app.route('/tweet', methods = ['POST'])
-def tweet():
-	if g.user is None:
-		return redirect('/twit')
-	status = u'@juggler2009 test tag testing 1 2'
-	resp = twitter.post('statuses/update.json', data = {'status': status})
-	return redirect('/index.html')
+def tweet(star_id):
+	try:
+		session = db.create_scoped_session()
+		query = session.query(Star)
+		star = query.get(star_id)
+		if star.owner.twitterUser:
+			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' because he ' + star.category + ' me. #' + star.hashtag + 'www.Goldstars.me'
+		else:
+			fullName = star.owner.firstName + ' ' + star.owner.lastName
+			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' www.Goldstars.me'
+		resp = twitter.post('statuses/update.json', data = {'status': status})
+		print "Tweet successful"
+	except Exception as ex:
+		print ex.message
+		userquery = session.query(User)
+		fixUser = userquery.get(star.issuer.id)
+		fixUser.twitterUser = None
+		fixUser.oauth_token = None
+		fixUser.oauth_secret = None
+		session.commit()
+		print "tweet not successful"
 
+#End Twitter Auth
 
 #The main index of the Gold Star App
-#OLD Login screen
-@app.route('/index.html')
-def index_route():
-	p = page.Page("Gold Star!", False)
-	return render_template('index.html', page = p)
-
-#Displays the entire Gold Star App
-#OLD GIVE A STAR SCREEN
-@app.route('/main.html')
-def main_route():
-	p = page.Page("Gold Star!", False)
-	return render_template('main.html', loginID = current_user.get_id(), page = p)
-	
 @app.route('/')
 @app.route('/mobileview.html')
 def mobileview_route():
@@ -272,6 +301,10 @@ def mobileview_route():
 		userID = current_user.get_id()
 		u = User.query.filter_by(id = userID).one()
 		thisUser = userPageUser.userPageUser(u.firstName, u.lastName, current_user.get_id())
+		if u.twitterUser is not None:
+			thisUser.twitterUser = "true"
+		else:
+			thisUser.twitterUser = "false"
 		return render_template('mobileview.html', page = p, user = thisUser)
 	else:
 		return redirect('login')
@@ -306,6 +339,9 @@ def login():
 		thisUser = None
 	return render_template("login.html", form=form, page = p, user = thisUser)
 
+@app.route('/test')
+def test():
+	return render_template('test.html')
 #user page
 @app.route('/users/<int:userID>')
 def userPage(userID):
@@ -323,8 +359,11 @@ def userPage(userID):
 			p = page.Page("Check out this user!", False)
 			if thisUser.ID == otherUser.ID:
 				ownPage = True
+				if me.twitterUser is not None:
+					thisUser.twitterUser = 'true'
 			else:
 				ownPage = False
+				thisUser.twitterUser = 'false'
 			return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
 		else:
 			thisUser = None
@@ -383,25 +422,31 @@ def feedback():
 @app.route("/logout")
 @login_required
 def logout():
+	session.pop('user_id', None)
 	logout_user()
 	return redirect('/')
+
 def models_committed(sender,changes):
 	session = db.create_scoped_session()
 	query = session.query(User)
 	for change in changes:
 		if isinstance(change[0],Star):
 			s = change[0]
+
 			users = query.filter(User.id.in_([s.owner_id,s.issuer_id]))
 			owner_name = ''
 			issuer_email =''
 			issuer_name = ''
 			for user in users:
 				if user.id == s.owner_id:
-					owner_name = str(makeName(user.firstName,user.lastName,user.email))		
+					owner_name = str(makeName(user.firstName,user.lastName,user.email))	
 				else:
 					issuer_email = user.email
 					issuer_name = str(makeName(user.firstName,user.lastName,user.email))
+					if user.oauth_token is not None and s.tweet:
+						tweet(s.id)						
 			startThread(issuer_name,issuer_email,"interacted",owner_name)
+
 def makeName(userFirstName, userLastName, userEmail):
 	fullName = "{0} {1}({2})".format(str(userFirstName), str(userLastName), str(userEmail))
 	return fullName

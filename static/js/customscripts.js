@@ -198,7 +198,6 @@ function postJSON(id, num)
 				alert(errorThrown + " " + textStatus + " " + jqXHR);
 			}
 		});
-	
 	}
 }
 function getJSON(num)
@@ -263,8 +262,7 @@ function getJSON(num)
 						star.ownerfullName = "";
 					star.issuerfullName = "You"
 					starMasterList.push(star)
-			};			
-
+			};
 			jdata.stars = starMasterList;
 			userData = jdata;
 			ko.applyBindings(userData,document.getElementById('userNameNav'));
@@ -297,8 +295,18 @@ function showModal()
 	$('#giveStarConfirmation').hide();
 	$('#giveStarErrorDiv').html('');
 	$('#myModal').modal('show');
+	if(sessionStorage.twitterUser == 'false')
+	{
+		$('#modalViewTweet').attr("disabled", true);
+		$('#modalViewTweet').attr("checked", false);
+	}
+	else
+	{
+		$('#modalViewTweet').attr("disabled", false);
+	}
 }
 function resetModalView(){
+<<<<<<< HEAD
 	$('#giveStarConfirmation').hide();
 	$('#giveStarErrorDiv').html('');
 	$('#modalViewUser').val("");
@@ -322,4 +330,15 @@ function showErrorMessage(page, message){
 		}
 		default: alert("Error!");
 	}
+=======
+		$('#modalViewUser').val("");
+		$('#modalViewVerb').val("");
+		$('#modalViewEvent').val("");
+		$('#modalViewTextarea').val("");
+		$('#modalViewTweet').attr("disabled", false);
+>>>>>>> abdcd8e55e0560cbf0f5424ea50e106e6aecf30a
+}
+function redirectTwitter()
+{
+	window.location = "../twitterauth";
 }
