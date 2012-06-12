@@ -16,7 +16,8 @@ function pageInit()
 	//sets default hashtag in search boxes
 
 	if(localStorage.CheckedIntoConference!="" && localStorage.CheckedIntoConference!= null){
-		defaultHashtag = localStorage.CheckedIntoConference;	
+		defaultHashtag = localStorage.CheckedIntoConference;
+		sessionStorage.hashtag= localStorage.CheckedIntoConference;
 	}
 	
 	else{
@@ -26,7 +27,6 @@ function pageInit()
 
 	$("#EventTextBox").val(defaultHashtag);
 	$("#AllStarEventHashTag").val(defaultHashtag);
-
 	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
 	{
 		_currentTab = "myStars";
@@ -55,6 +55,10 @@ function pageInit()
 			}
 			$('#browserTabs a[href="#eventTab"]').tab('show');
 		}
+		else if(sessionStorage.currentTab=="findPeople")
+		{
+			$('#browserTabs a[href="#findPeopleTab"]').tab('show')
+		}
 		else if(sessionStorage.currentTab =="leader")
 		{
 
@@ -73,8 +77,7 @@ function pageInit()
 	$("#myFeedFilter").change(displayMyStars);
 	
 	//load objects
-	getHashTags('all');
-	
+	suggestedHashtags();
 	//set autocomplete for stargazing menu
 	//Known duplicate code from customscripts.js, line 217(ish)
 
@@ -91,7 +94,7 @@ function pageInit()
 				source: usersDisplay,
 				select: function(event, ui){
 					var index = $.inArray(ui.item.value,usersDisplay);
-					loadOtherUserStars(usersHidden[index])
+					loadOtherUserStars(usersHidden[index], "otherUserStarList", "emptyUserSearchListMessage", "userSearchPageMessageDiv")
 				}
 			});
 
@@ -113,23 +116,9 @@ function updateData()
 function onGazeClick()
 {
 	var index = $.inArray($("#findPeopleSearchBox").val(),usersDisplay);
-	loadOtherUserStars(usersHidden[index])
+	loadOtherUserStars(usersHidden[index], "otherUserStarList", "emptyUserSearchListMessage", "userSearchPageMessageDiv")
 }
 
-function loadOtherUserStars(userID)
-{
-	var url = '/api/user/' + userID
-	$("#emptyUserSearchListMessage").html("Searching...");
-	$.getJSON(url, function(data)
-		{
-			//make array of stars
-		 	var starArray = [];
-		 	starArray = data.issued.concat(data.stars);
-		 	starArray.sort(compareStarArrayByDate)
-		 	starArray.reverse();
-			addStarsToDiv("otherUserStarList", starArray, "Oops, they do not have any stars!", "emptyUserSearchListMessage", "userSearchPageMessageDiv")		 	
-		}).error(function() {$("#emptyUserSearchListMessage").html("Oops, nothing was found!")});
-}
 
 function getSelectableDivId(id)
 {
@@ -209,13 +198,13 @@ function loadCurrentStars()
 		}
 		else
 		{
-			$("#EventTextBox").val(defaultHashtag);	
+			$("#EventTextBox").val(defaultHashtag);
 			sessionStorage.hashtag =$("#EventTextBox").val();
 		}
 		//RECOMMENT BACK IN TO WORK
 		loadHashtagStars($("#EventTextBox").val());	
 	}
-	if (_currentTab == "leader")
+	else if (_currentTab == "leader")
 	{
 
 		if($("#EventTextBox").val()!=defaultHashtag)
@@ -243,12 +232,15 @@ function loadCurrentStars()
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
-   
     var currentTab = e.target.toString();
     if (currentTab.indexOf("myStars")  >= 0 )
     {
     	
     	_currentTab = "myStars";
+    }
+    else if(currentTab.indexOf("findPeople") >=0 )
+    {
+    	_currentTab ="findPeople";
     }
     else if (currentTab.indexOf("event")  >= 0 )
     {
@@ -259,6 +251,7 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     {
     	
     	_currentTab = "leader";
+
     }
     else if (currentTab.indexOf("find")  >= 0 )
     {
@@ -394,11 +387,10 @@ function compareStarArrayByDate(a,b)
         );
 }
 
-function displayMyStars()
+function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
 {
 	//get user item from sessionStorage 
 	var user = JSON.parse(sessionStorage.getItem("userObject"));
-
 
  	// check to see what list item is selected, gets index
  	var myFeedFilterSelectedItem = $("#myFeedFilter").val();
@@ -407,7 +399,7 @@ function displayMyStars()
  	var emptyMessage = "Oh dear, nothing was found!";
 
  	//make array of stars
- 	var starArray = []
+ 	var starArray = [];
  	if (myFeedFilterSelectedItem == 0)
  	{
 
@@ -426,12 +418,21 @@ function displayMyStars()
  		starArray = user.stars;
  		emptyMessage = "No stars received, Try to be more awesome ;-)!"
  	}
+ 	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
+}
 
-
- 	addStarsToDiv("myStarList", starArray, emptyMessage, "emptyListMessage", "emptyListMessageContainer")
-
- 		
-
+function loadOtherUserStars(userID, listDiv, messageDiv, messageContainerDiv){
+	var url = '/api/user/' + userID;
+	$.getJSON(url, function(data)
+		{
+			var emptyMessage = "This user does not have any stars.";
+			//make array of stars
+		 	var starArray = [];
+		 	starArray = data.issued.concat(data.stars);
+		 	starArray.sort(compareStarArrayByDate)
+		 	starArray.reverse();
+			addStarsToDiv(listDiv, starArray, emptyMessage, messageDiv, messageContainerDiv)		 	
+		}).error(function() {$("#emptyUserSearchListMessage").html("Oops, nothing was found!")});
 }
 
 function GoToHashTagPage(hashtag)
@@ -460,6 +461,7 @@ function GoToHashTagPageWithRedirect(hashtag)
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
 		var itemHTML = '';
+
 		if(ownerID != sessionStorage.userID){
 			itemHTML += '<div onclick="goToStarPage('+star_id+')" class="starItemRecieved" style="overflow:hidden;padding:1em;border-bottom:0.1em solid #C0C0C0;font-size:1.2em">'
 		}	
@@ -499,7 +501,11 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		itemHTML += 	'</div>'
 		itemHTML += '</div>'
 		itemHTML += '<div style="clear:both"></div>'
+
 		return itemHTML;
+
+
+		
 
 }
 
@@ -530,7 +536,7 @@ function loadMyStars()
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
-			 	displayMyStars();				
+			 	displayMyStars("myStarList", "emptyListMessage", "emptyListMessageContainer");				
 			 });
 }
 
@@ -547,8 +553,8 @@ function loadHashtagStars(needle)
 }
 function checkIntoConference(checkingIntoHashtag)
 {
+	console.log("Here")
 	localStorage.CheckedIntoConference = checkingIntoHashtag;
-	console.log(localStorage.CheckedIntoConference);
 }
 //returns the hashtags
 function  getHashTags(whatTags)
@@ -579,6 +585,7 @@ function  getHashTags(whatTags)
 
 }
 
+
 function parseDate(wholeDate)
 	{
 		var dateYear = wholeDate.substr(0,4);
@@ -590,6 +597,11 @@ function parseDate(wholeDate)
 		var dateString = dateMonth+"/"+dateDay+"/"+dateYear+" "+dateHour+":"+dateMinute+":"+dateSecond
 		return dateString;
 	}
+
+function logoutFunction(){
+	sessionStorage.clear();
+}
+
 function calculateTimeFromServer(serverTime){
 	// Set the unit values in milliseconds.
 	var msecPerMinute = 1000 * 60;
@@ -598,7 +610,7 @@ function calculateTimeFromServer(serverTime){
 
 	// Determine the current date and time.
 	var today = new Date();
-	//alert (today.getTime());
+	
 
 	// Determine the difference in milliseconds.
 	var interval = today.getTime() - serverTime.getTime();
@@ -659,6 +671,43 @@ function calculateTimeFromServer(serverTime){
 	}
 	return msg;
 
+}
+function suggestedHashtags(){
+	var suggestedHashurl = "/hashtagSuggestions";
+	var suggestedHashList = [];
+	var count = 0;
+	$.getJSON(suggestedHashurl, function(data)
+	{
+		console.log(data.hashtags.length)
+		if(data.hashtags[0].hashtag != null){
+			$("#hashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#hashLink1").css("display","inline")
+			$("#LeadHashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#LeadHashLink1").css("display","inline")
+			$("#inStarHashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#inStarHashLink1").css("display","inline")
+		}
+		if (data.hashtags.length > 2){
+			if(data.hashtags[1].hashtag != null || data.hashtags[1].hashtag != data.hashtags[0].hashtag || data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
+				$("#hashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#hashLink2").css("display","inline")
+				$("#LeadHashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#LeadHashLink2").css("display","inline")
+				$("#inStarHashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#inStarHashLink2").css("display","inline")
+			}
+		}
+		if (data.hashtags.length > 3){
+			if(data.hashtags[2].hashtag != null && data.hashtags[2].hashtag != data.hashtags[0].hashtag && data.hashtags[2].hashtag != data.hashtags[1].hashtag ){
+				$("#hashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#hashLink3").css("display","inline")
+				$("#LeadHashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#LeadHashLink3").css("display","inline")
+				$("#inStarHashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#inStarHashLink3").css("display","inline")
+			}
+		}
+	});
 }
 
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta name="viewport" content="user-scalable=yes,width=device-width">
+		<meta name="viewport" content="user-scalable=yes,width=device-width,initial-scale=1.0">
 		<link rel="shortcut icon" type="image/x-icon" href="../static/img/staricon.ico" />
 		<link rel="icon" type="image/x-icon" href="../static/img/staricon.ico" />
 		<title>{{page.title}}</title>
@@ -9,6 +9,7 @@
 		<link href="../static/css/bootstrap-responsive.css" rel="stylesheet"/>
 		<link href="../static/css/jquery-ui-1.8.20.custom.css" rel="stylesheet"/>
 		<style type="text/css">
+
 		.hashTagButton
 		{
 			border:none; 
@@ -79,18 +80,18 @@
 				  })();
 			</script>
 	</head>
-	<body>
+	<body leftmargin="0px" topmargin="0px" marginwidth="0px" marginheight="0px" width="100%">
 	
-		<div class="navbar" >
-			<div class="navbar-inner" >
-				<div class="container" >
+		<div class="navbar" style="width:100%; padding-left:0px; padding-right:0px;">
+			<div class="navbar-inner" style="width:100%; padding-left:0px; padding-right:0px;">
+				<div class="container" style="width:100%; padding-left:0px; padding-right:0px;">
 					<!--  -->
 					{% if not page.hideStarButton %}
 
-					<a class="brand">Hello</a> <a class="underline brand" style = "padding-left:0.625em" href="/users/{{ user.ID }}">{{user.firstName}}!</a>					
+					<a class="brand">Hello</a> <a class="underline brand" style = "padding-left:0.625em" href="/users/{{ user.ID }}">{{user.firstName}}!</a>
 					<ul class="nav pull-right">
-						
-						<li><a href="#myModalview"><button  onclick="showModal(); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
+							
+					<li><a href="#myModalview"><button  onclick="showModal(); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
 					</ul>
 					{%endif%}
 				</div>
@@ -98,39 +99,46 @@
 		</div>
 		
 
-	<div class="modal" id="myModal" style="display:none">
-			<div class="modal-header modalgradient" >
-				<button class="close" data-dismiss="modal">Close</button>
-				<h3>Give a Star</h3>
+	<div class="modal hide fade in" data-backdrop="static" id="myModal" style="display:none">
+			<div class="modal-header modalgradient" style="text-align:center;">
+				<h3>Give a Star</h3> 
 			</div>
 			<div class="modal-body modalgradient">
 				<table style="width:98%">
 					<tr>
 						<td><h4>Who</h4><input id="modalViewUser" type="text" class="input-medium" placeholder="Person" /></td>
 						<td>
-							<h4>Did</h4>
-							<select style="width:100px;" id ="modalViewVerb">
-								<option name="-1" selected>Select One</option>
-								<option name="Influenced">Influenced</option>
-								<option name="Impressed">Impressed</option>
-								<option name="Persuaded">Persuaded</option>
-								<option name="Helped">Helped</option>
-								<option name="Inspired">Inspired</option>
-								<option name="Guided">Guided</option>
-							</select>
-							<!--<input id="modalViewVerb" type="text" class="input-small" placeholder="Verb" /> -->
+							<h4>Hashtag</h4>
+							<input id="modalViewEvent" style="width:98%" type="text" class="input-medium" placeholder="Event" />
 						</td>
 					</tr>
 				</table>
 				<div style="clear:both"></div>
 				<h4>Description</h4>
 				<textarea id="modalViewTextarea" onKeyDown="limitText(this.id, 100);" onKeyUp="limitText(this.id, 100);" style="resize:none; width:98%" rows="3" placeholder="Short description (100 character limit) *Optional"></textarea>
-				<h4>Hashtag</h4>
-				<input id="modalViewEvent" style="width:98%" type="text" class="input-medium" placeholder="Event" />
+				<div style="width:100%">
+          			Trending Hashtags:&nbsp;
+          			<a id="inStarHashLink1" onClick="setStarLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink2" onClick="setStarLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink3" onClick="setStarLinkValue(3)" style="display:none"></a>
+          		</div>
+				<label class ="checkbox inline"><input type="checkbox" id="modalViewTweet" value="True" checked="checked" /><b>Tweet</b></label>
+
+				<div style="clear:both"></div>
+				<div class="modalgradient" id="giveStarConfirmation" style="text-align:center; display:none">
+					<h4 style="color:black">Are you sure?</h4><br />
+					<button class="btn btn-success" style="width:38%;" onclick="postJSON({{ user.ID }}, 1);">Yes</button>  
+					<button class="btn btn-danger" style="width:38%;" onclick="$('#giveStarConfirmation').hide('slow');$('#modalFooterDiv').show('slow');">No</button>
+				</div>
+
+				<div id="giveStarErrorDiv" style="color:red; display:none; text-align:center">
+				</div>
+				<div id = "modalViewConnectDiv" style="text-align:center; display:none;">
+					<button id = "modalViewConnect" type="submit" class="btn btn-warning" onclick="redirectTwitter();">Connect to Twitter</button>
+				</div>
+
 			</div>
-			<div class="modal-footer modalgradient" >
-				<a href="#" class="btn btn-danger" data-dismiss="modal" style="width:33%; float:left;" onclick="resetModalView()">Cancel</a>
-				<a href="#" class="btn btn-success" style="width:33%; float:right;" onclick="if(noGiveStarErrors()){postJSON({{ user.ID }}, 1);}">Give</a>
+			<div id="modalFooterDiv"class="modal-footer modalgradient" style="text-align:center" >
+				<a href="#" class="btn btn-success" style="width:33%;" onclick="if(noGiveStarErrors()){$('#modalFooterDiv').hide('slow');$('#giveStarConfirmation').show('slow');}">Give</a>
+				<a href="#" class="btn btn-danger" data-dismiss="modal" style="width:33%; " onclick="resetModalView()">Cancel</a>
 			</div>
 		</div>
 		
@@ -146,21 +154,17 @@
 		<script src="../static/js/knockout-2.1.0.js"></script>		
 		<script src="../static/js/bootstrap.js"></script>
 		<script src="../static/js/customscripts.js"></script>
+		<script src="../static/js/mobileviewjs.js"></script>
 		<script>
 			function noGiveStarErrors(){
+				$('#giveStarErrorDiv').hide();
 				var noErrors = true;
 				if (document.getElementById("modalViewUser").name == ""){
-					alert("Cannot identify Name.  Please make sure you are using a name from the drop down menu.");
-					noErrors = false;
-				}
-				e = document.getElementById("modalViewVerb");
-				var e2 = e.options[e.selectedIndex].value;
-				if (e2 == "Select One"){
-					alert("Please select a verb.");
+					showErrorMessage('givestar', 'Cannot identify Name.  Please make sure you are using a name from the drop down menu.');
 					noErrors = false;
 				}
 				if (document.getElementById("modalViewEvent").value == ""){
-					alert("Please use a hashtag.");
+					showErrorMessage('givestar', 'Please use a hashtag');
 					noErrors = false;
 				}
 				if(noErrors)
@@ -185,6 +189,20 @@
 					alert(ex.message);
 				}
 			})
+		</script>
+		<script type="text/javascript">
+			function setStarLinkValue(whichLink){
+				if(whichLink == 1){
+					$("#modalViewEvent").val($("#inStarHashLink1").html().replace("#",""))
+				}
+				else if(whichLink == 2){
+					$("#modalViewEvent").val($("#inStarHashLink2").html().replace("#",""))
+				}
+				else if(whichLink == 3){
+					$("#modalViewEvent").val($("#inStarHashLink3").html().replace("#",""))
+				}
+			}
+				
 		</script>
 			{% block scripts %}
 			{% endblock %}

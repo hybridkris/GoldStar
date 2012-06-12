@@ -44,6 +44,8 @@
 						<td colspan=2><a href="../feedback">Feedback</a></td>
 					</tr>
 				</div>
+				
+				<div id="newaccountStar" style="width:100%; text-align:center; display:none;" ><a href="/signup">Don't have an account?</a></div>
 			</div>
 	</div>
 {% endblock%}
@@ -56,9 +58,18 @@
 		var DateFormatted = new Date(parseDate(wholeDate));
 		$("#timestamptext").css('display','Block');
 		$("#timestamptext").text(calculateTimeFromServer(DateFormatted));
+		var createAccountBtn = document.getElementById("newaccountStar");
+		if (sessionStorage.userID== "" || sessionStorage.length == 0){
+			createAccountBtn.style.display="block";
+		}
+		else
+		{
+			createAccountBtn.style.display="none";
+		}
 	});
 
 	
 </script>
 
+<script src="../static/js/mobileviewjs.js"></script>
 {%endblock%}
