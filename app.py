@@ -259,7 +259,16 @@ def twitterauth():
 			return twitter.authorize(callback=url_for('oauth_authorized', 
 				next = request.args.get('next') or request.referrer or None))
 		else:
-			return redirect('/error')
+			resp = twitter.get('account/verify_credentials.json')
+			if resp.status == 200:
+				return redirect('/error')
+			else:
+				user.twitterUser = None
+				user.oauth_secret = None
+				user.oauth_token = None
+				db.session.commit()
+				return twitter.authorize(callback=url_for('oauth_authorized', 
+					next = request.args.get('next') or request.referrer or None))
 	else:
 		return redirect('/error')
 
@@ -344,6 +353,16 @@ def login():
 			user = User.query.filter_by(email = unicode(loginINFO['email'])).one()
 			if bcrypt.hashpw(loginINFO['password'], user.password) == user.password:
 				login_user(user)
+				if user.twitterUser is not None:
+					resp = twitter.get('account/verify_credentials.json')
+					if resp.status == 200:
+						print "Twitter still Valid"
+					elif resp.status == 401:
+						print "Twitter Keys are Invalid"
+						user.oauth_secret = None
+						user.oauth_token = None
+						user.twitterUser = None
+						db.session.commit()
 				return jsonify(dict(id = current_user.get_id()))
 	except Exception as ex:
 		print ex.message
