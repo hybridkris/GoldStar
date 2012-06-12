@@ -54,7 +54,6 @@ class Star(db.Model):
 
 	id = db.Column(db.Integer, primary_key=True)
 	description = db.Column(db.Unicode)
-	category = db.Column(db.Unicode)
 	created = db.Column(db.DateTime, default = datetime.datetime.now)
 	issuer_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -90,20 +89,6 @@ class Star(db.Model):
 		if len(e) > 0:
 			exception = starValidation();
 			exception.errors = dict(description = e)
-			raise exception
-		return unicode(string)
-
-	#Validates the Category
-	@validates('category')
-	def validate_category(self, key, string):
-		e = ""
-		string = string.strip()
-		string = string.upper()
-		if len(string) > 100:
-			e = "Category Length is too long"
-		if len(e) > 0:
-			exception = starValidation()
-			exception.errors = dict(category = e)
 			raise exception
 		return unicode(string)
 
@@ -219,17 +204,6 @@ def load_user(userid):
 	return User.query.get(userid)
 
 #Twitter Authorizations
-"""
-@app.before_request
-def before_request():
-	try:
-		g.user = None
-		if current_user.is_authenticated():
-			g.user = User.query.get(current_user.get_id())
-	except Exception as ex:
-		print "Before Request method"
-		print ex.message """
-
 @app.after_request
 def after_request(response):
 	db.session.remove()
@@ -292,10 +266,10 @@ def tweet(star_id):
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
-			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' because he ' + star.category + ' me. #' + star.hashtag + ' Goldstars.me'
+			status = 'I gave #GoldStars to @' + star.owner.twitterUser + ' #' + star.hashtag + ' Goldstars.me'
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
-			status = 'I gave #GoldStars to ' + fullName + ' because he ' + star.category + ' me. #' + star.hashtag + ' Goldstars.me'
+			status = 'I gave #GoldStars to ' + fullName + ' #' + star.hashtag + ' Goldstars.me'
 		resp = twitter.post('statuses/update.json', data = {'status': status})
 		return True
 	except:
@@ -512,22 +486,16 @@ def getHashtags():
 
 	return jsonify(dict(hashtags = hashtagList))
 
-@app.route('/leaderboard/filter/<string:hashtag>/<string:verb>')
-def specificLeaderboard(hashtag, verb):
+@app.route('/leaderboard/filter/<string:hashtag>')
+def specificLeaderboard(hashtag):
 	hashtag = hashtag.lower()
-	if verb != 'all':
-		verb = verb.upper()
 	star_counts = {}
 	leaderList = []
 	try:
-		if hashtag != 'all' and verb == 'all':
+		if hashtag != 'all':
 			leaderboardfilter = Star.query.filter_by(hashtag = hashtag).order_by(Star.owner_id).all()
-		elif hashtag == 'all' and verb != 'all':
-			leaderboardfilter = Star.query.filter_by(category = verb).order_by(Star.owner_id).all()
-		elif hashtag == 'all' and verb == 'all':
+		elif hashtag == 'all':
 			leaderboardfilter = Star.query.all()
-		else:
-			leaderboardfilter = Star.query.filter_by(hashtag = hashtag, category = verb).order_by(Star.owner_id).all()
 		for star in leaderboardfilter:
 				if star.owner_id in star_counts:
 					star_counts[star.owner_id] += 1
@@ -546,7 +514,7 @@ def starsByHashtag(needle):
 	starObject = []
 	starQuery = Star.query.filter_by(hashtag = needle).all()
 	for i in starQuery:
-		starObject.append(dict(category = i.category, issuer_id = i.issuer_id, owner_id = i.owner_id, id=i.id, hashtag= i.hashtag, created = str(i.created)))
+		starObject.append(dict(issuer_id = i.issuer_id, owner_id = i.owner_id, id=i.id, hashtag= i.hashtag, created = str(i.created)))
 	return jsonify(dict(stars = starObject))
 
 @app.route('/error')
