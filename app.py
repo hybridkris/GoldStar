@@ -347,23 +347,24 @@ def test():
 def userPage(userID):
 	try:
 		#get info for other user
-		profileUser = User.query.filter_by(id = userID).one()
+		profileUser = User.query.get(userID)
 		starsIssued = len(profileUser.issued)
 		starsReceived = len(profileUser.stars)
 		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, userID)
 		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user
 		if current_user.is_authenticated():
-			me = User.query.filter_by(id = current_user.get_id()).one()
+			me = User.query.get(current_user.get_id())
 			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
 			p = page.Page("Check out this user!", False)
 			if thisUser.ID == otherUser.ID:
 				ownPage = True
-				if me.twitterUser is not None:
-					thisUser.twitterUser = 'true'
+				if me.twitterUser is None:
+					otherUser.twitterUser = True
+				else:
+					otherUser.twitterUser = False
 			else:
 				ownPage = False
-				thisUser.twitterUser = 'false'
 			return render_template("users.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
 		else:
 			thisUser = None

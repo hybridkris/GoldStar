@@ -4,7 +4,7 @@ class userPageUser:
 	ID = 0
 	starsGiven = 0
 	starsReceived = 0
-	twitterUser = "false"
+	twitterUser = True
 
 	def __init__(self, fn, ln, i):
 		self.firstName = fn

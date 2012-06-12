@@ -46,9 +46,11 @@
 				{{theOtherUser.firstName}} {{theOtherUser.lastName}}
 			</h3>
 			<div style="clear:both"></div>
+			{% if ownPage and theOtherUser.twitterUser %}
 			<div id = "TwitterShow" style="text-align:center;">
 				<button type="submit" class="btn btn-warning" onclick="redirectTwitter();">Connect to Twitter</button>
 			</div>
+			{%endif%}
 			<br />
 			<br />
 			
@@ -216,6 +218,7 @@
 				collapsible: true,
 				active: false
 			});
+			$("TwitterShow").css("display", "block");
 		})
 	</script>
 {%endblock%}
