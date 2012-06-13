@@ -268,7 +268,6 @@ function displayLeaderBoard()
 		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
 		var userUrl = "/leaderboard/filter/"+ht
-		console.log("getting all-stars");
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
@@ -461,8 +460,6 @@ function GoToHashTagPage(hashtag)
 	sessionStorage.clickedHashtag = hashtag;
 	//switch tabs
 	$('#browserTabs a[href="#eventTab"]').tab('show');
-	
-
 }
 
 
@@ -480,49 +477,47 @@ function GoToHashTagPageWithRedirect(hashtag)
 
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
-		var itemHTML = '';
-
-		if(ownerID != sessionStorage.userID){
-			itemHTML += '<div onclick="goToStarPage('+star_id+')" class="starItemRecieved" style="overflow:hidden;padding:1em;border-bottom:0.1em solid #C0C0C0;font-size:1.2em">'
+		var divClass = "starItemRecieved";
+		if(ownerID == sessionStorage.userID){
+			divClass = "starItemGiven"
 		}	
-		else
+		var mainDiv = $("<div>").click(function(event){
+			goToStarPage(star_id);
+		}).addClass(divClass).css({overflow:"hidden",padding:"1em",border_bottom:"0.1em solid #C0C0C0",font_size:"1.2em"});
+		var graphicDiv = $("<div>").css({float:"left",width:"13%",padding:"0em 1em 1em 1em"}).
+		append($("<img>").addClass("pull-left").attr("width",40).attr("height",30).css({padding_right:"1em"}).attr("src","../static/img/goldstar.png")).append("<br/>");
+		var giverName = "You";
+		if (issuerID != sessionStorage.userID)
 		{
-			itemHTML += '<div onclick="goToStarPage('+star_id+')" class="starItemGiven" style="overflow:hidden;padding:1em;border-bottom:0.1em solid #C0C0C0;font-size:1.2em">'
+			giverName = issuerName;
 		}
-
-		itemHTML += '	<div style="float:left;width:13%;padding:0em 1em 1em 1em;">'
-			itemHTML += 	'		<img class="pull-left" width="40" height="30" style="padding-right:1em;" src="../static/img/goldstar.png" />'
-		itemHTML += '	</div>'
-		itemHTML += '	<div style="float:left;width:60%;">'
-		if (issuerID == sessionStorage.userID)
+		var ownerDisplay = "you";
+		if (ownerID != sessionStorage.userID)
 		{
-			itemHTML += '		<a href="/users/'+issuerID+'">You</a>'
+			ownerDisplay = ownerName;
 		}
-		else
-		{
-			itemHTML += '		<a href="/users/'+issuerID+'">'+ issuerName + '</a>'
-		}
-		
-		itemHTML += '		gave a star to '
-		if (ownerID == sessionStorage.userID)
-		{
-			itemHTML += '		<a href="/users/'+ownerID+'">you</a><br/>'
-		}
-		else
-		{
-			itemHTML += '		<a href="/users/'+ownerID+'">' + ownerName+ '</a><br/>'
-		}
-		itemHTML += '		<span style="font-size:0.8em"><button class="hashTagButton" onclick="GoToHashTagPage(\''+ hashtag +'\');"><b><i>#'+ hashtag+'</i></b></button></span><br/>'
-		itemHTML += '		<span style="font-size:0.8em">'+timestamp+'</span><br/>'
-		itemHTML += '	</div>'
-		itemHTML += ''
-		itemHTML += '	<div style="float:right;width:auto;display:table-cell;height:3em">'
-		itemHTML += '		<i class="icon-chevron-right pull-right" style="vertical-align:middle;margin-top:1.5em"></i>'
-		itemHTML += 	'</div>'
-		itemHTML += '</div>'
-		itemHTML += '<div style="clear:both"></div>'
-
-		return itemHTML;
+		var issuerLink = $("<a>").attr("href","/users/'"+issuerID+"'").html(giverName);
+		var recieverLink = $("<a>").attr("href","/users/'"+ownerID+"'").html(ownerDisplay);		
+		var hashTagButton = $("<button>").addClass("hashTagButton").click(function(event){
+			GoToHashTagPage(hashtag);
+			event.stopPropagation();
+			return false;
+		}).append($("<b>").append($("<i>").html("#"+hashtag)))
+		var timestampSpan = $("<span>").css("font-size","0.8em").html(timestamp);
+		var buttonSpan = $("<span>").css("font-size","0.8em").append(hashTagButton);
+		var userLinkDiv = $("<div>").css("float","left").css("width","60%")
+		.append(issuerLink)
+		.append('		gave a star to ')
+		.append(recieverLink)
+		.append("<br/>")
+		.append(hashTagButton)
+		.append("<br/>")
+		.append(timestampSpan)
+		.append("<br/>");
+		var icon = $("<i>").addClass("icon-chevron-right").addClass("pull-right").css({vertical_align:"middle",margin_top:"1.5em"});
+		var iconDiv = $("<div>").css({float:"right",width:"auto",display:"table-cell",height:"3em"}).append(icon);
+		mainDiv.append(graphicDiv).append(userLinkDiv).append(iconDiv);
+		return $("<span>").append(mainDiv).append($("<div>").css("clear","both"));
 
 
 		
