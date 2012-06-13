@@ -552,7 +552,15 @@ def returnTopHashtags():
 
 @app.route('/settings')
 def settingsPage():
-	return render_template("settings.html")
+	if current_user.is_authenticated():
+		p = page.Page("Settings Page", False)
+		userID = current_user.get_id()
+		u = User.query.filter_by(id = userID).one()
+		thisUser = userPageUser.userPageUser(u.firstName, u.lastName,u.id )
+	else:
+		thisUser = None
+		p = page.Page("Settings", True)
+	return render_template("settings.html", page = p, user = thisUser)
 
 
 auth_func = lambda: current_user.is_authenticated()
