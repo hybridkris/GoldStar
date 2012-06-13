@@ -29,6 +29,21 @@
 				<button type="submit" class="btn btn-warning" onclick="redirectTwitter();">Connect to Twitter</button>
 			</div>
 			{%endif%}
+			<div style="text-align:center;"><b>Share!</b></div>
+			<div style="clear:both"></div>
+			<div style="text-align:center;">
+				<span class='st_googleplus_large' displayText='Google +'></span>
+				<span class='st_facebook_large' displayText='Facebook'></span>
+				<span class='st_twitter_large' displayText='Tweet'></span>
+				<span class='st_tumblr_large' displayText='Tumblr'></span>
+			</div>
+			<div style="clear:both"></div>
+			<div style="text-align:center;">
+				<span class='st_stumbleupon_large' displayText='StumbleUpon'></span>
+				<span class='st_reddit_large' displayText='Reddit'></span>
+				<span class='st_pinterest_large' displayText='Pinterest'></span>
+				<span class='st_email_large' displayText='Email'></span>
+			</div>
 			<br />
 			<br />
 			
@@ -55,13 +70,6 @@
 						<td style="text-align:center;" colspan=2><a href="../mobileview.html">Go back to my feed</a></td></br>
 					</tr>
 
-					{% if not page.hideStarButton %}
-						{% if ownPage %}
-							<tr>
-								<td style="text-align:center;" colspan=2><a OnClick="javascript:logoutFunction();">Log Out</a></td>
-							</tr>
-						{%endif%}
-					{%endif%}
 					<tr>
 						<td style="text-align:center;" colspan=2><a href="../settings">Settings</a></td>
 					</tr>
@@ -141,4 +149,7 @@ function logoutFunction()
 		loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", filter);
 	}
 </script>
+<script type="text/javascript">var switchTo5x=true;</script>
+<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">stLight.options({publisher: "ur-f7d15b3b-e19e-f5dd-520b-bca92d9f2bc8"}); </script>
 {%endblock%}
