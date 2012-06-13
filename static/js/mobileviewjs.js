@@ -267,8 +267,13 @@ function displayLeaderBoard()
 		//getJson of stars here
 		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
+<<<<<<< HEAD
 		var userUrl = "/leaderboard/filter/"+ht
 		console.log("getting all-stars");
+=======
+		var verb = "all"
+		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
+>>>>>>> dc9a1a41ed43588959bdd21387e9c20afe961b12
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
@@ -552,7 +557,6 @@ function loadMyStars()
 {
 			//getJson of stars here
 			var userUrl = "/api/user/" + sessionStorage.userID;
-			console.log("getting my stars");
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
@@ -564,7 +568,6 @@ function loadHashtagStars(needle)
 {
 	//getJson of stars here
 	var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
-	console.log("getting hashtag stars");
 	$.getJSON(userUrl, function(jdata)
 	{
 		sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
@@ -573,7 +576,6 @@ function loadHashtagStars(needle)
 }
 function checkIntoConference(checkingIntoHashtag)
 {
-	console.log("Here")
 	localStorage.CheckedIntoConference = checkingIntoHashtag;
 }
 //returns the hashtags
@@ -698,7 +700,6 @@ function suggestedHashtags(){
 	var count = 0;
 	$.getJSON(suggestedHashurl, function(data)
 	{
-		console.log(data.hashtags.length)
 		if(data.hashtags[0].hashtag != null){
 			$("#hashLink1").html("#"+data.hashtags[0].hashtag)
 			$("#hashLink1").css("display","inline")
@@ -708,7 +709,7 @@ function suggestedHashtags(){
 			$("#inStarHashLink1").css("display","inline")
 		}
 		if (data.hashtags.length > 2){
-			if(data.hashtags[1].hashtag != null || data.hashtags[1].hashtag != data.hashtags[0].hashtag || data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
+			if(data.hashtags[1].hashtag != null && data.hashtags[0].hashtag != data.hashtags[1].hashtag && data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
 				$("#hashLink2").html("#"+data.hashtags[1].hashtag)
 				$("#hashLink2").css("display","inline")
 				$("#LeadHashLink2").html("#"+data.hashtags[1].hashtag)
