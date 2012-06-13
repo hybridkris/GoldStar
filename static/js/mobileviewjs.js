@@ -74,11 +74,12 @@ function pageInit()
 
 	}
 	//attach event to select
-	$("#myFeedFilter").change(displayMyStars);
+	$("#myFeedFilter").change(function(){displayMyStars("myStarList", "emptyListMessage", "emptyListMessageContainer")});
 	
 	//load objects
 	suggestedHashtags();
 	//set autocomplete for stargazing menu
+	getHashTags("all")
 	//Known duplicate code from customscripts.js, line 217(ish)
 
 	$.each(userList, function(i, val){
@@ -99,7 +100,7 @@ function pageInit()
 			});
 
 	//RECOMMENT IN FOR AJAX UPDATES
-	//ajaxUpdate = setInterval(updateData, 10000);
+	ajaxUpdate = setInterval(updateData, 10000);
 
 }
 
