@@ -703,7 +703,7 @@ function suggestedHashtags(){
 			$("#inStarHashLink1").css("display","inline")
 		}
 		if (data.hashtags.length > 2){
-			if(data.hashtags[1].hashtag != null || data.hashtags[1].hashtag != data.hashtags[0].hashtag || data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
+			if(data.hashtags[1].hashtag != null && data.hashtags[0].hashtag != data.hashtags[1].hashtag && data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
 				$("#hashLink2").html("#"+data.hashtags[1].hashtag)
 				$("#hashLink2").css("display","inline")
 				$("#LeadHashLink2").html("#"+data.hashtags[1].hashtag)
