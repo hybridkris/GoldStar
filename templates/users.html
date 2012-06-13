@@ -132,11 +132,8 @@ function logoutFunction()
 			$("TwitterShow").css("display", "block");
 		}
 	});
-		
-
 	function filterStarList(filter){
 		loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", filter);
-		var totalStars = {{theOtherUser.starsGiven}} + {{theOtherUser.starsReceived}};
 	}
 </script>
 {%endblock%}
