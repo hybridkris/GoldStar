@@ -126,7 +126,7 @@ function logoutFunction()
 					userList[currentUser.id] = currentUser;				
 					users.push(currentUser.firstName + " " + currentUser.lastName);				
 				}
-
+				sessionStorage.thisUserID = {{theOtherUser.ID}};
 				loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", "all");
 				
 			})

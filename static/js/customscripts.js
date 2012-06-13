@@ -298,6 +298,12 @@ function showModal()
 	$('#giveStarConfirmation').hide();
 	$('#giveStarErrorDiv').html('');
 	$('#myModal').modal('show');
+	var thisUserID = (sessionStorage.thisUserID);
+	if (thisUserID != sessionStorage.userID)
+	{
+		console.log("there page")
+	}
+	sessionStorage.removeItem("thisUserID");
 	if(sessionStorage.twitterUser == 'false')
 	{
 		$('#modalViewTweet').attr("disabled", true);
