@@ -266,11 +266,9 @@ def tweet(star_id):
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
-<<<<<<< HEAD
-			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' www.goldStars.me'
-=======
+
 			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
->>>>>>> bc5b372f510df3bc1db37a37c140dbf61e4be6e9
+
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
 			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
@@ -280,11 +278,9 @@ def tweet(star_id):
 			if star.owner.twitterUser:
 				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
 			else:
-<<<<<<< HEAD
-				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.goldStars.me'
-=======
+
 				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
->>>>>>> bc5b372f510df3bc1db37a37c140dbf61e4be6e9
+
 		resp = twitter.post('statuses/update.json', data = {'status': status})
 		return True
 	except Exception as ex:
@@ -570,7 +566,7 @@ def settingsPage():
 			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
 			p = page.Page("Settings!", False)
 			ownPage = True
-			return render_template("settings.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
+			return render_template("settings.html", user = thisUser, page = p)
 	except Exception as ex:
 		print ex.message
 		return redirect('/error')
