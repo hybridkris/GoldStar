@@ -555,20 +555,13 @@ def settingsPage():
 	#get info for other user
 		profileUser = User.query.get(current_user.get_id())
 		starsIssued = len(profileUser.issued)
-		print starsIssued
 		starsReceived = len(profileUser.stars)
-		print starsReceived
-		otherUser = userPageUser.userPageUser(profileUser.firstName, profileUser.lastName, current_user.get_id())
-		otherUser.addStarsCount(starsIssued, starsReceived)
 		#get info for this user
 		if current_user.is_authenticated():
 			me = User.query.get(current_user.get_id())
 			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
 			p = page.Page("Settings!", False)
-			if thisUser.ID == otherUser.ID:
-				ownPage = True
-			else:
-				ownPage = False
+			ownPage = True
 			return render_template("settings.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
 		else:
 			thisUser = None
