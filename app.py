@@ -266,9 +266,7 @@ def tweet(star_id):
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
-
 			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
-
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
 			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
@@ -278,6 +276,7 @@ def tweet(star_id):
 			if star.owner.twitterUser:
 				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
 			else:
+
 				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
 
 		resp = twitter.post('statuses/update.json', data = {'status': status})
@@ -566,10 +565,6 @@ def settingsPage():
 			p = page.Page("Settings!", False)
 			ownPage = True
 			return render_template("settings.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
-		else:
-			thisUser = None
-			p = page.Page("Settings!", True)
-			return render_template("settings.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = False)
 	except Exception as ex:
 		print ex.message
 		return redirect('/error')
