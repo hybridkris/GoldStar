@@ -266,20 +266,23 @@ def tweet(star_id):
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
-			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' www.goldStars.me'
+
+			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
+
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
-			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me'
+			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
 		if len(status) > 140:
 			cutDescriptionBy = len(status) - 135
 			cutDescriptionBy = len(star.description) - cutDescriptionBy
 			if star.owner.twitterUser:
-				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me'
+				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
 			else:
-				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.goldStars.me'
+				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me/star/' + str(star_id)
+
 		resp = twitter.post('statuses/update.json', data = {'status': status})
 		return True
-	except:
+	except Exception as ex:
 		userQuery = session.query(User)
 		user = userQuery.get(star.owner.id)
 		user.twitterUser = None
@@ -547,19 +550,36 @@ def returnTopHashtags():
 	for i in hashtagQuery:
 		if i is not None:
 			hashtagObject.append(dict(hashtag = i.hashtag))
-	print hashtagObject
 	return jsonify(dict(hashtags = hashtagObject))
 
 @app.route('/settings')
 def settingsPage():
-	return render_template("settings.html")
+	try:
+	#get info for other user
+		profileUser = User.query.get(current_user.get_id())
+		starsIssued = len(profileUser.issued)
+		starsReceived = len(profileUser.stars)
+		#get info for this user
+		if current_user.is_authenticated():
+			me = User.query.get(current_user.get_id())
+			thisUser = userPageUser.userPageUser(me.firstName, me.lastName, me.id)
+			p = page.Page("Settings!", False)
+			ownPage = True
+			return render_template("settings.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = ownPage)
+		else:
+			thisUser = None
+			p = page.Page("Settings!", True)
+			return render_template("settings.html", user = thisUser, page = p, theOtherUser = otherUser, ownPage = False)
+	except Exception as ex:
+		print ex.message
+		return redirect('/error')
 
 
 auth_func = lambda: current_user.is_authenticated()
 #Creates the API
 #manager.create_api(User, methods=['GET', 'POST'], validation_exceptions=[userValidation], authentication_required_for=['GET'], authentication_function=auth_func)
 manager.create_api(User, methods=['GET', 'POST'], validation_exceptions=[userValidation], include_columns=['id','firstName', 'lastName', 'twitterUser', 'stars', 'issued','email'])
-manager.create_api(Star, methods=['GET', 'POST'], validation_exceptions=[starValidation], authentication_required_for=['POST'], authentication_function=auth_func)
+manager.create_api(Star, methods=['GET', 'POST'], validation_exceptions=[starValidation],authentication_required_for=['POST'], authentication_function=auth_func)
 flask.ext.sqlalchemy.models_committed.connect(models_committed,sender=app)
 
 if __name__ == '__main__':
