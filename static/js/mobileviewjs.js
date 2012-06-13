@@ -530,7 +530,11 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 
 function goToStarPage(starID)
 {
-	window.location = "star/" + starID;
+	var currentWebAddress = window.location.href;
+	if (currentWebAddress.toLowerCase().indexOf("/users") >= 0)
+		window.location = "../star/" + starID;
+	else
+		window.location = "star/" + starID;
 }
 function displayEventStars()
 {

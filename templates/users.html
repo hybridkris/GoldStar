@@ -115,6 +115,7 @@ function logoutFunction()
 <script>
 	$(document).ready(function(){
 		if (canUseStorage()){
+
 			sessionStorage.userID = {{user.ID}}
 			//sessionStorage.twitterUser = {{user.twitterUser}}
 			$.getJSON('/api/user', function(jdata)
@@ -128,16 +129,18 @@ function logoutFunction()
 
 				loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", "all");
 				
+			})
+			.success(function(){
+				alert("success!");
+			})
+			.error(function(){
+				alert("Could not load this users stars =(");
 			});
 			$("TwitterShow").css("display", "block");
 		}
 	});
-		
-
 	function filterStarList(filter){
 		loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", filter);
-		var totalStars = {{theOtherUser.starsGiven}} + {{theOtherUser.starsReceived}};
 	}
-
 </script>
 {%endblock%}
