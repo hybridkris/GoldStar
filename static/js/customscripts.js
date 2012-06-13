@@ -295,7 +295,13 @@ function showDescription(divid)
 function showModal()
 {
 	$('#giveStarErrorDiv').html('');
-	
+	// var thisUserID = (sessionStorage.thisUserID);
+	// if (thisUserID != sessionStorage.userID)
+	// {
+	// 	console.log("there page")
+	// }
+	// sessionStorage.removeItem("thisUserID");
+
 	if(sessionStorage.twitterUser == 'false')
 	{
 		$('#modalViewTweet').attr("disabled", true);

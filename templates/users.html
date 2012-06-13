@@ -134,13 +134,17 @@ function logoutFunction()
 					userList[currentUser.id] = currentUser;				
 					users.push(currentUser.firstName + " " + currentUser.lastName);				
 				}
+
+				sessionStorage.thisUserID = {{theOtherUser.ID}};
+				loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", "all");
 				
 			})
 			.success(function(){
 				loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", "all");
+
 			})
 			.error(function(){
-				alert("Could not load this users stars =(");
+				//alert("Could not load this users stars =(");
 			});
 			$("TwitterShow").css("display", "block");
 		}
@@ -152,4 +156,28 @@ function logoutFunction()
 <script type="text/javascript">var switchTo5x=true;</script>
 <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
 <script type="text/javascript">stLight.options({publisher: "ur-f7d15b3b-e19e-f5dd-520b-bca92d9f2bc8"}); </script>
+<script>
+	var suggestedHashurl = "/hashtagSuggestions";
+	var suggestedHashList = [];
+	$.getJSON(suggestedHashurl, function(data)
+	{
+		if(data.hashtags[0].hashtag != null){
+
+			$("#inStarHashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#inStarHashLink1").css("display","inline")
+		}
+		if (data.hashtags.length > 2){
+			if(data.hashtags[1].hashtag != null && data.hashtags[0].hashtag != data.hashtags[1].hashtag){
+				$("#inStarHashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#inStarHashLink2").css("display","inline")
+			}
+		}
+		if (data.hashtags.length > 3){
+			if(data.hashtags[2].hashtag != null && data.hashtags[2].hashtag != data.hashtags[0].hashtag && data.hashtags[2].hashtag != data.hashtags[1].hashtag ){
+				$("#inStarHashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#inStarHashLink3").css("display","inline")
+			}
+		}
+	});
+</script>
 {%endblock%}
