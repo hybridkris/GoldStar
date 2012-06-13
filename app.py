@@ -9,7 +9,7 @@ from flask.ext.login import current_user, login_user, LoginManager, UserMixin, l
 from flask.ext.wtf import PasswordField, SubmitField, TextField, Form
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import distinct
+from sqlalchemy import distinct, desc
 from threading import Thread
 from collections import Counter
 import userPageUser
@@ -495,8 +495,10 @@ def getHashtags():
 
 	return jsonify(dict(hashtags = hashtagList))
 
+
 @app.route('/leaderboard/filter/<string:hashtag>')
 def specificLeaderboard(hashtag):
+
 	hashtag = hashtag.lower()
 	star_counts = {}
 	leaderList = []
@@ -537,6 +539,16 @@ def errorPage():
 		thisUser = None
 		p = page.Page("Oops!", True)
 	return render_template("error.html", page = p,user = thisUser)
+
+@app.route('/hashtagSuggestions')
+def returnTopHashtags():
+	hashtagObject = []
+	hashtagQuery = Star.query.order_by(desc(Star.created)).distinct().limit(3).all()
+	for i in hashtagQuery:
+		if i is not None:
+			hashtagObject.append(dict(hashtag = i.hashtag))
+	print hashtagObject
+	return jsonify(dict(hashtags = hashtagObject))
 
 @app.route('/settings')
 def settingsPage():

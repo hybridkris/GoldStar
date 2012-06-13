@@ -44,25 +44,32 @@
 						<td colspan=2><a href="../feedback">Feedback</a></td>
 					</tr>
 				</div>
+				
+				<div id="newaccountStar" style="width:100%; text-align:center; display:none;" ><a href="/signup">Don't have an account?</a></div>
 			</div>
 	</div>
 {% endblock%}
 {% block scripts%}
+<script src="../static/js/mobileviewjs.js"></script>
 <script type = "text/javascript">
 	$(function(){
 
-		var wholeDate = new String($("#timestamptext").text().trim());
-		var dateYear = wholeDate.substr(0,4);
-		var dateMonth = wholeDate.substr(5,2);
-		var dateDay = wholeDate.substr(8,2);
-		var dateHour = wholeDate.substr(11,2);
-		var dateMinute = wholeDate.substr(14,2);
-		var dateSecond = wholeDate.substr(17,2);
-		var dateString = dateMonth+"/"+dateDay+"/"+dateYear+" "+dateHour+":"+dateMinute+":"+dateSecond
-		var DateFormatted = new Date(dateString);
+		var  wholeDate = new String($("#timestamptext").text().trim());
+		var DateFormatted = new Date(parseDate(wholeDate));
 		$("#timestamptext").css('display','Block');
 		$("#timestamptext").text(calculateTimeFromServer(DateFormatted));
+		var createAccountBtn = document.getElementById("newaccountStar");
+		if (sessionStorage.userID== "" || sessionStorage.length == 0){
+			createAccountBtn.style.display="block";
+		}
+		else
+		{
+			createAccountBtn.style.display="none";
+		}
 	});
+
+	
 </script>
+
 <script src="../static/js/mobileviewjs.js"></script>
 {%endblock%}

@@ -8,15 +8,21 @@
 {% block body%}
 
 	<div class="well">
+
 	
 
 			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
 			<h3 style="text-align:center;">
 				{{theOtherUser.firstName}} {{theOtherUser.lastName}}<hr /></h3>
-			<h4 style="text-align:center;">
-				{{theOtherUser.starsGiven}} Stars Given<br /></h4>
-			<h4 style="text-align:center;">{{theOtherUser.starsReceived}} Stars Received
-			</h4><hr />
+			<div style="text-align:center"><button onclick="filterStarList('all')" class="hashTagButton" style="text-align:center; font-size:1.8em"><script>
+				var totalStars = {{theOtherUser.starsReceived}} + {{theOtherUser.starsGiven}}
+				document.write(totalStars);
+			</script> Stars Total
+			</h4></div><br />
+			<div style="text-align:center"><button onclick="filterStarList('given')" class="hashTagButton" style="text-align:center; font-size:1.5em">
+				{{theOtherUser.starsGiven}} Stars Given<br /></button></div><br />
+			<div style="text-align:center"><button onclick="filterStarList('received')" class="hashTagButton" style="text-align:center; font-size:1.5em">{{theOtherUser.starsReceived}} Stars Received
+			</h4></div><hr />
 			<div style="clear:both"></div>
 			{% if ownPage and theOtherUser.twitterUser %}
 			<div id = "TwitterShow" style="text-align:center;">
@@ -40,19 +46,29 @@
 		</div>
 
 		<br />
-		<table class="table table-bordered" style="width:100%">
-					<tr>
-						<td style="text-align:center;" colspan=2><a href="../mobileview.html">Go back to feed</a></td>
-					</tr>
+		<table class="table table-bordered" style="width:100%;text-align:center;">
+
 		{% if not page.hideStarButton %}
 			{% if ownPage %}
 				
+					<tr>
+						<td style="text-align:center;" colspan=2><a href="../mobileview.html">Go back to my feed</a></td></br>
+					</tr>
+
+					{% if not page.hideStarButton %}
+						{% if ownPage %}
+							<tr>
+								<td style="text-align:center;" colspan=2><a OnClick="javascript:logoutFunction();">Log Out</a></td>
+							</tr>
+						{%endif%}
+					{%endif%}
 					<tr>
 						<td style="text-align:center;" colspan=2><a href="../settings">Settings</a></td>
 					</tr>
 					<tr>
 						<td style="text-align:center;" colspan=2><a href="../feedback">Feedback / Help</a></td>
 					</tr>
+
 					{% if not theOtherUser.twitterUser %}
 						<tr>
 							<td style="text-align:center;" colspan=2><a href="https://twitter.com/settings/applications">Deauthorize Twitter</a></td>
@@ -61,14 +77,41 @@
 					<tr>
 						<td style="text-align:center;" colspan=2><a href="../logout">Log Out</a></td>
 					</tr>
+
 				
 			{%endif%}
 		{%endif%}
-		</table>	
+		</table>
+
+			<div style="text-align:center;display:none;" id="newAccountUser">
+				</br>
+				<div style="width:100%; text-align:center;" ><a href="/signup">Don't have an account?</a></div>
+			</div>	
 	</div>
 
 {% endblock%}
-{% block scripts %}
+
+{% block scripts%}
+<script type="text/javascript">
+	$(function(){
+		var createAccountBtn = document.getElementById("newAccountUser");
+		if (sessionStorage.userID== "" || sessionStorage.length == 0){
+			createAccountBtn.style.display="block";
+		}
+		else
+		{
+			createAccountBtn.style.display="none";
+		}
+	});
+</script>
+<script  type="text/javascript">
+
+function logoutFunction()
+{
+	sessionStorage.clear();
+	window.location="../logout"
+}
+</script>
 <script>
 	$(document).ready(function(){
 		if (canUseStorage()){
@@ -83,11 +126,19 @@
 					users.push(currentUser.firstName + " " + currentUser.lastName);				
 				}
 
-				loadOtherUserStars({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer");
+				loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", "all");
 				
 			});
 			$("TwitterShow").css("display", "block");
-		}		
+		}
 	});
+		
+
+	function filterStarList(filter){
+		loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", filter);
+		var totalStars = {{theOtherUser.starsGiven}} + {{theOtherUser.starsReceived}};
+	}
+
+>>>>>>> 114df6678d43b2d7866eb58574d1184179128549
 </script>
 {%endblock%}

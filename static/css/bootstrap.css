@@ -3223,8 +3223,8 @@ input[type="submit"].btn.btn-mini {
 
 .nav-list > li > a,
 .nav-list .nav-header {
-  margin-right: -15px;
-  margin-left: -15px;
+  margin-right:0px;
+  margin-left: 0px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 

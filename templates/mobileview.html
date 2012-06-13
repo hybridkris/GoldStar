@@ -96,6 +96,19 @@
 
 		}
 
+		.starItemGiven
+		{
+			background: #eeff99;
+			background: -moz-linear-gradient(top,  #F5F5F5 1%, #F5F5F5 44%, #eeff99 100%);
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#F5F5F5), color-stop(44%,#F5F5F5), color-stop(100%,#eeff99));
+			background: -webkit-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: -o-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: -ms-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			background: linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#eeff99 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F5F5F5', endColorstr='#eeff99',GradientType=0 );
+
+
+		}
 		</style>
 {%endblock%}
 {% block body%}
@@ -136,13 +149,18 @@
 				</div>
 				
 			</div>
-			<div class="tab-pane" id="eventTab">
+			<div class="tab-pane" id="eventTab" style="overflow:hidden">
 				<div style="text-align:center;margin-bottom:9px;">
 					<div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox"><button class="btn btn-warning" style="width:5em;margin:1em" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button><button class="btn btn-warning" style="width:6em;margin:.5em" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
-
+                		<span class="add-on">#</span>
+                		<input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox">
+                		<button class="btn btn-warning" style="width:5em;" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button>
+                		<button class="btn btn-warning" style="width:6em;float:right" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
           			</div>
-
+          			<div style="width:100%">
+          				Trending Hashtags:&nbsp;
+          				<a id="hashLink1" onClick="setLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="hashLink2" onClick="setLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="hashLink3" onClick="setLinkValue(3)" style="display:none"></a>
+          			</div>
 				</div>
 				<hr/>
 					<div class="hero-unit" id="eventHashTagListMessageContainer">
@@ -155,6 +173,7 @@
 				
 				<div id="eventStarList">
 					
+
 				</div>
 				
 			</div>
@@ -168,15 +187,17 @@
 				</div>
 				<hr/>
 				<div class="hero-unit" id="emptyListMessageContainer">
-					<div class="well"><i>
-						<div id="emptyListMessage">
+					<div class="well" style="width:100%"><i>
+						<div id="emptyListMessage" style="width:100%">
 						</div>
 					</i>
 					</div>
 				</div>
 				
+					
 				<div id="myStarList">
 
+			
 				</div>
 				
 			</div>
@@ -186,18 +207,21 @@
 	
 			<tr>
 				<td><div class="input-prepend">
-                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:75%;margin:0em 1em 0em 0em;" id="AllStarEventHashTag"></div></td>
+                		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:50%;margin:0em 1em 0em 0em;" id="AllStarEventHashTag"></div></td>
 				
 				<td><div class="input-prepend"><button class="btn btn-warning" style="width:5em;margin:0em 1em 0em 1em;" onclick='displayLeaderBoard();'>Find</button></div></td>
 			</tr>
-
 			
 			
 			</table>
-<hr/>
+			<div style="width:100%">
+          		Trending Hashtags:&nbsp;
+          		<a id="LeadHashLink1" onClick="setLinkValue(1)" style="display:block"></a>&nbsp;&nbsp;<a id="LeadHashLink2" onClick="setLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="LeadHashLink3" onClick="setLinkValue(3)" style="display:none"></a>
+          	</div>
+			<hr/>
 			<br />
 
-			<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 1%</h4>
+			<h4>Top 1%</h4>
 
 				<div class="well tier5" id="tier5">
 					<div class="well-small" style="background-color:#ffffbb">
@@ -206,7 +230,7 @@
 						</i>
 					</div>			
 				</div>
-				<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 5%</h4>
+				<h4>Top 5%</h4>
 				<div class="well tier4" id="tier4">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -215,7 +239,7 @@
 					</div>			
 			
 				</div>
-				<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 10%</h4>
+				<h4>Top 10%</h4>
 				<div class="well tier3" id="tier3">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -233,7 +257,7 @@
 					</div>			
 			
 	 			</div>
-	 			<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Top 50%</h4>
+	 			<h4>Top 50%</h4>
 				<div class="well tier1" id="tier1">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -242,7 +266,7 @@
 					</div>			
 			
 	 			</div>
-	 			<h4 style="text-shadow: 0.1em 0.1em black; color:yellow;">Slow Starters</h4>
+	 			<h4>Slow Starters</h4>
 				<div class="well tier0" id="tier0">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
@@ -271,7 +295,7 @@
 					userList[currentUser.id] = currentUser;				
 					users.push(currentUser.firstName + " " + currentUser.lastName);				
 				}
-
+				suggestedHashtags();
 				pageInit();
 				
 			});
@@ -280,6 +304,29 @@
 		
 	})
 
+</script>
+<script type="text/javascript">
+	function setLinkValue(whichLink){
+		if(whichLink == 1){
+			$("#EventTextBox").val($("#hashLink1").html().replace("#",""))
+			$("#AllStarEventHashTag").val($("#LeadHashLink1").html().replace("#",""))
+		}
+		else if(whichLink == 2){
+			$("#EventTextBox").val($("#LeadHashLink2").html().replace("#",""))
+			$("#AllStarEventHashTag").val($("#LeadHashLink2").html().replace("#",""))
+		}
+		else if(whichLink == 3){
+			$("#EventTextBox").val($("#LeadHashLink3").html().replace("#",""))
+			$("#AllStarEventHashTag").val($("#LeadHashLink3").html().replace("#",""))
+		}
+		if(sessionStorage.currentTab == "leader"){
+			displayLeaderBoard();
+		}
+		else if(sessionStorage.currentTab =="event")
+		{
+			loadHashtagStars($("#EventTextBox").val());
+		}
+	}
 </script>
 <script src="../static/js/mobileviewjs.js"></script>
 
