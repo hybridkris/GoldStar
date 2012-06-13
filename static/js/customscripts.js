@@ -135,7 +135,7 @@ function postJSON(id, num)
   			contentType: "application/json",
 			success: function(data, textStatus, jqXHR){
 				sessionStorage.userID = data.id;
-				alert('You have successfully created an account!');
+				//alert('You have successfully created an account!');
 			},
 			error: function(jqXHR, textStatus, errorThrown){
 				var err = jQuery.parseJSON(jqXHR.responseText);
@@ -171,39 +171,36 @@ function postJSON(id, num)
 	}
 	else if (num == 1)
 	{
-		//var e = document.getElementById("select1");
-		if(confirm('Are you sure you want to give a star to ' + $('#modalViewUser').val() + '?'))
-		{
-			//var e1 = e.options[e.selectedIndex].value;
-			//starName = e.options[e.selectedIndex].text;
-			var e1 = document.getElementById("modalViewUser").name;
-			var starName = $('#modalViewUser').val();
-			sessionStorage.starName = starName;
-			e = document.getElementById("modalViewVerb");
-			var e2 = e.options[e.selectedIndex].value;
-			//var e3 = document.getElementById("select3").value;
-			//var e2 = $('#modalViewVerb').val();
-			var e3 = $('#modalViewTextarea').val();
-			var e4 = $('#modalViewEvent').val();
-			var userData = '{"description":"'+e3+'","category":"'+e2+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
-			//alert(userData);
-			$.ajax({
-				type: "POST",
-				url: "/api/star",
-				data: userData,
-				contentType: "application/json",
-				success: function(data){
-					sessionStorage.starID = data.id;
-					alert("You successfully gave a star to "+starName+"!");
-				},
-				complete: function(){
-					window.location = "/";
-				},
-				error: function(jqXHR, textStatus, errorThrown){
-					alert(errorThrown + " " + textStatus + " " + jqXHR);
-				}
-			});
-		}
+		var e1 = document.getElementById("modalViewUser").name;
+		var starName = $('#modalViewUser').val();
+		sessionStorage.starName = starName;
+		var e3 = $('#modalViewTextarea').val();
+		var e4 = $('#modalViewEvent').val();
+		var e5 = false;
+		if($('#modalViewTweet').is(":checked"))
+			e5 = true;
+		else
+			e5 = false;
+
+		var userData = '{"tweet":"'+e5+'","description":"'+e3+'","issuer_id":"'+sessionStorage.userID+'","owner_id":"'+e1+'","hashtag":"'+e4+'"}';
+
+		//alert(userData);
+		$.ajax({
+			type: "POST",
+			url: "/api/star",
+			data: userData,
+			contentType: "application/json",
+			success: function(data){
+				sessionStorage.starID = data.id;
+				//alert("You successfully gave a star to "+starName+"!");
+			},
+			complete: function(){
+				window.location = "/";
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				alert(errorThrown + " " + textStatus + " " + jqXHR);
+			}
+		});
 	}
 }
 function getJSON(num)
@@ -268,8 +265,7 @@ function getJSON(num)
 						star.ownerfullName = "";
 					star.issuerfullName = "You"
 					starMasterList.push(star)
-			};			
-
+			};
 			jdata.stars = starMasterList;
 			userData = jdata;
 			ko.applyBindings(userData,document.getElementById('userNameNav'));
@@ -288,7 +284,7 @@ function limitText(limitField, limitNum)
 function showselect(id)
 {
 	var e = document.getElementById(id);
-	alert(e.options[e.selectedIndex].value);
+	//alert(e.options[e.selectedIndex].value);
 }
 function showDescription(divid)
 {
@@ -298,11 +294,75 @@ function showDescription(divid)
 //modal functionality
 function showModal()
 {
+	$('#modalFooterDiv').show();
+	$('#giveStarConfirmation').hide();
+	$('#giveStarErrorDiv').html('');
 	$('#myModal').modal('show');
+	if(sessionStorage.twitterUser == 'false')
+	{
+		$('#modalViewTweet').attr("disabled", true);
+		$('#modalViewTweet').attr("checked", false);
+		$("#modalViewConnect").show();
+		$("#modalViewConnectDiv").css("display", "block");
+	}
+	else
+	{
+		$("#modalViewConnect").hide();
+		$("#modalViewConnectDiv").css("display", "none");
+		$('#modalViewTweet').attr("disabled", false);
+	}
 }
 function resetModalView(){
+	$('#giveStarConfirmation').hide();
+	$('#giveStarErrorDiv').html('');
+	$('#modalViewUser').val("");
+	$('#modalViewVerb').val("");
+	$('#modalViewEvent').val("");
+	$('#modalViewTextarea').val("");
+	$('#myModal').modal({
+		keyboard: false
+	});
+}
+
+function resetModalView(){
+	//Moved all to showModal()
+
+}
+function showErrorMessage(page, message){
+	$('#signUpErrorField').hide();
+	switch(page){
+		//login has its own error inside of login.html
+		case 'signup':{
+			$('#signUpErrorDiv').html(message);
+			$('#signUpErrorField').show('slow');
+			break;
+		}
+		case 'givestar':{
+			$('#giveStarErrorDiv').html(message);
+			$('#giveStarErrorDiv').show('fast');
+			break;
+		}
+		default: alert("Error!");
+		}
 		$('#modalViewUser').val("");
 		$('#modalViewVerb').val("");
 		$('#modalViewEvent').val("");
 		$('#modalViewTextarea').val("");
+		if(sessionStorage.twitterUser == 'false')
+		{
+			$('#modalViewTweet').attr("disabled", true);
+			$('#modalViewTweet').attr("checked", false);
+			$("#modalViewConnect").show();
+			$("#modalViewConnectDiv").css("display", "block");
+		}
+		else
+		{
+			$("#modalViewConnect").hide();
+			$("#modalViewConnectDiv").css("display", "none");
+			$('#modalViewTweet').attr("disabled", false);
+		}
+}
+function redirectTwitter()
+{
+	window.location = "../twitterauth";
 }

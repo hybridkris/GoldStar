@@ -9,11 +9,14 @@
 			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
 
 			<h4 style="text-align:center">
-				<a href="/users/{{star.issuer_id}}">{{star.issuer}}</a> gave a star to <a href="/users/{{star.owner_id}}">{{star.owner}}</a> because {{star.reason}} 
+				<a href="/users/{{star.issuer_id}}">{{star.issuer}}</a> gave a star to <a href="/users/{{star.owner_id}}">{{star.owner}}</a> 
+			</h4>
+			<h4 style="text-align:center">
+				Reason:{{star.reason}}
 			</h4>
 			<h4 style="text-align:center" >
-				<br/>
-				#{{star.hashtag}}
+				<br/><button class="hashTagButton" onclick="GoToHashTagPageWithRedirect('{{star.hashtag}}');"><b><i>#{{star.hashtag}}</i></b></button>
+				
 			</h4>
 			<h5 style="text-align:center" >
 				</br>
@@ -41,25 +44,32 @@
 						<td colspan=2><a href="../feedback">Feedback</a></td>
 					</tr>
 				</div>
+				
+				<div id="newaccountStar" style="width:100%; text-align:center; display:none;" ><a href="/signup">Don't have an account?</a></div>
 			</div>
 	</div>
 {% endblock%}
 {% block scripts%}
+<script src="../static/js/mobileviewjs.js"></script>
 <script type = "text/javascript">
 	$(function(){
 
-		var wholeDate = new String($("#timestamptext").text().trim());
-		var dateYear = wholeDate.substr(0,4);
-		var dateMonth = wholeDate.substr(5,2);
-		var dateDay = wholeDate.substr(8,2);
-		var dateHour = wholeDate.substr(11,2);
-		var dateMinute = wholeDate.substr(14,2);
-		var dateSecond = wholeDate.substr(17,2);
-		var dateString = dateMonth+"/"+dateDay+"/"+dateYear+" "+dateHour+":"+dateMinute+":"+dateSecond
-		var DateFormatted = new Date(dateString);
+		var  wholeDate = new String($("#timestamptext").text().trim());
+		var DateFormatted = new Date(parseDate(wholeDate));
 		$("#timestamptext").css('display','Block');
 		$("#timestamptext").text(calculateTimeFromServer(DateFormatted));
+		var createAccountBtn = document.getElementById("newaccountStar");
+		if (sessionStorage.userID== "" || sessionStorage.length == 0){
+			createAccountBtn.style.display="block";
+		}
+		else
+		{
+			createAccountBtn.style.display="none";
+		}
 	});
+
+	
 </script>
+
 <script src="../static/js/mobileviewjs.js"></script>
 {%endblock%}

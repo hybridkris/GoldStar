@@ -3,35 +3,176 @@
 var _currentTab;
 var userList = {};
 var defaultHashtag;
+var usersDisplay  = [];
+var usersHidden = [];
+var ajaxUpdate;
+
 
 //on doc ready for mobile view
 function pageInit()
 {
 
 	//sets _currentTab to default value
-	if (_currentTab == null)
+	//sets default hashtag in search boxes
+
+	if(localStorage.CheckedIntoConference!="" && localStorage.CheckedIntoConference!= null){
+		defaultHashtag = localStorage.CheckedIntoConference;
+		sessionStorage.hashtag= localStorage.CheckedIntoConference;
+	}
+	
+	else{
+		defaultHashtag = "mLearnCon"
+		sessionStorage.hashtag = "mLearnCon"
+	}
+
+	$("#EventTextBox").val(defaultHashtag);
+	$("#AllStarEventHashTag").val(defaultHashtag);
+	if (sessionStorage.currentTab == null || sessionStorage.currentTab =="")
 	{
 		_currentTab = "myStars";
+		$("#EventTextBox").val(defaultHashtag);
+		$("#AllStarEventHashTag").val(defaultHashtag);
+		loadCurrentStars();
 	}
 	else
-	{
+	{ 
 		_currentTab = sessionStorage.currentTab;
+		if(sessionStorage.currentTab == "myStars")
+		{
+			loadCurrentStars();
+			$('#browserTabs a[href="#myStarsTab"]').tab('show');
+
+		}
+		else if(sessionStorage.currentTab == "event")
+		{
+			if(sessionStorage.hashtag!=defaultHashtag && sessionStorage.hashtag!="" && sessionStorage.hashtag!=null){
+				$("#EventTextBox").val(sessionStorage.hashtag);
+				$("#AllStarEventHashTag").val(sessionStorage.hashtag);
+			}
+			
+			else{
+				$("#EventTextBox").val(defaultHashtag);
+			}
+			$('#browserTabs a[href="#eventTab"]').tab('show');
+		}
+		else if(sessionStorage.currentTab=="findPeople")
+		{
+			$('#browserTabs a[href="#findPeopleTab"]').tab('show')
+		}
+		else if(sessionStorage.currentTab =="leader")
+		{
+
+			if(sessionStorage.hashtag!=defaultHashtag){
+				$("#AllStarEventHashTag").val(sessionStorage.hashtag);
+				$("#EventTextBox").val(sessionStorage.hashtag);
+			}
+			else{
+				$("#AllStarEventHashTag").val(defaultHashtag);
+			}
+			$('#browserTabs a[href="#leaderBoardTab"]').tab('show');
+		}
+
 	}
 	//attach event to select
 	$("#myFeedFilter").change(displayMyStars);
 	
-	//sets default hashtag in search boxes
-	defaultHashtag = "Overlap12"
-	$("#EventTextBox").val(defaultHashtag);
-	$("#AllStarEventHashTag").val(defaultHashtag);
 	//load objects
-	loadCurrentStars();
-	getHashTags('all');
+	suggestedHashtags();
+	//set autocomplete for stargazing menu
+	//Known duplicate code from customscripts.js, line 217(ish)
 
+	$.each(userList, function(i, val){
+			var currentUser = val;
+			if (sessionStorage.userID != currentUser.id)
+			{
+				usersHidden.push(currentUser.id);
+				usersDisplay.push(currentUser.firstName + ' ' + currentUser.lastName + ' (' +currentUser.email+')');
+			}
+	});
+
+	$("#findPeopleSearchBox").autocomplete({
+				source: usersDisplay,
+				select: function(event, ui){
+					var index = $.inArray(ui.item.value,usersDisplay);
+					loadOtherUserStars(usersHidden[index], "otherUserStarList", "emptyUserSearchListMessage", "userSearchPageMessageDiv")
+				}
+			});
+
+	//RECOMMENT IN FOR AJAX UPDATES
+	//ajaxUpdate = setInterval(updateData, 10000);
+
+}
+
+//ajax function call
+function updateData()
+{
+	//update user page
+	loadMyStars();
+	//update hashtag
+	loadHashtagStars($("#EventTextBox").val());
+}
+
+
+function onGazeClick()
+{
+	var index = $.inArray($("#findPeopleSearchBox").val(),usersDisplay);
+	loadOtherUserStars(usersHidden[index], "otherUserStarList", "emptyUserSearchListMessage", "userSearchPageMessageDiv")
+}
+
+
+function getSelectableDivId(id)
+{
+	if (id.indexOf("#") != 0)
+	{
+		id = "#" + id;
+	}
+	return id;	
+}
+
+function addStarsToDiv(divToAdd, starArray, errorMessage, errorMessageDiv, errorMessageContainer)
+{
+	//makes sure the div id has a hashtag to be selected by jquery
+	divToAdd = getSelectableDivId(divToAdd);
+	errorMessageDiv = getSelectableDivId(errorMessageDiv);
+	errorMessageContainer = getSelectableDivId(errorMessageContainer);
+
+		//check for length first
+ 	if (starArray.length == 0 )
+ 	{
+ 		$(divToAdd).html("");
+ 		$(errorMessageDiv).html(errorMessage);
+ 		$(errorMessageContainer).css("display","block");
+ 	}
+ 	else
+ 	{
+ 		$(divToAdd).html("");	
+ 		$(errorMessageContainer).css("display","none");
+	 	//loop through array
+	 	$.each(starArray, function(i, val)
+			{
+				var ownerName =  userList[val.owner_id].firstName + ' ' + userList[val.owner_id].lastName;
+				var ownerID = val.owner_id
+				var verb = val.category;
+				var issuerName = userList[val.issuer_id].firstName + ' ' + userList[val.issuer_id].lastName ;
+				var issuerID = val.issuer_id;
+				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
+				var today = new Date(parseDate(val.created));
+				var todayFormatted = calculateTimeFromServer(today);
+				var star_id = val.id	
+				
+			
+				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted,star_id);
+
+				$(divToAdd).append(itemHTML);	
+			}
+	 	);
+	 		
+ 	}
 }
 
 function loadCurrentStars()
 {
+
 	if (_currentTab == "myStars")
 	{
 		
@@ -39,28 +180,67 @@ function loadCurrentStars()
 	}
 	else if (_currentTab == "event")
 	{
-		
-		 //RECOMMENT BACK IN TO WORK
-		 loadHashtagStars($("#EventTextBox").val());	
+		if (sessionStorage.clickedHashtag != null && sessionStorage.clickedHashtag != "" )
+		{
+			$("#EventTextBox").val(sessionStorage.clickedHashtag);
+			sessionStorage.clickedHashtag = "";
+		}
+
+		else if($("#AllStarEventHashTag").val()!=defaultHashtag)
+		{
+			$("#EventTextBox").val($("#AllStarEventHashTag").val());
+			sessionStorage.hashtag =$("#EventTextBox").val();
+		}
+		else if($("#AllStarEventHashTag").val()==defaultHashtag)
+		{
+			$("#EventTextBox").val(defaultHashtag);	
+			sessionStorage.hashtag =$("#EventTextBox").val();
+		}
+		else
+		{
+			$("#EventTextBox").val(defaultHashtag);
+			sessionStorage.hashtag =$("#EventTextBox").val();
+		}
+		//RECOMMENT BACK IN TO WORK
+		loadHashtagStars($("#EventTextBox").val());	
 	}
-	if (_currentTab == "leader")
+	else if (_currentTab == "leader")
 	{
+
+		if($("#EventTextBox").val()!=defaultHashtag)
+		{
+			$("#AllStarEventHashTag").val($("#EventTextBox").val());
+			sessionStorage.hashtag =$("#AllStarEventHashTag").val();
+		}
+		else if($("#EventTextBox").val()==defaultHashtag)
+		{
+			$("#AllStarEventHashTag").val(defaultHashtag);	
+			sessionStorage.hashtag =$("#AllStarEventHashTag").val();
+		}
+		else
+		{
+			$("#AllStarEventHashTag").val(defaultHashtag);	
+			sessionStorage.hashtag =$("#AllStarEventHashTag").val();
+		}
 		
 		displayLeaderBoard();
 	}
-	
-	
 }
+
+
 
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
-   
     var currentTab = e.target.toString();
     if (currentTab.indexOf("myStars")  >= 0 )
     {
     	
     	_currentTab = "myStars";
+    }
+    else if(currentTab.indexOf("findPeople") >=0 )
+    {
+    	_currentTab ="findPeople";
     }
     else if (currentTab.indexOf("event")  >= 0 )
     {
@@ -71,6 +251,12 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     {
     	
     	_currentTab = "leader";
+
+    }
+    else if (currentTab.indexOf("find")  >= 0 )
+    {
+    	
+    	_currentTab = "findPeople";
     }
     sessionStorage.currentTab = _currentTab;
     loadCurrentStars();
@@ -81,14 +267,10 @@ function displayLeaderBoard()
 		//getJson of stars here
 		var ht = $("#AllStarEventHashTag").val().toLowerCase();
 		ht = (ht == "") ? "all" : ht;
-		var verb = $("#allStarFilter").val().toLowerCase();
-		var userUrl = "/leaderboard/filter/"+ht+"/"+verb;
-		sessionStorage
-		console.log(userUrl)
+		var userUrl = "/leaderboard/filter/"+ht
 		$.getJSON(userUrl, function(data)
 		 {
 		 	//reset divs
-		 	console.log(data)
 		 	var defaultDiv = '<div class="well-small" style="background-color:#ffffbb"><i>Nobody is this bright yet, will you be the first?</i></div>	'
 		 	$("#tier5").html(defaultDiv);	
 		 	$("#tier4").html(defaultDiv);	
@@ -203,21 +385,20 @@ function compareStarArrayByDate(a,b)
         );
 }
 
-function displayMyStars()
+function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
 {
 	//get user item from sessionStorage 
 	var user = JSON.parse(sessionStorage.getItem("userObject"));
 
-
- 	// check to see what list item is selected
+ 	// check to see what list item is selected, gets index
  	var myFeedFilterSelectedItem = $("#myFeedFilter").val();
 
  	//create empty message
- 	var emptyMessage = "Oops! something went wrong!";
+ 	var emptyMessage = "Oh dear, nothing was found!";
 
  	//make array of stars
- 	var starArray = []
- 	if (myFeedFilterSelectedItem == "All")
+ 	var starArray = [];
+ 	if (myFeedFilterSelectedItem == 0)
  	{
 
  		starArray = user.issued.concat(user.stars);
@@ -225,75 +406,127 @@ function displayMyStars()
  		starArray.reverse();
 		emptyMessage = "No stars! You need involvement..."	
  	}
- 	else if( myFeedFilterSelectedItem == "Given")
+ 	else if( myFeedFilterSelectedItem == 1)
  	{
  		starArray = user.issued;
  		emptyMessage = "No stars given, go out and meet some people!"
  	} 
- 	else if (myFeedFilterSelectedItem == "Received")
+ 	else if (myFeedFilterSelectedItem == 2)
  	{
  		starArray = user.stars;
  		emptyMessage = "No stars received, Try to be more awesome ;-)!"
  	}
- 	//check for length first
- 	if (starArray.length == 0 )
- 	{
- 		$("#myStarList").html("");
- 		$("#emptyListMessage").html(emptyMessage);
- 		$("#emptyListMessageContainer").css("display","block");
- 	}
- 	else
- 	{
- 		$("#myStarList").html("");	
- 		$("#emptyListMessageContainer").css("display","none");
-	 	//loop through array
-	 	$.each(starArray, function(i, val)
-			{
-				var ownerName =  userList[val.owner_id].firstName + ' ' + userList[val.owner_id].lastName;
-				var ownerID = val.owner_id
-				var verb = val.category;
-				var issuerName = userList[val.issuer_id].firstName + ' ' + userList[val.issuer_id].lastName ;
-				var issuerID = val.issuer_id;
-				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
-				var timestamp = new Date(val.created);
-				var today = new Date(val.created);
-				var todayFormatted = calculateTimeFromServer(today);
-				var star_id = val.id	
-				
-			
-				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted,star_id);
+ 	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
+}
 
-				$("#myStarList").append(itemHTML);	
-			}
-	 	);
-	 		
- 	}
- 		
+function loadOtherUserStars(userID, listDiv, messageDiv, messageContainerDiv){
+	var url = '/api/user/' + userID;
+	$.getJSON(url, function(data)
+		{
+			var emptyMessage = "This user does not have any stars.";
+			//make array of stars
+		 	var starArray = [];
+		 	starArray = data.issued.concat(data.stars);
+		 	starArray.sort(compareStarArrayByDate)
+		 	starArray.reverse();
+			addStarsToDiv(listDiv, starArray, emptyMessage, messageDiv, messageContainerDiv)		 	
+		}).error(function() {$("#emptyUserSearchListMessage").html("Oops, nothing was found!")});
+}
+function loadStarsUserPage(userID, listDiv, messageDiv, messageContainerDiv, filter){
+	var url = '/api/user/' + userID;
+	$.getJSON(url, function(data)
+		{
+			var emptyMessage = "This user does not have any stars.";
+			//make array of stars
+		 	var starArray = [];
+		 	if (filter == "given"){
+		 		starArray = data.issued;
+		 	}
+		 	else if (filter == "received"){
+		 		starArray = data.stars;
+		 	}
+		 	else{
+		 		starArray = data.issued.concat(data.stars);
+		 	}
+		 	starArray.sort(compareStarArrayByDate)
+		 	starArray.reverse();
+			addStarsToDiv(listDiv, starArray, emptyMessage, messageDiv, messageContainerDiv)		 	
+		});
+}
 
+function GoToHashTagPage(hashtag)
+{
+	//set flag to catch hastag click
+	sessionStorage.clickedHashtag = hashtag;
+	//switch tabs
+	$('#browserTabs a[href="#eventTab"]').tab('show');
+}
+
+
+function GoToHashTagPageWithRedirect(hashtag)
+{
+	//set flag to catch hastag click
+	sessionStorage.clickedHashtag = hashtag;
+	
+	//switch tabs
+	sessionStorage.currentTab = "event"
+	
+	window.location = "/";
+	
 }
 
 function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, timestamp, star_id)
 {
-		var itemHTML = '';
-		itemHTML += '<div class="well" style="height:4em; margin-bottom:0;">'				
-		itemHTML += 	'<div style="float:left; width:80%;">'
-		itemHTML += 	'	<img class="pull-left" width="40" height="40" style="padding-right:1em;" src="../static/img/goldstar.png" />'
-		itemHTML += 		'<span font-size:1.2em;><a href="/users/'+ownerID+'">' + ownerName+ '</a> '+verb+' <a href="/users/'+issuerID+'">'+ issuerName + '</a></span> <br/>'
-		//itemHTML += 		'<span style="font-size:1.0em;">at <a href="#" >' + hashtag + '</a></span><br/>'
-		itemHTML += 		'<span style="font-size:1.0em;">at #' + hashtag + '</span><br/>'
-		itemHTML += 		'<span style="font-size:0.8em">'+timestamp+' </span> <br/>'
-		itemHTML += 	'</div>'
-		itemHTML += 	'<a href="/star/' + star_id + '">'
-		itemHTML += 		'<div style="float:right; height:90%; width:20%;position:relative; padding-top:1.5em;">'
-		itemHTML += 				'<div class="iconDiv">'
-		itemHTML += 				'	<i class="icon-chevron-right pull-right"></i>'
-		itemHTML += 			'	</div>	'					
-		itemHTML += 		'</div>	'	
-		itemHTML += 	'</a>'
-		itemHTML += '</div>	'		
-		itemHTML += 	'<div style="clear:both"></div>'
-		return itemHTML;
+		var divClass = "starItemRecieved";
+		if(ownerID == sessionStorage.userID){
+			divClass = "starItemGiven"
+		}	
+		var mainDiv = $("<div>").click(function(event){
+			goToStarPage(star_id);
+		}).addClass(divClass).css({overflow:"hidden",padding:"1em",border_bottom:"0.1em solid #C0C0C0",font_size:"1.2em"});
+		var graphicDiv = $("<div>").css({float:"left",width:"13%",padding:"0em 1em 1em 1em"}).
+		append($("<img>").addClass("pull-left").attr("width",40).attr("height",30).css({padding_right:"1em"}).attr("src","../static/img/goldstar.png")).append("<br/>");
+		var giverName = "You";
+		if (issuerID != sessionStorage.userID)
+		{
+			giverName = issuerName;
+		}
+		var ownerDisplay = "you";
+		if (ownerID != sessionStorage.userID)
+		{
+			ownerDisplay = ownerName;
+		}
+		var issuerLink = $("<a>").attr("href","/users/'"+issuerID+"'").html(giverName);
+		var recieverLink = $("<a>").attr("href","/users/'"+ownerID+"'").html(ownerDisplay);		
+		var hashTagButton = $("<button>").addClass("hashTagButton").click(function(event){
+			GoToHashTagPage(hashtag);
+			event.stopPropagation();
+			return false;
+		}).append($("<b>").append($("<i>").html("#"+hashtag)))
+		var timestampSpan = $("<span>").css("font-size","0.8em").html(timestamp);
+		var buttonSpan = $("<span>").css("font-size","0.8em").append(hashTagButton);
+		var userLinkDiv = $("<div>").css("float","left").css("width","60%")
+		.append(issuerLink)
+		.append('		gave a star to ')
+		.append(recieverLink)
+		.append("<br/>")
+		.append(hashTagButton)
+		.append("<br/>")
+		.append(timestampSpan)
+		.append("<br/>");
+		var icon = $("<i>").addClass("icon-chevron-right").addClass("pull-right").css({vertical_align:"middle",margin_top:"1.5em"});
+		var iconDiv = $("<div>").css({float:"right",width:"auto",display:"table-cell",height:"3em"}).append(icon);
+		mainDiv.append(graphicDiv).append(userLinkDiv).append(iconDiv);
+		return $("<span>").append(mainDiv).append($("<div>").css("clear","both"));
 
+
+		
+
+}
+
+function goToStarPage(starID)
+{
+	window.location = "star/" + starID;
 }
 function displayEventStars()
 {
@@ -301,40 +534,11 @@ function displayEventStars()
 	var hashtagStars = JSON.parse(sessionStorage.getItem("hashtagStars"));
 
  	
+ 	hashtagStars.sort(compareStarArrayByDate)
+ 	hashtagStars.reverse();
  	//create empty message
- 	var emptyMessage = "Oops! something went wrong!";
-
- 	//check for length first
- 	if (hashtagStars.length == 0 )
- 	{
- 		$("#eventStarList").html("");
- 		$("#emptyHashtagListMessage").html(emptyMessage);
- 		$("#eventHashTagListMessageContainer").css("display", "block")
- 	}
- 	else
- 	{
- 		$("#eventStarList").html("");
- 		$("#eventHashTagListMessageContainer").css("display", "none")
-	 	//loop through array
-	 	$.each(hashtagStars, function(i, val)
-			{
-				
-				var ownerName =  userList[val.owner_id].firstName + ' ' + userList[val.owner_id].lastName;
-				var ownerID = val.owner_id
-				var verb = val.category;
-				var issuerName = userList[val.issuer_id].firstName + ' ' + userList[val.issuer_id].lastName ;
-				var issuerID = val.issuer_id;
-				var hashtag = (val.hashtag != null) ? val.hashtag : "somewhere";
-				var timestamp = new Date(val.created);
-				var today = new Date(val.created);
-				var todayFormatted = calculateTimeFromServer(today);
-				var star_id = val.id	
-				var itemHTML = getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, todayFormatted, star_id);
-				$("#eventStarList").append(itemHTML);	
-			}
-	 	);
-	 		
- 	}
+ 	var emptyMessage = "Oh dear! Nothing was found!";
+ 	addStarsToDiv("eventStarList", hashtagStars, emptyMessage, "emptyHashtagListMessage", "eventHashTagListMessageContainer")
  		
 
 }
@@ -343,32 +547,33 @@ function loadMyStars()
 {
 			//getJson of stars here
 			var userUrl = "/api/user/" + sessionStorage.userID;
-			
 			$.getJSON(userUrl, function(jdata)
 			 {
 			 	sessionStorage.setItem("userObject", JSON.stringify(jdata));
-			 	displayMyStars();				
+			 	displayMyStars("myStarList", "emptyListMessage", "emptyListMessageContainer");				
 			 });
 }
 
 function loadHashtagStars(needle)
 {
-			//getJson of stars here
-			var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
-
-			$.getJSON(userUrl, function(jdata)
-			 {
-			 	sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
-			 	displayEventStars();				
-			 });
+	//getJson of stars here
+	var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
+	$.getJSON(userUrl, function(jdata)
+	{
+		sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
+	 	displayEventStars();				
+	});
 }
-
+function checkIntoConference(checkingIntoHashtag)
+{
+	localStorage.CheckedIntoConference = checkingIntoHashtag;
+}
 //returns the hashtags
 function  getHashTags(whatTags)
 {
 	var hashlist
 	
-	var hashurl = "/Hashtags"
+	var hashurl = "/Hashtags";
 	$.getJSON(hashurl, function(data)
 	{
 		
@@ -391,6 +596,24 @@ function  getHashTags(whatTags)
 	});
 
 }
+
+
+function parseDate(wholeDate)
+	{
+		var dateYear = wholeDate.substr(0,4);
+		var dateMonth = wholeDate.substr(5,2);
+		var dateDay = wholeDate.substr(8,2);
+		var dateHour = wholeDate.substr(11,2);
+		var dateMinute = wholeDate.substr(14,2);
+		var dateSecond = wholeDate.substr(17,2);
+		var dateString = dateMonth+"/"+dateDay+"/"+dateYear+" "+dateHour+":"+dateMinute+":"+dateSecond
+		return dateString;
+	}
+
+function logoutFunction(){
+	sessionStorage.clear();
+}
+
 function calculateTimeFromServer(serverTime){
 	// Set the unit values in milliseconds.
 	var msecPerMinute = 1000 * 60;
@@ -399,7 +622,7 @@ function calculateTimeFromServer(serverTime){
 
 	// Determine the current date and time.
 	var today = new Date();
-	//alert (today.getTime());
+	
 
 	// Determine the difference in milliseconds.
 	var interval = today.getTime() - serverTime.getTime();
@@ -461,3 +684,58 @@ function calculateTimeFromServer(serverTime){
 	return msg;
 
 }
+function suggestedHashtags(){
+	var suggestedHashurl = "/hashtagSuggestions";
+	var suggestedHashList = [];
+	var count = 0;
+	$.getJSON(suggestedHashurl, function(data)
+	{
+		if(data.hashtags[0].hashtag != null){
+			$("#hashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#hashLink1").css("display","inline")
+			$("#LeadHashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#LeadHashLink1").css("display","inline")
+			$("#inStarHashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#inStarHashLink1").css("display","inline")
+		}
+		if (data.hashtags.length > 2){
+			if(data.hashtags[1].hashtag != null || data.hashtags[1].hashtag != data.hashtags[0].hashtag || data.hashtags[1].hashtag != data.hashtags[2].hashtag ){
+				$("#hashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#hashLink2").css("display","inline")
+				$("#LeadHashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#LeadHashLink2").css("display","inline")
+				$("#inStarHashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#inStarHashLink2").css("display","inline")
+			}
+		}
+		if (data.hashtags.length > 3){
+			if(data.hashtags[2].hashtag != null && data.hashtags[2].hashtag != data.hashtags[0].hashtag && data.hashtags[2].hashtag != data.hashtags[1].hashtag ){
+				$("#hashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#hashLink3").css("display","inline")
+				$("#LeadHashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#LeadHashLink3").css("display","inline")
+				$("#inStarHashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#inStarHashLink3").css("display","inline")
+			}
+		}
+	});
+}
+
+
+///KnockOut stuff//////
+/*
+TODO: Implement Knock with an observable array of objects
+
+function StarListViewModal()
+{
+	this.myStars = ko.observable([
+		{Issuer: "Person 1", Receiver: "Person 2"},
+		{Issuer: "Person 3", Receiver: "Person 1"},
+		{Issuer: "Person 4", Receiver: "Person 3"},
+		{Issuer: "Person 2", Receiver: "Person 4"}
+	]);
+}
+
+ko.applyBindings(new StarListViewModal());
+
+*/
