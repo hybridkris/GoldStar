@@ -266,17 +266,17 @@ def tweet(star_id):
 		query = session.query(Star)
 		star = query.get(star_id)
 		if star.owner.twitterUser:
-			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me'
+			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me/star/' + star.id
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
-			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me'
+			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me/star/' + star.id
 		if len(status) > 140:
 			cutDescriptionBy = len(status) - 140
 			cutDescriptionBy = len(star.description) - cutDescriptionBy
 			if star.owner.twitterUser:
-				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me'
+				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me/star/' + star.id
 			else:
-				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me'
+				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me/star/' + star.id
 		resp = twitter.post('statuses/update.json', data = {'status': status})
 		return True
 	except:
