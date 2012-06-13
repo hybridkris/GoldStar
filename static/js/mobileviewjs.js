@@ -183,7 +183,6 @@ function loadCurrentStars()
 		if (sessionStorage.clickedHashtag != null && sessionStorage.clickedHashtag != "" )
 		{
 			$("#EventTextBox").val(sessionStorage.clickedHashtag);
-			sessionStorage.clickedHashtag = "";
 		}
 
 		else if($("#AllStarEventHashTag").val()!=defaultHashtag)
@@ -496,10 +495,15 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		{
 			ownerDisplay = ownerName;
 		}
-		var issuerLink = $("<a>").attr("href","/users/'"+issuerID+"'").html(giverName);
-		var recieverLink = $("<a>").attr("href","/users/'"+ownerID+"'").html(ownerDisplay);		
+		var issuerLink = $("<a>").attr("href","/users/"+issuerID).html(giverName);
+		var recieverLink = $("<a>").attr("href","/users/"+ownerID).html(ownerDisplay);		
 		var hashTagButton = $("<button>").addClass("hashTagButton").click(function(event){
-			GoToHashTagPage(hashtag);
+			if (window.location.toString().indexOf("users") >= 0)
+			{
+				GoToHashTagPageWithRedirect(hashtag)
+			}
+			else
+				GoToHashTagPage(hashtag);
 			event.stopPropagation();
 			return false;
 		}).append($("<b>").append($("<i>").html("#"+hashtag)))
@@ -507,14 +511,14 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 		var buttonSpan = $("<span>").css("font-size","0.8em").append(hashTagButton);
 		var userLinkDiv = $("<div>").css("float","left").css("width","60%")
 		.append(issuerLink)
-		.append('		gave a star to ')
+		.append(' gave a star to ')
 		.append(recieverLink)
 		.append("<br/>")
 		.append(hashTagButton)
 		.append("<br/>")
 		.append(timestampSpan)
 		.append("<br/>");
-		var icon = $("<i>").addClass("icon-chevron-right").addClass("pull-right").css({vertical_align:"middle",margin_top:"1.5em"});
+		var icon = $("<i>").addClass("icon-chevron-right").addClass("pull-right").css({margin:"1.5em 0 0 0 "});
 		var iconDiv = $("<div>").css({float:"right",width:"auto",display:"table-cell",height:"3em"}).append(icon);
 		mainDiv.append(graphicDiv).append(userLinkDiv).append(iconDiv);
 		return $("<span>").append(mainDiv).append($("<div>").css("clear","both"));
@@ -561,7 +565,8 @@ function loadHashtagStars(needle)
 	$.getJSON(userUrl, function(jdata)
 	{
 		sessionStorage.setItem("hashtagStars", JSON.stringify(jdata.stars));
-	 	displayEventStars();				
+	 	displayEventStars();	
+	 	sessionStorage.clickedHashtag = "";			
 	});
 }
 function checkIntoConference(checkingIntoHashtag)
