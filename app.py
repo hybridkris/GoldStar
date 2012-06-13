@@ -271,7 +271,7 @@ def tweet(star_id):
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
 			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.goldStars.me'
 		if len(status) > 140:
-			cutDescriptionBy = len(status) - 140
+			cutDescriptionBy = len(status) - 135
 			cutDescriptionBy = len(star.description) - cutDescriptionBy
 			if star.owner.twitterUser:
 				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.goldStars.me'
