@@ -96,7 +96,7 @@
 					<a class="brand">Hello</a> <a class="underline brand" style = "padding-left:0.25em;" href="/users/{{ user.ID }}">{{user.firstName}}!</a>
 					<ul class="nav pull-right">
 							
-					<li><a href="#myModalview"><button  onclick="showModal(); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
+					<li><a href="#myModalview"><button  onclick="$('#myModal').toggle('slow'); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
 					</ul>
 					{% else %}
 					<ul class="nav pull-right">
@@ -108,45 +108,54 @@
 			</div>
 		</div>
 		
-
-	<div class="modal hide fade in" data-backdrop="static" id="myModal" style="display:none">
-			<div class="modal-header modalgradient" style="text-align:center;">
-				<h3>Give a Star</h3> 
-			</div>
-			<div class="modal-body modalgradient">
-				<table style="width:98%">
-					<tr>
-						<td><h4>Who</h4><input id="modalViewUser" type="text" class="input-medium" placeholder="Person" /></td>
-						<td>
-							<h4>Hashtag</h4>
-							<input id="modalViewEvent" style="width:98%" type="text" class="input-medium" placeholder="Event" />
-						</td>
-					</tr>
-				</table>
-				<div style="clear:both"></div>
-				<h4>Reason</h4>
-				<textarea id="modalViewTextarea" onKeyDown="limitText(this.id, 75);" onKeyUp="limitText(this.id, 100);" style="resize:none; width:98%" rows="3" placeholder="For being awesome at this weeks conference!"></textarea>
-				<div style="width:100%">
-          			Trending Hashtags:&nbsp;
-          			<a id="inStarHashLink1" onClick="setStarLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink2" onClick="setStarLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink3" onClick="setStarLinkValue(3)" style="display:none"></a>
-          		</div>
-				<label class ="checkbox inline"><input type="checkbox" id="modalViewTweet" value="True" checked="checked" /><b>Tweet</b></label>
-
-				<div style="clear:both"></div>
-				
-
-				<div id="giveStarErrorDiv" style="color:red; display:none; text-align:center">
-				</div>
-				<div id = "modalViewConnectDiv" style="text-align:center; display:none;">
-					<button id = "modalViewConnect" type="submit" class="btn btn-warning" onclick="redirectTwitter();">Connect to Twitter</button>
-				</div>
-
-			</div>
-			<div id="modalFooterDiv"class="modal-footer modalgradient" style="text-align:center" >
-				<a href="#" class="btn btn-success" style="width:33%;" onclick="if(noGiveStarErrors()){postJSON({{ user.ID }}, 1)}">Give</a>
-				<a href="#" class="btn btn-danger" data-dismiss="modal" style="width:33%; " onclick="resetModalView()">Cancel</a>
-			</div>
+<!-- <div style="width:24%; height:100%; float:left; border:1px solid black">Hi</div>
+<div style="width:24%; height:100%; float:left; border:1px solid black; margin-left: 1px">Bro</div> -->
+	<div class="well" id="myModal" style="display:none; width:auto; height:auto; margin:auto">
+		<div style="width:59%; height:100%; float:left;">
+			<table style="width:98%;margin-left:auto">
+				<tr>
+					<td>
+						<h4>Who</h4>
+						<input id="modalViewUser" type="text" style="width:90%" class="input" placeholder="Person" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h4>Hashtag</h4>
+						<input id="modalViewEvent" type="text" style="width:90%" class="input" placeholder="Event" /><br />
+						<div>
+			      			Trending Hashtags:&nbsp;
+			      			<a id="inStarHashLink1" onClick="setStarLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink2" onClick="setStarLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink3" onClick="setStarLinkValue(3)" style="display:none"></a>
+			      		</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h4>Reason</h4>
+						<textarea id="modalViewTextarea" onKeyDown="limitText(this.id, 75);" onKeyUp="limitText(this.id, 100);" style="resize:none;width:90%" rows="2" placeholder="For being awesome at this weeks conference!"></textarea>
+					</td>
+			</table>
 		</div>
+		<div style="width:39%; height:auto; float:left">
+			<a href="#" class="btn btn-success" style="margin-top:1em; margin-left:1em;" onclick="if(noGiveStarErrors()){postJSON({{ user.ID }}, 1)}"><img style="margin:2em 2em 2em 2em" src="../static/img/icon-star.png" /></a>
+
+			<div style="clear:both"></div>
+
+			<a href="#" class="btn btn-danger" style="margin-top:2em; margin-left:1em;" onclick="resetModalView()"><img style="margin:2em 2em 2em 2em" src="../static/img/icon-cancel.png" /></a>
+		</div>
+		<div style="clear:both"></div>
+		<div style="clear:both"></div>
+		<div style="95%; height:auto">
+			<div id = "modalViewConnectDiv" class="pull-left" style="display:none; padding-left:1em; padding-right:1em;">
+				<button id = "modalViewConnect" type="submit" class="btn btn-warning" onclick="redirectTwitter();">Connect to Twitter</button>
+			</div>
+			<div style="text-align:center">
+			<label class ="checkbox inline"><input type="checkbox" id="modalViewTweet" value="True" checked="checked" /><b>Tweet</b></label></div>
+		</div>
+		<div style="clear:both"></div>
+		<div id="giveStarErrorDiv" style="color:red; display:none; text-align:center">
+		</div>
+	</div>
 		
 		<div id="MainContent">
 			{% for message in get_flashed_messages() %}

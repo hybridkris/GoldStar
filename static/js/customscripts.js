@@ -315,7 +315,7 @@ function showModal()
 		$("#modalViewConnectDiv").css("display", "none");
 		$('#modalViewTweet').attr("disabled", false);
 	}
-	$('#myModal').modal('show');
+	$('#myModal').show('slow');
 }
 function resetModalView(){
 	$('#giveStarErrorDiv').html('');
@@ -323,6 +323,7 @@ function resetModalView(){
 	$('#modalViewVerb').val("");
 	$('#modalViewEvent').val("");
 	$('#modalViewTextarea').val("");
+	$('#myModal').hide('slow');
 }
 function showErrorMessage(page, message){
 	$('#signUpErrorField').hide();
