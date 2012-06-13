@@ -269,12 +269,12 @@ def tweet(star_id):
 			status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description + ' #' + star.hashtag + ' www.goldStars.me'
 		else:
 			fullName = star.owner.firstName + ' ' + star.owner.lastName
-			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.goldStars.me'
+			status = '#GoldStar: ' + fullName + ' for ' + star.description + ' #' + star.hashtag + ' www.Goldstars.me'
 		if len(status) > 140:
 			cutDescriptionBy = len(status) - 135
 			cutDescriptionBy = len(star.description) - cutDescriptionBy
 			if star.owner.twitterUser:
-				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.goldStars.me'
+				status = '#GoldStar: @' + star.owner.twitterUser + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.Goldstars.me'
 			else:
 				status = '#GoldStar: ' + fullName + ' for ' + star.description[0:cutDescriptionBy] + ' #' + star.hashtag + ' www.goldStars.me'
 		resp = twitter.post('statuses/update.json', data = {'status': status})
@@ -558,8 +558,7 @@ def settingsPage():
 auth_func = lambda: current_user.is_authenticated()
 #Creates the API
 #manager.create_api(User, methods=['GET', 'POST'], validation_exceptions=[userValidation], authentication_required_for=['GET'], authentication_function=auth_func)
-manager.create_api(User, methods=['GET', 'POST'], validation_exceptions=[userValidation], authentication_required_for=['GET'], authentication_function=auth_func, 
-	include_columns=['id','firstName', 'lastName', 'twitterUser', 'stars', 'issued','email'])
+manager.create_api(User, methods=['GET', 'POST'], validation_exceptions=[userValidation], include_columns=['id','firstName', 'lastName', 'twitterUser', 'stars', 'issued','email'])
 manager.create_api(Star, methods=['GET', 'POST'], validation_exceptions=[starValidation])
 flask.ext.sqlalchemy.models_committed.connect(models_committed,sender=app)
 

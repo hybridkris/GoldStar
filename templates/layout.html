@@ -98,6 +98,11 @@
 							
 					<li><a href="#myModalview"><button  onclick="showModal(); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
 					</ul>
+					{% else %}
+					<ul class="nav pull-right">
+							
+					<li><span style="color:black; font-size:1.2em">Not a user?</span> <button style="color:yellow;" onclick="signUpNewUser();" class="btn btn-inverse" >Sign Up</button></li>
+					</ul>
 					{%endif%}
 				</div>
 			</div>
@@ -119,8 +124,8 @@
 					</tr>
 				</table>
 				<div style="clear:both"></div>
-				<h4>Description</h4>
-				<textarea id="modalViewTextarea" onKeyDown="limitText(this.id, 100);" onKeyUp="limitText(this.id, 100);" style="resize:none; width:98%" rows="3" placeholder="Short description (100 character limit) *Optional"></textarea>
+				<h4>Reason</h4>
+				<textarea id="modalViewTextarea" onKeyDown="limitText(this.id, 75);" onKeyUp="limitText(this.id, 100);" style="resize:none; width:98%" rows="3" placeholder="For being awesome at this weeks conference!"></textarea>
 				<div style="width:100%">
           			Trending Hashtags:&nbsp;
           			<a id="inStarHashLink1" onClick="setStarLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink2" onClick="setStarLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink3" onClick="setStarLinkValue(3)" style="display:none"></a>
@@ -191,7 +196,7 @@
 				}
 			})
 		</script>
-		<script type="text/javascript">
+		<script>
 			function setStarLinkValue(whichLink){
 				if(whichLink == 1){
 					$("#modalViewEvent").val($("#inStarHashLink1").html().replace("#",""))
@@ -202,6 +207,15 @@
 				else if(whichLink == 3){
 					$("#modalViewEvent").val($("#inStarHashLink3").html().replace("#",""))
 				}
+			}
+			function signUpNewUser(){
+				var currentURL = window.location.href;
+				if (currentURL.toLowerCase().indexOf('/users') >= 0)
+					window.location = "../signup";
+				else if (currentURL.toLowerCase().indexOf('/star') >= 0)
+					window.location = "../signup";
+				else
+					window.location = "signup";
 			}
 				
 		</script>

@@ -126,12 +126,14 @@ function logoutFunction()
 					userList[currentUser.id] = currentUser;				
 					users.push(currentUser.firstName + " " + currentUser.lastName);				
 				}
+
 				sessionStorage.thisUserID = {{theOtherUser.ID}};
 				loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", "all");
 				
 			})
 			.success(function(){
-				//alert("success!");
+				loadStarsUserPage({{theOtherUser.ID}}, "userStarList", "userPageListMessage", "userPageMessageContainer", "all");
+
 			})
 			.error(function(){
 				//alert("Could not load this users stars =(");
