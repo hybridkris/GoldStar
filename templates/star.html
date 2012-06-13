@@ -11,6 +11,7 @@
 			<h4 style="text-align:center">
 				<a href="/users/{{star.issuer_id}}">{{star.issuer}}</a> gave a star to <a href="/users/{{star.owner_id}}">{{star.owner}}</a> 
 			</h4>
+			</br>
 			<h4 style="text-align:center">
 				Reason:{{star.reason}}
 			</h4>
@@ -70,6 +71,29 @@
 
 	
 </script>
+<script>
+	var suggestedHashurl = "/hashtagSuggestions";
+	var suggestedHashList = [];
+	$.getJSON(suggestedHashurl, function(data)
+	{
+		if(data.hashtags[0].hashtag != null){
 
+			$("#inStarHashLink1").html("#"+data.hashtags[0].hashtag)
+			$("#inStarHashLink1").css("display","inline")
+		}
+		if (data.hashtags.length > 2){
+			if(data.hashtags[1].hashtag != null && data.hashtags[0].hashtag != data.hashtags[1].hashtag){
+				$("#inStarHashLink2").html("#"+data.hashtags[1].hashtag)
+				$("#inStarHashLink2").css("display","inline")
+			}
+		}
+		if (data.hashtags.length > 3){
+			if(data.hashtags[2].hashtag != null && data.hashtags[2].hashtag != data.hashtags[0].hashtag && data.hashtags[2].hashtag != data.hashtags[1].hashtag ){
+				$("#inStarHashLink3").html("#"+data.hashtags[2].hashtag)
+				$("#inStarHashLink3").css("display","inline")
+			}
+		}
+	});
+</script>
 <script src="../static/js/mobileviewjs.js"></script>
 {%endblock%}

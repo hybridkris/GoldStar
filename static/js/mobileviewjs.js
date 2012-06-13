@@ -696,7 +696,7 @@ function calculateTimeFromServer(serverTime){
 function suggestedHashtags(){
 	var suggestedHashurl = "/hashtagSuggestions";
 	var suggestedHashList = [];
-	var count = 0;
+
 	$.getJSON(suggestedHashurl, function(data)
 	{
 		if(data.hashtags[0].hashtag != null){
