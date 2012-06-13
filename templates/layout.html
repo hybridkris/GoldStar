@@ -169,7 +169,7 @@
 					showErrorMessage('givestar', 'Cannot identify Name.  Please make sure you are using a name from the drop down menu.');
 					noErrors = false;
 				}
-				if (document.getElementById("modalViewEvent").value == ""){
+				if (!$('#modalViewEvent').val()){
 					showErrorMessage('givestar', 'Please use a hashtag');
 					noErrors = false;
 				}
