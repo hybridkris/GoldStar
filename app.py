@@ -20,8 +20,8 @@ from pythontincan import startThread
 app = Flask(__name__)
 app.config['DEBUG'] = True
 SECRET_KEY = 'development key'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://zoubpmfsdtxwoq:3G0ELHUf2BcAOSF1hUxDceKsQL@ec2-23-23-234-187.compute-1.amazonaws.com/resource44881'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testdb.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://zoubpmfsdtxwoq:3G0ELHUf2BcAOSF1hUxDceKsQL@ec2-23-23-234-187.compute-1.amazonaws.com/resource44881'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testdb.sqlite'
 db = flask.ext.sqlalchemy.SQLAlchemy(app)
 TWITTER_APP_ID = '8YsjtlJjL8kRaGDv1SZjmQ'
 TWITTER_APP_SECRET_ID = 'QVAWDUstIpIHWhZegr5CqQm1XJHWtBIzOacQdXzP7o'
