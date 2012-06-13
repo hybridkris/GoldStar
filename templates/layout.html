@@ -20,7 +20,8 @@
 		}
 		a , .hashTagButton
 		{
-			color:#B94E0D;			
+			color:#B94E0D;	
+			z-index:1;
 		}
 		a:hover , .hashTagButton:hover
 		{
@@ -63,6 +64,10 @@
 			background: -ms-linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#dff1f5 100%);
 			background: linear-gradient(top,  #F5F5F5 1%,#F5F5F5 44%,#dff1f5 100%);
 			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F5F5F5', endColorstr='#dff1f5',GradientType=0 );
+		}
+		.starItemGiven, .starItemRecieved
+		{
+			z-index:-1;
 		}
 		</style>
 			{% block cssStyle %}{% endblock %}
