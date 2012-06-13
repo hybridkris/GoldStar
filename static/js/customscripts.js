@@ -294,16 +294,14 @@ function showDescription(divid)
 //modal functionality
 function showModal()
 {
-	$('#modalFooterDiv').show();
-	$('#giveStarConfirmation').hide();
 	$('#giveStarErrorDiv').html('');
-	$('#myModal').modal('show');
-	var thisUserID = (sessionStorage.thisUserID);
-	if (thisUserID != sessionStorage.userID)
-	{
-		console.log("there page")
-	}
-	sessionStorage.removeItem("thisUserID");
+	// var thisUserID = (sessionStorage.thisUserID);
+	// if (thisUserID != sessionStorage.userID)
+	// {
+	// 	console.log("there page")
+	// }
+	// sessionStorage.removeItem("thisUserID");
+
 	if(sessionStorage.twitterUser == 'false')
 	{
 		$('#modalViewTweet').attr("disabled", true);
@@ -317,22 +315,14 @@ function showModal()
 		$("#modalViewConnectDiv").css("display", "none");
 		$('#modalViewTweet').attr("disabled", false);
 	}
+	$('#myModal').modal('show');
 }
 function resetModalView(){
-	$('#giveStarConfirmation').hide();
 	$('#giveStarErrorDiv').html('');
 	$('#modalViewUser').val("");
 	$('#modalViewVerb').val("");
 	$('#modalViewEvent').val("");
 	$('#modalViewTextarea').val("");
-	$('#myModal').modal({
-		keyboard: false
-	});
-}
-
-function resetModalView(){
-	//Moved all to showModal()
-
 }
 function showErrorMessage(page, message){
 	$('#signUpErrorField').hide();
@@ -350,10 +340,6 @@ function showErrorMessage(page, message){
 		}
 		default: alert("Error!");
 		}
-		$('#modalViewUser').val("");
-		$('#modalViewVerb').val("");
-		$('#modalViewEvent').val("");
-		$('#modalViewTextarea').val("");
 		if(sessionStorage.twitterUser == 'false')
 		{
 			$('#modalViewTweet').attr("disabled", true);
