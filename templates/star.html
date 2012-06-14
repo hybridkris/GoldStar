@@ -34,7 +34,7 @@
 				
 
 			</table>-->
-			<div style="text-align:center">
+			<div id ="starFooter" style="text-align:center; display:None">
 				<div>		
 					<tr>
 						<td colspan=2><a href="../mobileview.html">Go back to my feed</a></td>
@@ -59,13 +59,12 @@
 		var DateFormatted = new Date(parseDate(wholeDate));
 		$("#timestamptext").css('display','Block');
 		$("#timestamptext").text(calculateTimeFromServer(DateFormatted));
-		var createAccountBtn = document.getElementById("newaccountStar");
-		if (sessionStorage.userID== "" || sessionStorage.length == 0){
-			createAccountBtn.style.display="block";
+		if (sessionStorage.userID== null || sessionStorage.length == 0){
+			$('#starFooter').css("display","none")
 		}
 		else
 		{
-			createAccountBtn.style.display="none";
+			$('#starFooter').css("display","block")
 		}
 	});
 

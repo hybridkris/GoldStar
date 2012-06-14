@@ -453,27 +453,29 @@ def models_committed(sender,changes):
 	for change in changes:
 		if isinstance(change[0],Star):
 			s = change[0]
+			hashtag = change[0].hashtag
+			reason = s.description
 			users = query.filter(User.id.in_([s.owner_id,s.issuer_id]))
 			owner_name = ''
 			issuer_email =''
 			issuer_name = ''
 			for user in users:
 				if user.id == s.owner_id:
-					owner_name = str(makeName(user.firstName,user.lastName,user.email))	
+					owner_name = str(makeName(user.firstName,user.lastName))	
 				else:
 					issuer_email = user.email
-					issuer_name = str(makeName(user.firstName,user.lastName,user.email))
+					issuer_name = str(makeName(user.firstName,user.lastName))
 					if user.oauth_token is not None and s.tweet:
 						success = tweet(s.id)
 						if success:
 							print "Tweet successful"
 						else:
 							print "Tweet failed"				
-			startThread(issuer_name,issuer_email,"interacted",owner_name)
+			startThread(issuer_name,issuer_email,"interacted",owner_name,hashtag,reason)
 	session.close()
 
-def makeName(userFirstName, userLastName, userEmail):
-	fullName = "{0} {1}({2})".format(str(userFirstName), str(userLastName), str(userEmail))
+def makeName(userFirstName, userLastName):
+	fullName = "{0} {1}".format(str(userFirstName), str(userLastName))
 	return fullName
 
 @app.route('/getLeaderboard')
@@ -543,7 +545,8 @@ def errorPage():
 @app.route('/hashtagSuggestions')
 def returnTopHashtags():
 	hashtagObject = []
-	hashtagQuery = Star.query.order_by(desc(Star.created)).distinct().limit(3).all()
+	hashtagQuery = Star.query.group_by(Star.hashtag).order_by(desc(Star.created)).limit(3).all()
+
 	for i in hashtagQuery:
 		if i is not None:
 			hashtagObject.append(dict(hashtag = i.hashtag))

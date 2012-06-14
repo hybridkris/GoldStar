@@ -132,6 +132,7 @@ function getSelectableDivId(id)
 function addStarsToDiv(divToAdd, starArray, errorMessage, errorMessageDiv, errorMessageContainer)
 {
 	//makes sure the div id has a hashtag to be selected by jquery
+
 	divToAdd = getSelectableDivId(divToAdd);
 	errorMessageDiv = getSelectableDivId(errorMessageDiv);
 	errorMessageContainer = getSelectableDivId(errorMessageContainer);
@@ -231,6 +232,7 @@ function loadCurrentStars()
 //bind events to tab change
 //sets current tab
 $('a[data-toggle="tab"]').on('shown', function (e) {
+
     var currentTab = e.target.toString();
     if (currentTab.indexOf("myStars")  >= 0 )
     {
@@ -261,11 +263,19 @@ $('a[data-toggle="tab"]').on('shown', function (e) {
     loadCurrentStars();
 });
 
-function displayLeaderBoard()
+function displayLeaderBoard(cameFromWhere)
 {
 		//getJson of stars here
-		var ht = $("#AllStarEventHashTag").val().toLowerCase();
-		ht = (ht == "") ? "all" : ht;
+		console.log(cameFromWhere)
+		if(cameFromWhere == 2)
+		{
+			var ht = "all"
+		}
+		else
+		{
+			var ht = $("#AllStarEventHashTag").val().toLowerCase();
+			ht = (ht == "") ? "all" : ht;
+		}
 		var userUrl = "/leaderboard/filter/"+ht
 		$.getJSON(userUrl, function(data)
 		 {
@@ -275,8 +285,7 @@ function displayLeaderBoard()
 		 	$("#tier4").html(defaultDiv);	
 		 	$("#tier3").html(defaultDiv);	
 		 	$("#tier2").html(defaultDiv);	
-		 	$("#tier1").html(defaultDiv);	
-		 	$("#tier0").html(defaultDiv);	
+		 	$("#tier1").html(defaultDiv);		
 		
 		 	e = data.leaders;
 		 	numberOfUsers = data.leaders.length;
@@ -403,7 +412,7 @@ function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
  		starArray = user.issued.concat(user.stars);
  		starArray.sort(compareStarArrayByDate)
  		starArray.reverse();
-		emptyMessage = "No stars! You need involvement..."	
+		emptyMessage = "No stars! It's time to get involved!"	
  	}
  	else if( myFeedFilterSelectedItem == 1)
  	{
@@ -413,7 +422,7 @@ function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
  	else if (myFeedFilterSelectedItem == 2)
  	{
  		starArray = user.stars;
- 		emptyMessage = "No stars received, Try to be more awesome ;-)!"
+ 		emptyMessage = "No stars received, it's time to shine!"
  	}
  	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
 }
@@ -564,6 +573,7 @@ function loadMyStars()
 
 function loadHashtagStars(needle)
 {
+	localStorage.CheckedIntoConference = needle
 	//getJson of stars here
 	var userUrl = "/starsbyhashtag/" + needle.replace("#","").toLowerCase();
 	$.getJSON(userUrl, function(jdata)
@@ -572,6 +582,15 @@ function loadHashtagStars(needle)
 	 	displayEventStars();	
 	 	sessionStorage.clickedHashtag = "";			
 	});
+}
+function loadAllEventStars(){
+	var starsURL = '/api/star'
+	console.log('HERE')
+	$.getJSON(starsURL,function(data){
+		console.log(data)
+		sessionStorage.setItem("hashtagStars", JSON.stringify(data.objects))
+		displayEventStars();
+	});	
 }
 function checkIntoConference(checkingIntoHashtag)
 {
@@ -707,7 +726,7 @@ function suggestedHashtags(){
 			$("#inStarHashLink1").html("#"+data.hashtags[0].hashtag)
 			$("#inStarHashLink1").css("display","inline")
 		}
-		if (data.hashtags.length > 2){
+		if (data.hashtags.length > 1){
 			if(data.hashtags[1].hashtag != null && data.hashtags[0].hashtag != data.hashtags[1].hashtag){
 				$("#hashLink2").html("#"+data.hashtags[1].hashtag)
 				$("#hashLink2").css("display","inline")
@@ -717,7 +736,7 @@ function suggestedHashtags(){
 				$("#inStarHashLink2").css("display","inline")
 			}
 		}
-		if (data.hashtags.length > 3){
+		if (data.hashtags.length > 2){
 			if(data.hashtags[2].hashtag != null && data.hashtags[2].hashtag != data.hashtags[0].hashtag && data.hashtags[2].hashtag != data.hashtags[1].hashtag ){
 				$("#hashLink3").html("#"+data.hashtags[2].hashtag)
 				$("#hashLink3").css("display","inline")
