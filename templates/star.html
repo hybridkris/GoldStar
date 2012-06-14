@@ -13,7 +13,7 @@
 			</h4>
 			</br>
 			<h4 style="text-align:center">
-				Reason:{{star.reason}}
+				Reason:&nbsp;{{star.reason}}
 			</h4>
 			<h4 style="text-align:center" >
 				<br/><button class="hashTagButton" onclick="GoToHashTagPageWithRedirect('{{star.hashtag}}');"><b><i>#{{star.hashtag}}</i></b></button>
@@ -29,8 +29,7 @@
 			<br/>
 			<div style="clear:both"></div>
 
-
-			<table style="text-align:center width:100%" class="table table-striped">
+				<table style="text-align:center; width:100% display:inline" class="table table-striped" id ="starFooter">
 				<tr>
 						<td style="text-align:center;" ><button ONCLICK="history.go(-1)" class="btn btn-warning">Go back</button></td>
 						<td style="text-align:center;"><a href="../mobileview.html" class="btn btn-warning">Home</a></td>
@@ -43,7 +42,10 @@
 						</td>
 				</tr>
 			</table>
+
+
 	</div>
+
 {% endblock%}
 {% block scripts%}
 <script src="../static/js/mobileviewjs.js"></script>
@@ -54,13 +56,12 @@
 		var DateFormatted = new Date(parseDate(wholeDate));
 		$("#timestamptext").css('display','Block');
 		$("#timestamptext").text(calculateTimeFromServer(DateFormatted));
-		var createAccountBtn = document.getElementById("newaccountStar");
-		if (sessionStorage.userID== "" || sessionStorage.length == 0){
-			createAccountBtn.style.display="block";
+		if (sessionStorage.userID== null || sessionStorage.length == 0){
+			$('#starFooter').css("display","none")
 		}
 		else
 		{
-			createAccountBtn.style.display="none";
+			$('#starFooter').css("display","table")
 		}
 	});
 

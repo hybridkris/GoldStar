@@ -28,21 +28,23 @@
 				<button type="submit" class="btn btn-warning" onclick="redirectTwitter();">Connect to Twitter</button>
 			</div>
 			{%endif%}
-			<div style="text-align:center;"><b>Share!</b></div>
-			<div style="clear:both"></div>
-			<div style="text-align:center;">
-				<span class='st_googleplus_large' displayText='Google +'></span>
-				<span class='st_facebook_large' displayText='Facebook'></span>
-				<span class='st_twitter_large' displayText='Tweet'></span>
-				<span class='st_tumblr_large' displayText='Tumblr'></span>
-			</div>
-			<div style="clear:both"></div>
-			<div style="text-align:center;">
-				<span class='st_stumbleupon_large' displayText='StumbleUpon'></span>
-				<span class='st_reddit_large' displayText='Reddit'></span>
-				<span class='st_pinterest_large' displayText='Pinterest'></span>
-				<span class='st_email_large' displayText='Email'></span>
-			</div>
+			{%if ownPage%}
+				<div style="text-align:center;"><b>Share!</b></div>
+				<div style="clear:both"></div>
+				<div style="text-align:center;">
+					<span class='st_googleplus_large' displayText='Google +'></span>
+					<span class='st_facebook_large' displayText='Facebook'></span>
+					<span class='st_twitter_large' displayText='Tweet'></span>
+					<span class='st_tumblr_large' displayText='Tumblr'></span>
+				</div>
+				<div style="clear:both"></div>
+				<div style="text-align:center;">
+					<span class='st_stumbleupon_large' displayText='StumbleUpon'></span>
+					<span class='st_reddit_large' displayText='Reddit'></span>
+					<span class='st_pinterest_large' displayText='Pinterest'></span>
+					<span class='st_email_large' displayText='Email'></span>
+				</div>
+			{%endif%}
 			<br />
 			<br />
 			
@@ -82,7 +84,7 @@
 						</tr>
 					{%endif%}
 					<tr>
-						<td style="text-align:center;" colspan=2><a href="../logout">Log Out</a></td>
+						<td style="text-align:center;" colspan=2><a onclick ="logoutFunction()" href="../logout">Log Out</a></td>
 					</tr>
 
 				
@@ -115,7 +117,11 @@
 
 function logoutFunction()
 {
+	console.log(sessionStorage.userID)
+		console.log(sessionStorage.length)
 	sessionStorage.clear();
+	console.log(sessionStorage.userID)
+		console.log(sessionStorage.length)
 	window.location="../logout"
 }
 </script>

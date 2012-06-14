@@ -124,10 +124,10 @@
 					<td>
 						<h4>Hashtag</h4>
 						<input id="modalViewEvent" type="text" style="width:90%" class="input" placeholder="Event" /><br />
-						<div>
-			      			Trending Hashtags:&nbsp;
-			      			<a id="inStarHashLink1" onClick="setStarLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink2" onClick="setStarLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="inStarHashLink3" onClick="setStarLinkValue(3)" style="display:none"></a>
-			      		</div>
+						<div style="width:100%">
+          			Trending Hashtags:&nbsp;
+          			<button id="inStarHashLink1" onClick="setStarLinkValue(1)" class="hashTagButton" style="display:none"></button>&nbsp;&nbsp;<button id="inStarHashLink2" onClick="setStarLinkValue(2)" class="hashTagButton" style="display:none"></button>&nbsp;&nbsp;<button id="inStarHashLink3" onClick="setStarLinkValue(3)" class="hashTagButton" style="display:none"></button>
+          		</div>
 					</td>
 				</tr>
 				<tr>
@@ -139,8 +139,6 @@
 		</div>
 		<div style="width:39%; height:auto; float:left">
 			<a href="#" class="btn btn-success" style="margin-top:1em; margin-left:1em;" onclick="if(noGiveStarErrors()){postJSON({{ user.ID }}, 1)}"><img style="margin:2em 2em 2em 2em" src="../static/img/icon-star.png" /></a>
-
-			<div style="clear:both"></div>
 
 			<a href="#" class="btn btn-danger" style="margin-top:2em; margin-left:1em;" onclick="resetModalView()"><img style="margin:2em 2em 2em 2em" src="../static/img/icon-cancel.png" /></a>
 		</div>

@@ -130,7 +130,7 @@
 			<div class="tab-pane" id="findPeopleTab">
 				<div style="text-align:center;margin-bottom:9px;">
 					<div class="input-prepend">
-                		<span class="add-on">@</span><input type="search" class="input-medium search-query" placeholder="Start stargazing here!" style="width:25%;" id="findPeopleSearchBox"><button class="btn btn-warning" style="width:5em;margin:1em" onclick='onGazeClick();'>Gaze</button><br />
+                		<input type="search" class="input-medium search-query" placeholder="Start stargazing here!" style="width:25%;" id="findPeopleSearchBox"><button class="btn btn-warning" style="width:5em;margin:1em" onclick='onGazeClick();'>Search</button><br />
           			</div>
 										
 				</div>
@@ -155,12 +155,14 @@
                 		<span class="add-on">#</span>
                 		<input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:25%;" id="EventTextBox">
                 		<button class="btn btn-warning" style="width:5em;" onclick='loadHashtagStars($("#EventTextBox").val());'>Explore</button>
-                		<button class="btn btn-warning" style="width:6em;float:right;margin-right:1em;" onclick='checkIntoConference($("#EventTextBox").val());'>CheckIn</button>		
+                		<button class="btn btn-warning" style="width:4em;" onclick="loadAllEventStars()">All</button>	
           			</div>
-          			<div style="width:100%">
+          			<div class="input-prepend" style="width:100%">
+          				
           				Trending Hashtags:&nbsp;
-          				<a id="hashLink1" onClick="setLinkValue(1)" style="display:none"></a>&nbsp;&nbsp;<a id="hashLink2" onClick="setLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="hashLink3" onClick="setLinkValue(3)" style="display:none"></a>
+          				<button id="hashLink1" class="hashTagButton" onClick="setLinkValue(1)" style="display:none; cursor: pointer;"></button>&nbsp;&nbsp;<button id="hashLink2" class="hashTagButton" onClick="setLinkValue(2)" style="display:none; cursor: pointer;"; ></button>&nbsp;&nbsp;<button id="hashLink3" class="hashTagButton" onClick="setLinkValue(3)" style="display:none; cursor: pointer;"></button>
           			</div>
+          			
 				</div>
 				<hr/>
 					<div class="hero-unit" id="eventHashTagListMessageContainer">
@@ -209,14 +211,14 @@
 				<td><div class="input-prepend">
                 		<span class="add-on">#</span><input type="search" class="input-medium search-query" placeholder="Type Here To Search For An Event by Hashtag" style="width:50%;margin:0em 1em 0em 0em;" id="AllStarEventHashTag"></div></td>
 				
-				<td><div class="input-prepend"><button class="btn btn-warning" style="width:5em;margin:0em 1em 0em 1em;" onclick='displayLeaderBoard();'>Find</button></div></td>
+				<td><div class="input-prepend"><button class="btn btn-warning" style="width:5em;margin:0em 1em 0em 1em;" onclick='displayLeaderBoard(1);'>Find</button><button class="btn btn-warning" style="width:5em"; onclick='displayLeaderBoard(2);'>Overall</button></div></td>
 			</tr>
 			
 			
 			</table>
 			<div style="width:100%">
           		Trending Hashtags:&nbsp;
-          		<a id="LeadHashLink1" onClick="setLinkValue(1)" style="display:block"></a>&nbsp;&nbsp;<a id="LeadHashLink2" onClick="setLinkValue(2)" style="display:none"></a>&nbsp;&nbsp;<a id="LeadHashLink3" onClick="setLinkValue(3)" style="display:none"></a>
+          		<button id="LeadHashLink1" onClick="setLinkValue(1)" class="hashTagButton" style="display:none"></button>&nbsp;&nbsp;<button id="LeadHashLink2" onClick="setLinkValue(2)" class="hashTagButton" style="display:none"></button>&nbsp;&nbsp;<button id="LeadHashLink3" onClick="setLinkValue(3)" class="hashTagButton" style="display:none"></button>
           	</div>
 			<hr/>
 			<br />
@@ -226,7 +228,7 @@
 				<div class="well tier5" id="tier5">
 					<div class="well-small" style="background-color:#ffffbb">
 						<i>
-							Nobody is this bright yet, will you be the first?
+							Give someone a star and help them shine brightly.
 						</i>
 					</div>			
 				</div>
@@ -234,7 +236,7 @@
 				<div class="well tier4" id="tier4">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
-							Nobody is this bright yet, will you be the first?
+							Give someone a star and help them shine brightly.
 						</i>
 					</div>			
 			
@@ -243,7 +245,7 @@
 				<div class="well tier3" id="tier3">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
-							Nobody is this bright yet, will you be the first?
+							Give someone a star and help them shine brightly.
 						</i>
 					</div>			
 			
@@ -252,7 +254,7 @@
 				<div class="well tier2" id="tier2">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
-							Nobody is this bright yet, will you be the first?
+							Give someone a star and help them shine brightly.
 						</i>
 					</div>			
 			
@@ -261,20 +263,12 @@
 				<div class="well tier1" id="tier1">
 							<div class="well-small" style="background-color:#ffffbb">
 						<i>
-							Nobody is this bright yet, will you be the first?
+							Give someone a star and help them shine brightly.
 						</i>
 					</div>			
 			
 	 			</div>
-	 			<h4>Slow Starters</h4>
-				<div class="well tier0" id="tier0">
-							<div class="well-small" style="background-color:#ffffbb">
-						<i>
-							Nobody is this bright yet, will you be the first?
-						</i>
-					</div>			
-			
-	 			</div>
+	 			
 	 		</div>
 		</div>
 

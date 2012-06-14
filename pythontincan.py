@@ -7,7 +7,7 @@ from requests.auth import HTTPBasicAuth
 import uuid
 import random
 import argparse
-def sendToLRS(whoDid,whoDidEmail,didWhat,whoDidObject,):
+def sendToLRS(whoDid,whoDidEmail,didWhat,whoDidObject,hashtag,reason):
 	#Call functions to get account variables
 	statement_id = str(_ruuid())
 	objectID = str(_randomID())
@@ -17,7 +17,8 @@ def sendToLRS(whoDid,whoDidEmail,didWhat,whoDidObject,):
 				"id":statement_id,
 				'actor':{'name':[whoDid],'mbox':['mailto:'+whoDidEmail]},
 				'verb':didWhat,
-				'object':{'id':objectID,'definition':{'name':{"en-US":'with '+ whoDidObject},'description':{"en-US":whoDid+' gave a gold star to '+whoDidObject+'.'}}}
+				'object':{'id':objectID,'definition':{'name':{"en-US":'with '+ whoDidObject},'description':{"en-US":whoDid+' gave a gold star to '+whoDidObject+' for '}}},
+				'context':{'extensions':{'Hashtag':'#'+hashtag, 'Reason':reason }}
 			}]
 	try:
 		resp = requests.post(url,data=json.dumps(tc_star),auth=HTTPBasicAuth(getUsername(),getsecretKey()),headers={"Content-Type":"application/json"})
@@ -27,8 +28,8 @@ def sendToLRS(whoDid,whoDidEmail,didWhat,whoDidObject,):
 def main():
 	#Thread(None,sendToLRS,None,(Who,Did,toWho)).start()
 	print "Hi"
-def startThread(Who,whoEmail,Did,toWho):
-	Thread(None,sendToLRS,None,(Who,whoEmail,Did,toWho)).start()
+def startThread(Who,whoEmail,Did,toWho, hashtag,starReason):
+	Thread(None,sendToLRS,None,(Who,whoEmail,Did,toWho,hashtag,starReason)).start()
 def _randomID():
 	return str(random.randint(1,10000000))
 
