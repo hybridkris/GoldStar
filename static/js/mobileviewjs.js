@@ -100,7 +100,7 @@ function pageInit()
 			});
 
 	//RECOMMENT IN FOR AJAX UPDATES
-	//ajaxUpdate = setInterval(updateData, 10000);
+	ajaxUpdate = setInterval(updateData, 10000);//10 seconds
 
 }
 
