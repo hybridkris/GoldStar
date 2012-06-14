@@ -402,9 +402,7 @@ function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
  	{
 
  		starArray = user.issued.concat(user.stars);
- 		starArray.sort(compareStarArrayByDate)
- 		starArray.reverse();
-		emptyMessage = "No stars! You need involvement..."	
+ 		emptyMessage = "No stars! You need involvement..."	
  	}
  	else if( myFeedFilterSelectedItem == 1)
  	{
@@ -416,7 +414,9 @@ function displayMyStars(starListDiv, messageDiv, messageContainerDiv )
  		starArray = user.stars;
  		emptyMessage = "No stars received, Try to be more awesome ;-)!"
  	}
- 	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
+ 	starArray.sort(compareStarArrayByDate)
+ 	starArray.reverse();
+	addStarsToDiv(starListDiv, starArray, emptyMessage, messageDiv, messageContainerDiv);
 }
 
 function loadOtherUserStars(userID, listDiv, messageDiv, messageContainerDiv){

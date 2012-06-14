@@ -2,8 +2,8 @@
 {% block cssStyle%}
 {%endblock%}
 {% block body%}
-			
-	<div class="well">
+	
+	<div class="well"> 
 		
 
 			<div style="text-align:center"><img style="margin-bottom:1em;" src="../static/img/goldstar.png" height="100" width="100" /></div>
@@ -26,28 +26,23 @@
 					{{star.timestamp}}
 				</div>
 			</h5>
-			
+			<br/>
 			<div style="clear:both"></div>
-			<hr />
-			<!--
-			<table style="text-align:center width:100%">
-				
 
-			</table>-->
-			<div style="text-align:center">
-				<div>		
-					<tr>
-						<td colspan=2><a href="../mobileview.html">Go back to my feed</a></td>
-					</tr>
-				</div>
-				<div>
-					<tr>
-						<td colspan=2><a href="../feedback">Feedback</a></td>
-					</tr>
-				</div>
-				
-				<div id="newaccountStar" style="width:100%; text-align:center; display:none;" ><a href="/signup">Don't have an account?</a></div>
-			</div>
+
+			<table style="text-align:center width:100%" class="table table-striped">
+				<tr>
+						<td style="text-align:center;" ><button ONCLICK="history.go(-1)" class="btn btn-warning">Go back</button></td>
+						<td style="text-align:center;"><a href="../mobileview.html" class="btn btn-warning">Home</a></td>
+						<td style="text-align:center;"><a href="../feedback" class="btn btn-warning">Feedback</a></td>
+				</tr>
+
+				<tr>
+						<td id="newaccountStar" style="width:100%; text-align:center; display:none;" colspan="2" >
+							<a href="/signup" class="btn btn-warning">Don't have an account?</a>
+						</td>
+				</tr>
+			</table>
 	</div>
 {% endblock%}
 {% block scripts%}

@@ -92,8 +92,10 @@
 				<div class="container" style="width:100%; padding-left:0px; padding-right:0px;">
 					<!--  -->
 					{% if not page.hideStarButton %}
-
-					<a class="brand">Hello</a> <a class="underline brand" style = "padding-left:0.25em;" href="/users/{{ user.ID }}">{{user.firstName}}!</a>
+					<span>
+					<img width="30" height="30" src=../static/img/goldstar.png  class="brand" style="margin:-0.5em 0em 0em 0em"/><a class="brand underline" href="/users/{{ user.ID }}">{{user.firstName}}!</a><vr/>
+					<a class="brand underline" href="/mobileview.html">Home</a>
+					</span>
 					<ul class="nav pull-right">
 							
 					<li><a href="#myModalview"><button  onclick="$('#myModal').toggle('slow'); getJSON(0);" class="btn btn-inverse" ><img width="23px" height="20px" src=../static/img/goldstar.png /></button></a></li>
