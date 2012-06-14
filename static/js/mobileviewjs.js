@@ -485,7 +485,7 @@ function getItemHTML(ownerID, ownerName, verb, issuerID, issuerName, hashtag, ti
 			goToStarPage(star_id);
 		}).addClass(divClass).css({overflow:"hidden",padding:"1em",border_bottom:"0.1em solid #C0C0C0",font_size:"1.2em"});
 		var graphicDiv = $("<div>").css({float:"left",width:"13%",padding:"0em 1em 1em 1em"}).
-		append($("<img>").addClass("pull-left").attr("width",40).attr("height",30).css({padding_right:"1em"}).attr("src","../static/img/goldstar.png")).append("<br/>");
+		append($("<img>").addClass("pull-left").attr("width",30).attr("height",30).css({padding_right:"1em"}).attr("src","../static/img/goldstar.png")).append("<br/>");
 		var giverName = "You";
 		if (issuerID != sessionStorage.userID)
 		{
