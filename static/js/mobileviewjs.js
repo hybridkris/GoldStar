@@ -100,7 +100,7 @@ function pageInit()
 			});
 
 	//RECOMMENT IN FOR AJAX UPDATES
-	ajaxUpdate = setInterval(updateData, 10000);
+	//ajaxUpdate = setInterval(updateData, 10000);
 
 }
 
@@ -375,12 +375,12 @@ function displayLeaderBoard()
 
 function compareStarArrayByDate(a,b)
 {
-	a = new Date(a.created);
-	b = new Date(b.created);
+	a = new Date(parseDate(a.created));
+	b = new Date(parseDate(b.created));
 	return (
-            isFinite(a.valueOf()) &&
-            isFinite(b.valueOf()) ?
-            (a>b)-(a<b) :
+            isFinite(a.getTime()) &&
+            isFinite(b.getTime()) ?
+            a.getTime() - b.getTime() :
             NaN
         );
 }
